@@ -1,0 +1,2345 @@
+openapi: 3.1.1
+info:
+  title: Starbridge External Public Bridges External MCP API
+  version: '1.0'
+servers:
+- url: https://dashboard.starbridge.ai
+tags:
+- name: External MCP
+paths:
+  /api/external/buyer/quick/search:
+    get:
+      operationId: searchBuyers
+      tags:
+      - External MCP
+      summary: Search Buyers
+      description: Search for buyer institutions — cities, counties, school districts, higher-education institutions, police and fire departments, federal agencies, and other public-sector entities — by name. Returns a list of candidates; pick the single buyer that best fits the user's intent based on name, type, and location, then use its `id` (the buyer ID) for downstream tools. If the user mentions a state or province, pass `buyerStateCode` as the matching `StateMapping` enum name (the server resolves it to the corresponding ISO 3166-2 code).
+      parameters:
+      - name: buyerName
+        in: query
+        description: Buyer name to search Buyer entity by.
+        required: true
+        schema:
+          type: string
+      - name: buyerStateCode
+        in: query
+        description: StateMapping enum value for the buyer's ISO 3166-2 state code. Optional.
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Maximum number of buyers to return. Defaults to 10.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Matching buyers ordered by relevance.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuyerSearchResponse'
+        '400':
+          description: Invalid request body or format
+        '401':
+          description: Missing or invalid authentication
+        '403':
+          description: Unauthorized to access resource or perform action
+        '415':
+          description: Unsupported media type or request body format
+        '404':
+          description: Resource not found
+        '429':
+          description: Rate limit exceeded
+        '500':
+          description: Internal server error
+      security:
+      - apiKey: []
+      x-mcp-annotations:
+        readOnlyHint: true
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+  /api/external/buyer/{buyerId}/attribute/{buyerAttribute}:
+    get:
+      operationId: getBuyerAttribute
+      tags:
+      - External MCP
+      summary: Get Buyer Attribute
+      description: 'Retrieve a single structured attribute about a buyer (institution) by its key, as defined in the BuyerField enum. Buyers include cities, counties, higher-education institutions, school districts, police and fire departments, federal agencies, and other public-sector entities. See the `buyerAttribute` parameter for the full list of available keys and what each one returns.
+
+
+        If you need more than one attribute for the same buyer, use the bulk endpoint `getBuyerAttributesBulk` instead. It returns multiple attributes in a single request, saving you from making separate calls for each one.'
+      parameters:
+      - name: buyerId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: buyerAttribute
+        in: path
+        description: "The attribute key to retrieve. Must be one of the following BuyerField values:\n\n- `Id` (Buyer ID) — The unique Starbridge ID associated with a buyer.\n- `Name` (Buyer Name) — The name of the buyer.\n- `CommonName` (Buyer Common Name) — A buyer's common-use name or abbreviation, distinct from its full legal name.\n- `ParentName` (Buyer Parent Name) — The name of the parent buyer.\n- `ParentBuyerId` (Buyer Parent ID) — The unique Starbridge ID of the parent buyer.\n- `Type` (Buyer Type) — The type of buyer this is such as school district, higher ed, city, county, state agency, police, hospital or federal.\n- `Classifications` (Buyer Classifications)\n- `Url` (Buyer Homepage URL) — The website URL of the buyer.\n- `LinkedinSlug` (LinkedIn Slug) — The LinkedIn organization slug, e.g. \"starbridge-ai\" for https://www.linkedin.com/company/starbridge-ai.\n- `Zip` (Buyer Zip) — The zip code of the buyer.\n- `CountryCode` (Buyer Country Code) — The country code of the buyer such as US for United States or CA for Canada.\n- `StateCode` (Buyer State Code) — The state code of the buyer.\n- `StateName` (Buyer State Name) — The full state name of the buyer.\n- `City` (Buyer City) — The city of the buyer.\n- `County` (Buyer County) — The county of the buyer.\n- `Address` (Buyer Full Address) — The full address of the buyer.\n- `Street1` (Buyer Street1) — The primary street address of the buyer.\n- `Street2` (Buyer Street2) — The secondary street address of the buyer.\n- `MainPhoneNumber` (Buyer Phone Number) — The primary contact phone number for the buyer.\n- `EmailDomains` (Buyer Email Domains)\n- `Population` (Population) — Commonly used by sales teams in the government market to size and prioritize opportunities, since larger populations often correlate with bigger budgets and more complex procurement needs. It also helps tailor outreach by aligning messaging and product positioning to the scale of the community being served.\n- `BudgetAmount` (Operating Budget Amount) — The estimated amount of operating expenditures noted in the budget from a city, county, state agency or special district (not applicable for schools) in the latest year found. This is commonly used for account scoring: accounts with more budget are usually a larger focus. Note that while for most buyers we are able to extract the actual budget amount from their online budget document, for some buyers we create an estimated projection of their budget. There is another field called budget confidence which outlines whether the estimated budget amount was actual (pulled from a document) or inferred (an estimate).\n- `BudgetSbita` (Budget Subscription Based IT Spend) — The amount of actual subscription based IT expenditures noted in the budget from a city, county, state agency or special district (not applicable for schools). This field is commonly used for account scoring: accounts with more budget are usually a larger focus.\n- `BudgetUrl` (Budget URL) — The actual URL of a city, county or special district's most recent budget document.\n- `BudgetLatestYear` (Latest Budget Year) — The most recent year that a budget was published that Starbridge indexed. Ties to the budget operating expenditures amount field and sometimes provides in a CRM integration for richer context on the Starbridge budget amount.\n- `BudgetConfidence` (Budget Confidence) — Either verified (the budget was pulled from a document made available online) or inferred (an estimate based on population and other web sources).\n- `SchoolDistrictType` (School District Type) — Categorizes the school district based on its administrative structure, such as whether it is a regular local district, a component of a larger supervisory union, a charter district, or a state or federal education agency.\n- `HigherEdFullTimeEnrollment` (Higher Education Full Time Equivalent Enrollment) — The full-time equivalent enrollment of the higher education institution.\n- `HigherEdInstitutionType` (Higher Education Institution Type) — A list of Higher Ed institution types including: undergraduate universities, large research universities, liberal arts schools, online schools, business schools & medical schools. This is commonly used to score accounts (for example some companies may prefer to sell to medical schools) and tailor messaging.\n- `DepartmentName` (Department Name) — The specific name of the department.\n- `DepartmentCode` (Department Code) — A unique code assigned to a department.\n- `AgencyName` (Agency Name) — The name of the government agency.\n- `OfficeCodeArray` (Office Codes)\n- `AgencyCode` (Agency Code) — A unique code assigned to a government agency.\n- `AiAdoptionScore` (AI Adoption Score) — A ranking 1 (low AI adoption) to 100 (extremely aggressive AI adoption) of how much evidence there is that the agency/school is rapidly adopting AI based on meeting minutes, purchase data and news reports and webpages.\n- `AiAdoptionSummary` (AI Adoption Summary) — A plaintext description of how the buyer is adopting AI: including meeting minutes discussions, web articles and purchase data.\n- `StartupFriendlinessScore` (Startup Friendliness Score) — A ranking 1 (not startup friendly) to 100 (extremely startup friendly) of how often this government/school seems to be an early adopter or champions startups/startup adoption in public\n- `StartupFriendlinessSummary` (Startup Friendliness Summary) — A plaintext description of how often the buyer prefers to buy from startups: looking at meeting minutes discussions, web articles and purchase data.\n- `ProcurementHellScore` (Procurement Hell Score) — A ranking from 1 to 100 of how difficult a buyer's procurement process is with 1 being the easiest to navigate and 100 being the most difficult, slow procurement process. \n- `AngelProcurementSummary` (How to Navigate Procurement Summary) — A summary detailing how a company can navigate the procurement process of a buyer: looking at its procurement limit, sole source policies and usage of cooperatives and resellers.\n- `IpedsIdNumeric` (IPEDS ID) — The most common ID used in the Higher Education market to map accounts from external databases to a CRM. Sourced from the IPEDS official dataset.\n- `TotalEnrollment` (Total Enrollment) — The total enrollment of an institution or a school.\n- `NcesId` (NCES ID) — The most common ID used in the School District market to map accounts from external databases to a CRM. Sourced from the NCES official dataset from https://nces.ed.gov/\n- `NcesStateDistrictId` (NCES State District ID) — The state-specific identifier for a school district, assigned by the NCES\n- `CensusIdPid6` (Census ID (PID6)) — A common ID used in the Government market to map accounts from external databases to a CRM. Sourced from the official Census.gov dataset.\n- `CensusIdGidId` (Census ID (GID)) — The most common ID used in the Government market to map accounts from external databases to a CRM. Sourced from the official Census.gov dataset.\n- `SgcId` (SGC ID) — Standard Geographical Classification (SGC) Code used for Canadian government entities. This is the primary ID used to map Canadian accounts from external databases to a CRM.\n- `HigherEdGraduationRate` (Higher Education Graduation Rate) — The graduation rate of the higher education institution.\n- `HigherEdRetentionRate` (Higher Education Retention Rate) — The retention rate of the higher education institution.\n- `HigherEdAcceptanceRate` (Higher Education Acceptance Rate) — The percentage of applicants offered admission at the higher education institution.\n- `HigherEdYieldRate` (Higher Education Yield Rate) — The percentage of admitted students who enroll at the higher education institution.\n- `HigherEdGraduationEnrollment` (Higher Education Graduate Enrollment) — The graduate enrollment of the higher education institution.\n- `HigherEdUndergradEnrollment` (Higher Education Undergrad Enrollment) — The undergraduate enrollment of the higher education institution.\n- `HigherEdOnlineOnlyEnrollment` (Higher Education Online Only Enrollment) — Enrollment of students enrolled exclusively in distance education programs at the higher education institution.\n- `HigherEdControlOfInstitution` (Higher Education Institution Control) — Whether the institution is public or private.\n- `HigherEdForProfitStatus` (Higher Education For Profit Status) — Whether the higher education institution is operated on a for-profit basis.\n- `HigherEdLevelOfInstitution` (Higher Education Institution Level) — Whether a degree is complete in less than two years, two years or four years.\n- `HigherEdRecruitmentAdmissionsCrmArray` (Higher Education Recruitment / Admissions CRM List)\n- `HigherEdEndowment` (Higher Education Endowment) — The endowment of the higher education institution.\n- `HigherEdMascot` (Mascot) — The name of the mascot. Often used to personalize emails: for example at UCLA, ending an email with Go Bruins!\n- `HigherEdNumberOfOnCampusResidents` (Higher Education Number of On-Campus Residents) — The number of on-campus residents at the higher education institution.\n- `HigherEdNumberOfFullTimeEmployees` (Higher Education Number of Full Time Employees) — The number of full-time employees at the higher education institution.\n- `HigherEdSisModernizationStatus` (Higher Education SIS Modernization Status) — The SIS modernization status of the higher education institution.\n- `HigherEdPrimaryRegionalAccreditor` (Higher Education Main Accreditor) — The institution's primary accreditor for institutional accreditation (institution-level only, excluding program accreditors).\n- `HigherEdAccreditationSummary` (Higher Education Accreditation Summary) — List of accreditation details across institutional and program accreditations, including accreditors and accreditation expiration dates.\n- `HigherEdAccreditationStatus` (Higher Education Accreditation Status) — The institution's accreditation status for institutional accreditation (institution-level only, excluding program accreditations).\n- `DapipId` (DAPIP ID) — The DAPIP identifier for the higher education institution.\n- `HigherEdNextAccreditationReviewDate` (Higher Education Accreditation Expiration Date) — The institution's accreditation expiration date for institutional accreditation (institution-level only, excluding program accreditations).\n- `HigherEdSystem` (Higher Education System) — Whether the institution is a Higher Education system that looks over a number of campuses: such as the City University of New York System or the University of California System.\n- `CommunityCollegeSystem` (Community College System) — Whether the institution is a Community College system that oversees multiple community college campuses.\n- `Sis` (SIS) — The student information system used by the buyer.\n- `LmsArray` (LMS List)\n- `SchoolDistrictLocale` (School District Locale) — The locale of the school district.\n- `SchoolDistrictFullTimeEquivalentTeachers` (School District Full Time Equivalent Teachers) — The full-time equivalent teachers in the school district.\n- `LowestGradeOffered` (Lowest Grade) — The lowest grade offered by the school or school district. Values: -1 = Pre-K, 0 = Kindergarten, 1-13 = grades.\n- `HighestGradeOffered` (Highest Grade) — The highest grade offered by the school or school district. Values: -1 = Pre-K, 0 = Kindergarten, 1-13 = grades.\n- `SchoolDistrictNumberOfSchools` (School District Number of Schools) — The number of schools in the school district.\n- `SchoolDistrictElementarySchools` (School District Elementary Schools) — The number of elementary schools in the school district.\n- `SchoolDistrictMiddleSchools` (School District Middle Schools) — The number of middle schools in the school district.\n- `SchoolDistrictHighSchools` (School District High Schools) — The number of high schools in the school district.\n- `SchoolDistrictTotalStaff` (School District Total Staff) — The total staff in the school district.\n- `SchoolDistrictMedianHouseholdIncome` (School District Median Household Income) — The median household income for the district. A value of 250000 means $250,000 or more.\n- `SchoolDistrictSector` (School District Sector) — Categorizes the school district as Public or Private.\n- `RegionalEducationServiceAgencyName` (Regional Education Service Agency Name) — The name of the regional education service agency that serves the school district.\n- `RegionalEducationServiceAgencyBuyerId` (Regional Education Service Agency Buyer ID) — The unique Starbridge buyer ID of the regional education service agency that serves the school district.\n- `SchoolManagementOrganizationName` (School Operator Name) — The name of the management organization that serves the school. Depending on the school type, this may be an Education Management Organization or a Charter Management Organization.\n- `SchoolManagementOrganizationBuyerId` (School Operator Buyer ID) — The unique Starbridge buyer ID of the management organization that serves the school. Depending on the school type, this may be an Education Management Organization or a Charter Management Organization.\n- `EnglishLearners` (English Learner %) — The percentage of English learners in the school or school district.\n- `BlackPercentage` (Black or African American Students %) — The percentage of students who identify as Black or African American in the school or school district.\n- `LatinoPercentage` (Latino or Hispanic Students %) — The percentage of students who identify as Latino or Hispanic in the school or school district.\n- `WhitePercentage` (White Students %) — Percentage of students who identify as White in the school or school district.\n- `StudentTeacherRatio` (Student-Teacher Ratio) — Average number of enrolled students per full-time equivalent teacher.\n- `SchoolSector` (School Sector) — Categorizes the school as Public, Private, or Charter.\n- `SchoolLevel` (School Level) — Categorizes the school by its educational level: Elementary, Middle, High School, or Other.\n- `AlternativeSchool` (Alternative School) — Identifies schools whose primary model is alternative or non-traditional, based on NCES school data.\n- `SchoolCurriculumProgramArray` (Curriculum Program List)\n- `ReligiousAffiliation` (Religious Affiliation) — The religious affiliation of the school or higher education institution.\n- `StudentGenderComposition` (Student Gender Composition) — The student gender composition of the school or higher education institution.\n- `SchoolVirtualStatus` (School Virtual Status) — Describes the operational model of the school or district (e.g., Exclusively virtual, No virtual instruction).\n- `Subentity` (Government Subentity) — A classification of a special district government entity based on its function and administrative level, including specific service-providing entities like transportation, utilities, and public safety.\n- `FiscalYearStartDate` (Buyer Fiscal Year Start Date) — The start date of the buyer's fiscal year.\n- `FreeOrReducedLunchEligiblePercentage` (Free & Reduced Lunch Eligible %) — A strong indicator of a school's or district’s socioeconomic demographics such as poverty, helping sales teams identify schools that may have more limited budgets or greater funding opportunities.\n- `FdId` (Fire Department ID (FDID)) — Fire Department Identification number\n- `FireDepartmentType` (Fire Department Type) — Categorizes the department based on its primary staffing model: 'Volunteer', 'Career', or 'Combination' (a mix of volunteer and career staff).\n- `FireDepartmentOrganizationType` (Fire Department Organization Type) — Defines the department's governing structure, such as 'Local', 'Federal', 'State', 'Tribal', or 'Private'.\n- `FireDepartmentPrimaryAgency` (Fire Department Primary Agency) — Indicates if the fire department is designated as the primary agency for emergency management within its jurisdiction.\n- `FireDepartmentNumberOfStations` (Fire Department Number of Stations) — The total number of fire stations operated by the department.\n- `FireDepartmentActiveFirefightersCareer` (Fire Department Active Firefighters - Career) — The number of active, full-time paid (career) firefighters employed by the department.\n- `FireDepartmentActiveFirefightersVolunteer` (Fire Department Active Firefighters - Volunteer) — The number of active volunteer firefighters registered with the department.\n- `FireDepartmentActiveFirefightersPaidPerCall` (Fire Department Active Firefighters - Paid Per Call) — The number of active firefighters who are not full-time staff but receive payment for responding to incidents (paid-per-call).\n- `FireDepartmentNonFirefightingCivilian` (Fire Department Non firefighting - Civilian) — The number of paid civilian (non-firefighting) employees, such as administrative staff, dispatchers, or mechanics.\n- `FireDepartmentNonFirefightingVolunteer` (Fire Department Non firefighting - Volunteer) — The number of non-firefighting volunteers who support the department in administrative or other auxiliary roles.\n- `PoliceOri` (Originating Agency Identifier (ORI)) — The Originating Agency Identifier (ORI) is a unique identification code assigned to law enforcement agencies by the FBI.\n- `PoliceOfficerCt` (Total Full-Time Sworn Officers) — The total count of all full-time sworn officers employed by the police department.\n- `Psap` (PSAP) — Indicates if the buyer is a Public Safety Answering Point (PSAP), a call center for emergency services.\n- `StateAgencySector` (State Agency Sector) — Categorizes state agencies by their primary area of government responsibility (e.g., Education, Health & Human Services, Transportation & Infrastructure). Enables dynamic territory creation and account scoring by agency sector without relying on static buyer lists.\n- `EmployeeFte` (Employee FTE) — The total number of full-time equivalent employees.\n- `PropensityToSpendScore` (Propensity to Spend Score) — A predictive score from 1 (low) to 100 (high) indicating the buyer's likelihood to make purchases.\n- `PropensityToSpendSummary` (Propensity to Spend Summary) — A descriptive analysis highlighting the key drivers, market signals, and trends influencing the buyer's computed propensity score.\n- `BudgetChangeAnalysisSourceUrls` (Budget Change Analysis Source URLs)\n- `PropensityToSpend` (Propensity to Spend) — A categorical classification of the buyer's spending behavior: Aggressive Spender, Open to Spend, Selective, or Highly Cautious.\n- `YoyChangeInEnrollment` (YoY Change in Enrollment) — Year-over-year percentage change in enrollment, ranging from -100 to +100.\n- `EnrollmentTrend` (Enrollment Trend) — A categorical classification of the enrollment trend: Stable / Flat, Strongly Decreasing, Strongly Increasing, Moderately Increasing, Moderately Decreasing, or Not Available.\n- `EnrollmentTrendBasedOnFte` (Enrollment Trend Measured Based on FTE?) — Indicates whether the enrollment trend measurement is based on Full-Time Equivalent (FTE) students.\n- `SpecialEducationEnrollment` (Special Education Enrollment) — Number of enrolled students receiving special education services under IDEA.\n- `SpecialEducationEnrollmentPercentage` (Special Education Enrollment %) — Percentage of enrolled students receiving special education services under IDEA.\n- `PerPupilExpenditure` (Per-Pupil Expenditure) — Average total current expenditure per enrolled student (per-pupil expenditure).\n- `MathProficiencyPercentage` (Math Proficiency %) — Percentage of students meeting or exceeding state proficiency standards in Mathematics (0–100).\n- `ElaProficiencyPercentage` (ELA Proficiency %) — Percentage of students meeting or exceeding state proficiency standards in English Language Arts (0–100).\n- `TitleIFunding` (Title I Funding) — Total federal Title I, Part A allocation received by the district for supplemental instruction and support for low-income students.\n- `TitleIiFunding` (Title II Funding) — Total federal Title II, Part A allocation for educator quality improvement, professional development, and class-size reduction.\n- `TitleIiiFunding` (Title III Funding) — Total federal Title III, Part A allocation for English Learner instruction, language development, and immigrant student programs.\n- `TitleIvFunding` (Title IV Funding) — Total federal Title IV, Part A (SSAE) allocation for well-rounded education, safe and healthy schools, and effective technology use.\n- `TitleVFunding` (Title V Funding) — Total federal Title V allocation, primarily supporting the Rural Education Achievement Program (REAP) to assist rural and low-income school districts.\n- `FederalGrantComplianceRisk` (Federal Grant Compliance Risk) — Federal grant compliance risk based on FAC Single Audit data. High means serious findings like material weakness, material noncompliance, questioned costs, or repeat findings. Medium means less severe findings like significant deficiency or modified opinion. None means checked with no relevant risk.\n- `FederalGrantComplianceCapSummary` (Federal Grant Compliance CAP Summary) — Corrective action plans reported in FAC Single Audit data for federal grant compliance findings.\n- `BuyerLocationLatitude` (Buyer Location Latitude) — The geographic latitude of the buyer's primary location. Part of a coordinate pair.\n- `BuyerLocationLongitude` (Buyer Location Longitude) — The geographic longitude of the buyer's primary location. Part of a coordinate pair."
+        required: true
+        schema:
+          type: string
+          enum:
+          - Id
+          - Name
+          - CommonName
+          - ParentName
+          - ParentBuyerId
+          - Type
+          - Classifications
+          - Url
+          - LinkedinSlug
+          - Zip
+          - CountryCode
+          - StateCode
+          - StateName
+          - City
+          - County
+          - Address
+          - Street1
+          - Street2
+          - MainPhoneNumber
+          - EmailDomains
+          - Population
+          - BudgetAmount
+          - BudgetSbita
+          - BudgetUrl
+          - BudgetLatestYear
+          - BudgetConfidence
+          - SchoolDistrictType
+          - HigherEdFullTimeEnrollment
+          - HigherEdInstitutionType
+          - DepartmentName
+          - DepartmentCode
+          - AgencyName
+          - OfficeCodeArray
+          - AgencyCode
+          - AiAdoptionScore
+          - AiAdoptionSummary
+          - StartupFriendlinessScore
+          - StartupFriendlinessSummary
+          - ProcurementHellScore
+          - AngelProcurementSummary
+          - IpedsIdNumeric
+          - TotalEnrollment
+          - NcesId
+          - NcesStateDistrictId
+          - CensusIdPid6
+          - CensusIdGidId
+          - SgcId
+          - HigherEdGraduationRate
+          - HigherEdRetentionRate
+          - HigherEdAcceptanceRate
+          - HigherEdYieldRate
+          - HigherEdGraduationEnrollment
+          - HigherEdUndergradEnrollment
+          - HigherEdOnlineOnlyEnrollment
+          - HigherEdControlOfInstitution
+          - HigherEdForProfitStatus
+          - HigherEdLevelOfInstitution
+          - HigherEdRecruitmentAdmissionsCrmArray
+          - HigherEdEndowment
+          - HigherEdMascot
+          - HigherEdNumberOfOnCampusResidents
+          - HigherEdNumberOfFullTimeEmployees
+          - HigherEdSisModernizationStatus
+          - HigherEdPrimaryRegionalAccreditor
+          - HigherEdAccreditationSummary
+          - HigherEdAccreditationStatus
+          - DapipId
+          - HigherEdNextAccreditationReviewDate
+          - HigherEdSystem
+          - CommunityCollegeSystem
+          - Sis
+          - LmsArray
+          - SchoolDistrictLocale
+          - SchoolDistrictFullTimeEquivalentTeachers
+          - LowestGradeOffered
+          - HighestGradeOffered
+          - SchoolDistrictNumberOfSchools
+          - SchoolDistrictElementarySchools
+          - SchoolDistrictMiddleSchools
+          - SchoolDistrictHighSchools
+          - SchoolDistrictTotalStaff
+          - SchoolDistrictMedianHouseholdIncome
+          - SchoolDistrictSector
+          - RegionalEducationServiceAgencyName
+          - RegionalEducationServiceAgencyBuyerId
+          - SchoolManagementOrganizationName
+          - SchoolManagementOrganizationBuyerId
+          - EnglishLearners
+          - BlackPercentage
+          - LatinoPercentage
+          - WhitePercentage
+          - StudentTeacherRatio
+          - SchoolSector
+          - SchoolLevel
+          - AlternativeSchool
+          - SchoolCurriculumProgramArray
+          - ReligiousAffiliation
+          - StudentGenderComposition
+          - SchoolVirtualStatus
+          - Subentity
+          - FiscalYearStartDate
+          - FreeOrReducedLunchEligiblePercentage
+          - FdId
+          - FireDepartmentType
+          - FireDepartmentOrganizationType
+          - FireDepartmentPrimaryAgency
+          - FireDepartmentNumberOfStations
+          - FireDepartmentActiveFirefightersCareer
+          - FireDepartmentActiveFirefightersVolunteer
+          - FireDepartmentActiveFirefightersPaidPerCall
+          - FireDepartmentNonFirefightingCivilian
+          - FireDepartmentNonFirefightingVolunteer
+          - PoliceOri
+          - PoliceOfficerCt
+          - Psap
+          - StateAgencySector
+          - EmployeeFte
+          - PropensityToSpendScore
+          - PropensityToSpendSummary
+          - BudgetChangeAnalysisSourceUrls
+          - PropensityToSpend
+          - YoyChangeInEnrollment
+          - EnrollmentTrend
+          - EnrollmentTrendBasedOnFte
+          - SpecialEducationEnrollment
+          - SpecialEducationEnrollmentPercentage
+          - PerPupilExpenditure
+          - MathProficiencyPercentage
+          - ElaProficiencyPercentage
+          - TitleIFunding
+          - TitleIiFunding
+          - TitleIiiFunding
+          - TitleIvFunding
+          - TitleVFunding
+          - FederalGrantComplianceRisk
+          - FederalGrantComplianceCapSummary
+          - BuyerLocationLatitude
+          - BuyerLocationLongitude
+      responses:
+        '200':
+          description: The requested attribute value wrapped in BuyerAttributeResponse.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuyerAttributeResponse'
+        '400':
+          description: Invalid request body or format
+        '401':
+          description: Missing or invalid authentication
+        '403':
+          description: Unauthorized to access resource or perform action
+        '415':
+          description: Unsupported media type or request body format
+        '404':
+          description: Resource not found
+        '429':
+          description: Rate limit exceeded
+        '500':
+          description: Internal server error
+      security:
+      - apiKey: []
+      x-mcp-annotations:
+        readOnlyHint: true
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+  /api/external/buyer/{buyerId}/attributes:
+    get:
+      operationId: getBuyerAttributesBulk
+      tags:
+      - External MCP
+      summary: Get Buyer Attributes in bulk
+      description: Retrieve multiple structured attributes about a buyer (institution) in a single call — the bulk counterpart to getBuyerAttribute, so you don't have to make one request per attribute (which clutters MCP / Ask Starbridge sessions). Buyers include cities, counties, higher-education institutions, school districts, police and fire departments, federal agencies, and other public-sector entities. Pass one or more `attribute` query parameters (BuyerField keys) to select what to return, or omit `attribute` entirely to get every available attribute. The response `buyerData` maps each requested key to its value (JsonNull when the attribute is unset).
+      parameters:
+      - name: buyerId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: attribute
+        in: query
+        description: "The attribute keys to retrieve. Pass multiple `attribute` parameters for multiple keys, or omit entirely to return all available attributes. Each key must be one of the following BuyerField values:\n\n- `Id` (Buyer ID) — The unique Starbridge ID associated with a buyer.\n- `Name` (Buyer Name) — The name of the buyer.\n- `CommonName` (Buyer Common Name) — A buyer's common-use name or abbreviation, distinct from its full legal name.\n- `ParentName` (Buyer Parent Name) — The name of the parent buyer.\n- `ParentBuyerId` (Buyer Parent ID) — The unique Starbridge ID of the parent buyer.\n- `Type` (Buyer Type) — The type of buyer this is such as school district, higher ed, city, county, state agency, police, hospital or federal.\n- `Classifications` (Buyer Classifications)\n- `Url` (Buyer Homepage URL) — The website URL of the buyer.\n- `LinkedinSlug` (LinkedIn Slug) — The LinkedIn organization slug, e.g. \"starbridge-ai\" for https://www.linkedin.com/company/starbridge-ai.\n- `Zip` (Buyer Zip) — The zip code of the buyer.\n- `CountryCode` (Buyer Country Code) — The country code of the buyer such as US for United States or CA for Canada.\n- `StateCode` (Buyer State Code) — The state code of the buyer.\n- `StateName` (Buyer State Name) — The full state name of the buyer.\n- `City` (Buyer City) — The city of the buyer.\n- `County` (Buyer County) — The county of the buyer.\n- `Address` (Buyer Full Address) — The full address of the buyer.\n- `Street1` (Buyer Street1) — The primary street address of the buyer.\n- `Street2` (Buyer Street2) — The secondary street address of the buyer.\n- `MainPhoneNumber` (Buyer Phone Number) — The primary contact phone number for the buyer.\n- `EmailDomains` (Buyer Email Domains)\n- `Population` (Population) — Commonly used by sales teams in the government market to size and prioritize opportunities, since larger populations often correlate with bigger budgets and more complex procurement needs. It also helps tailor outreach by aligning messaging and product positioning to the scale of the community being served.\n- `BudgetAmount` (Operating Budget Amount) — The estimated amount of operating expenditures noted in the budget from a city, county, state agency or special district (not applicable for schools) in the latest year found. This is commonly used for account scoring: accounts with more budget are usually a larger focus. Note that while for most buyers we are able to extract the actual budget amount from their online budget document, for some buyers we create an estimated projection of their budget. There is another field called budget confidence which outlines whether the estimated budget amount was actual (pulled from a document) or inferred (an estimate).\n- `BudgetSbita` (Budget Subscription Based IT Spend) — The amount of actual subscription based IT expenditures noted in the budget from a city, county, state agency or special district (not applicable for schools). This field is commonly used for account scoring: accounts with more budget are usually a larger focus.\n- `BudgetUrl` (Budget URL) — The actual URL of a city, county or special district's most recent budget document.\n- `BudgetLatestYear` (Latest Budget Year) — The most recent year that a budget was published that Starbridge indexed. Ties to the budget operating expenditures amount field and sometimes provides in a CRM integration for richer context on the Starbridge budget amount.\n- `BudgetConfidence` (Budget Confidence) — Either verified (the budget was pulled from a document made available online) or inferred (an estimate based on population and other web sources).\n- `SchoolDistrictType` (School District Type) — Categorizes the school district based on its administrative structure, such as whether it is a regular local district, a component of a larger supervisory union, a charter district, or a state or federal education agency.\n- `HigherEdFullTimeEnrollment` (Higher Education Full Time Equivalent Enrollment) — The full-time equivalent enrollment of the higher education institution.\n- `HigherEdInstitutionType` (Higher Education Institution Type) — A list of Higher Ed institution types including: undergraduate universities, large research universities, liberal arts schools, online schools, business schools & medical schools. This is commonly used to score accounts (for example some companies may prefer to sell to medical schools) and tailor messaging.\n- `DepartmentName` (Department Name) — The specific name of the department.\n- `DepartmentCode` (Department Code) — A unique code assigned to a department.\n- `AgencyName` (Agency Name) — The name of the government agency.\n- `OfficeCodeArray` (Office Codes)\n- `AgencyCode` (Agency Code) — A unique code assigned to a government agency.\n- `AiAdoptionScore` (AI Adoption Score) — A ranking 1 (low AI adoption) to 100 (extremely aggressive AI adoption) of how much evidence there is that the agency/school is rapidly adopting AI based on meeting minutes, purchase data and news reports and webpages.\n- `AiAdoptionSummary` (AI Adoption Summary) — A plaintext description of how the buyer is adopting AI: including meeting minutes discussions, web articles and purchase data.\n- `StartupFriendlinessScore` (Startup Friendliness Score) — A ranking 1 (not startup friendly) to 100 (extremely startup friendly) of how often this government/school seems to be an early adopter or champions startups/startup adoption in public\n- `StartupFriendlinessSummary` (Startup Friendliness Summary) — A plaintext description of how often the buyer prefers to buy from startups: looking at meeting minutes discussions, web articles and purchase data.\n- `ProcurementHellScore` (Procurement Hell Score) — A ranking from 1 to 100 of how difficult a buyer's procurement process is with 1 being the easiest to navigate and 100 being the most difficult, slow procurement process. \n- `AngelProcurementSummary` (How to Navigate Procurement Summary) — A summary detailing how a company can navigate the procurement process of a buyer: looking at its procurement limit, sole source policies and usage of cooperatives and resellers.\n- `IpedsIdNumeric` (IPEDS ID) — The most common ID used in the Higher Education market to map accounts from external databases to a CRM. Sourced from the IPEDS official dataset.\n- `TotalEnrollment` (Total Enrollment) — The total enrollment of an institution or a school.\n- `NcesId` (NCES ID) — The most common ID used in the School District market to map accounts from external databases to a CRM. Sourced from the NCES official dataset from https://nces.ed.gov/\n- `NcesStateDistrictId` (NCES State District ID) — The state-specific identifier for a school district, assigned by the NCES\n- `CensusIdPid6` (Census ID (PID6)) — A common ID used in the Government market to map accounts from external databases to a CRM. Sourced from the official Census.gov dataset.\n- `CensusIdGidId` (Census ID (GID)) — The most common ID used in the Government market to map accounts from external databases to a CRM. Sourced from the official Census.gov dataset.\n- `SgcId` (SGC ID) — Standard Geographical Classification (SGC) Code used for Canadian government entities. This is the primary ID used to map Canadian accounts from external databases to a CRM.\n- `HigherEdGraduationRate` (Higher Education Graduation Rate) — The graduation rate of the higher education institution.\n- `HigherEdRetentionRate` (Higher Education Retention Rate) — The retention rate of the higher education institution.\n- `HigherEdAcceptanceRate` (Higher Education Acceptance Rate) — The percentage of applicants offered admission at the higher education institution.\n- `HigherEdYieldRate` (Higher Education Yield Rate) — The percentage of admitted students who enroll at the higher education institution.\n- `HigherEdGraduationEnrollment` (Higher Education Graduate Enrollment) — The graduate enrollment of the higher education institution.\n- `HigherEdUndergradEnrollment` (Higher Education Undergrad Enrollment) — The undergraduate enrollment of the higher education institution.\n- `HigherEdOnlineOnlyEnrollment` (Higher Education Online Only Enrollment) — Enrollment of students enrolled exclusively in distance education programs at the higher education institution.\n- `HigherEdControlOfInstitution` (Higher Education Institution Control) — Whether the institution is public or private.\n- `HigherEdForProfitStatus` (Higher Education For Profit Status) — Whether the higher education institution is operated on a for-profit basis.\n- `HigherEdLevelOfInstitution` (Higher Education Institution Level) — Whether a degree is complete in less than two years, two years or four years.\n- `HigherEdRecruitmentAdmissionsCrmArray` (Higher Education Recruitment / Admissions CRM List)\n- `HigherEdEndowment` (Higher Education Endowment) — The endowment of the higher education institution.\n- `HigherEdMascot` (Mascot) — The name of the mascot. Often used to personalize emails: for example at UCLA, ending an email with Go Bruins!\n- `HigherEdNumberOfOnCampusResidents` (Higher Education Number of On-Campus Residents) — The number of on-campus residents at the higher education institution.\n- `HigherEdNumberOfFullTimeEmployees` (Higher Education Number of Full Time Employees) — The number of full-time employees at the higher education institution.\n- `HigherEdSisModernizationStatus` (Higher Education SIS Modernization Status) — The SIS modernization status of the higher education institution.\n- `HigherEdPrimaryRegionalAccreditor` (Higher Education Main Accreditor) — The institution's primary accreditor for institutional accreditation (institution-level only, excluding program accreditors).\n- `HigherEdAccreditationSummary` (Higher Education Accreditation Summary) — List of accreditation details across institutional and program accreditations, including accreditors and accreditation expiration dates.\n- `HigherEdAccreditationStatus` (Higher Education Accreditation Status) — The institution's accreditation status for institutional accreditation (institution-level only, excluding program accreditations).\n- `DapipId` (DAPIP ID) — The DAPIP identifier for the higher education institution.\n- `HigherEdNextAccreditationReviewDate` (Higher Education Accreditation Expiration Date) — The institution's accreditation expiration date for institutional accreditation (institution-level only, excluding program accreditations).\n- `HigherEdSystem` (Higher Education System) — Whether the institution is a Higher Education system that looks over a number of campuses: such as the City University of New York System or the University of California System.\n- `CommunityCollegeSystem` (Community College System) — Whether the institution is a Community College system that oversees multiple community college campuses.\n- `Sis` (SIS) — The student information system used by the buyer.\n- `LmsArray` (LMS List)\n- `SchoolDistrictLocale` (School District Locale) — The locale of the school district.\n- `SchoolDistrictFullTimeEquivalentTeachers` (School District Full Time Equivalent Teachers) — The full-time equivalent teachers in the school district.\n- `LowestGradeOffered` (Lowest Grade) — The lowest grade offered by the school or school district. Values: -1 = Pre-K, 0 = Kindergarten, 1-13 = grades.\n- `HighestGradeOffered` (Highest Grade) — The highest grade offered by the school or school district. Values: -1 = Pre-K, 0 = Kindergarten, 1-13 = grades.\n- `SchoolDistrictNumberOfSchools` (School District Number of Schools) — The number of schools in the school district.\n- `SchoolDistrictElementarySchools` (School District Elementary Schools) — The number of elementary schools in the school district.\n- `SchoolDistrictMiddleSchools` (School District Middle Schools) — The number of middle schools in the school district.\n- `SchoolDistrictHighSchools` (School District High Schools) — The number of high schools in the school district.\n- `SchoolDistrictTotalStaff` (School District Total Staff) — The total staff in the school district.\n- `SchoolDistrictMedianHouseholdIncome` (School District Median Household Income) — The median household income for the district. A value of 250000 means $250,000 or more.\n- `SchoolDistrictSector` (School District Sector) — Categorizes the school district as Public or Private.\n- `RegionalEducationServiceAgencyName` (Regional Education Service Agency Name) — The name of the regional education service agency that serves the school district.\n- `RegionalEducationServiceAgencyBuyerId` (Regional Education Service Agency Buyer ID) — The unique Starbridge buyer ID of the regional education service agency that serves the school district.\n- `SchoolManagementOrganizationName` (School Operator Name) — The name of the management organization that serves the school. Depending on the school type, this may be an Education Management Organization or a Charter Management Organization.\n- `SchoolManagementOrganizationBuyerId` (School Operator Buyer ID) — The unique Starbridge buyer ID of the management organization that serves the school. Depending on the school type, this may be an Education Management Organization or a Charter Management Organization.\n- `EnglishLearners` (English Learner %) — The percentage of English learners in the school or school district.\n- `BlackPercentage` (Black or African American Students %) — The percentage of students who identify as Black or African American in the school or school district.\n- `LatinoPercentage` (Latino or Hispanic Students %) — The percentage of students who identify as Latino or Hispanic in the school or school district.\n- `WhitePercentage` (White Students %) — Percentage of students who identify as White in the school or school district.\n- `StudentTeacherRatio` (Student-Teacher Ratio) — Average number of enrolled students per full-time equivalent teacher.\n- `SchoolSector` (School Sector) — Categorizes the school as Public, Private, or Charter.\n- `SchoolLevel` (School Level) — Categorizes the school by its educational level: Elementary, Middle, High School, or Other.\n- `AlternativeSchool` (Alternative School) — Identifies schools whose primary model is alternative or non-traditional, based on NCES school data.\n- `SchoolCurriculumProgramArray` (Curriculum Program List)\n- `ReligiousAffiliation` (Religious Affiliation) — The religious affiliation of the school or higher education institution.\n- `StudentGenderComposition` (Student Gender Composition) — The student gender composition of the school or higher education institution.\n- `SchoolVirtualStatus` (School Virtual Status) — Describes the operational model of the school or district (e.g., Exclusively virtual, No virtual instruction).\n- `Subentity` (Government Subentity) — A classification of a special district government entity based on its function and administrative level, including specific service-providing entities like transportation, utilities, and public safety.\n- `FiscalYearStartDate` (Buyer Fiscal Year Start Date) — The start date of the buyer's fiscal year.\n- `FreeOrReducedLunchEligiblePercentage` (Free & Reduced Lunch Eligible %) — A strong indicator of a school's or district’s socioeconomic demographics such as poverty, helping sales teams identify schools that may have more limited budgets or greater funding opportunities.\n- `FdId` (Fire Department ID (FDID)) — Fire Department Identification number\n- `FireDepartmentType` (Fire Department Type) — Categorizes the department based on its primary staffing model: 'Volunteer', 'Career', or 'Combination' (a mix of volunteer and career staff).\n- `FireDepartmentOrganizationType` (Fire Department Organization Type) — Defines the department's governing structure, such as 'Local', 'Federal', 'State', 'Tribal', or 'Private'.\n- `FireDepartmentPrimaryAgency` (Fire Department Primary Agency) — Indicates if the fire department is designated as the primary agency for emergency management within its jurisdiction.\n- `FireDepartmentNumberOfStations` (Fire Department Number of Stations) — The total number of fire stations operated by the department.\n- `FireDepartmentActiveFirefightersCareer` (Fire Department Active Firefighters - Career) — The number of active, full-time paid (career) firefighters employed by the department.\n- `FireDepartmentActiveFirefightersVolunteer` (Fire Department Active Firefighters - Volunteer) — The number of active volunteer firefighters registered with the department.\n- `FireDepartmentActiveFirefightersPaidPerCall` (Fire Department Active Firefighters - Paid Per Call) — The number of active firefighters who are not full-time staff but receive payment for responding to incidents (paid-per-call).\n- `FireDepartmentNonFirefightingCivilian` (Fire Department Non firefighting - Civilian) — The number of paid civilian (non-firefighting) employees, such as administrative staff, dispatchers, or mechanics.\n- `FireDepartmentNonFirefightingVolunteer` (Fire Department Non firefighting - Volunteer) — The number of non-firefighting volunteers who support the department in administrative or other auxiliary roles.\n- `PoliceOri` (Originating Agency Identifier (ORI)) — The Originating Agency Identifier (ORI) is a unique identification code assigned to law enforcement agencies by the FBI.\n- `PoliceOfficerCt` (Total Full-Time Sworn Officers) — The total count of all full-time sworn officers employed by the police department.\n- `Psap` (PSAP) — Indicates if the buyer is a Public Safety Answering Point (PSAP), a call center for emergency services.\n- `StateAgencySector` (State Agency Sector) — Categorizes state agencies by their primary area of government responsibility (e.g., Education, Health & Human Services, Transportation & Infrastructure). Enables dynamic territory creation and account scoring by agency sector without relying on static buyer lists.\n- `EmployeeFte` (Employee FTE) — The total number of full-time equivalent employees.\n- `PropensityToSpendScore` (Propensity to Spend Score) — A predictive score from 1 (low) to 100 (high) indicating the buyer's likelihood to make purchases.\n- `PropensityToSpendSummary` (Propensity to Spend Summary) — A descriptive analysis highlighting the key drivers, market signals, and trends influencing the buyer's computed propensity score.\n- `BudgetChangeAnalysisSourceUrls` (Budget Change Analysis Source URLs)\n- `PropensityToSpend` (Propensity to Spend) — A categorical classification of the buyer's spending behavior: Aggressive Spender, Open to Spend, Selective, or Highly Cautious.\n- `YoyChangeInEnrollment` (YoY Change in Enrollment) — Year-over-year percentage change in enrollment, ranging from -100 to +100.\n- `EnrollmentTrend` (Enrollment Trend) — A categorical classification of the enrollment trend: Stable / Flat, Strongly Decreasing, Strongly Increasing, Moderately Increasing, Moderately Decreasing, or Not Available.\n- `EnrollmentTrendBasedOnFte` (Enrollment Trend Measured Based on FTE?) — Indicates whether the enrollment trend measurement is based on Full-Time Equivalent (FTE) students.\n- `SpecialEducationEnrollment` (Special Education Enrollment) — Number of enrolled students receiving special education services under IDEA.\n- `SpecialEducationEnrollmentPercentage` (Special Education Enrollment %) — Percentage of enrolled students receiving special education services under IDEA.\n- `PerPupilExpenditure` (Per-Pupil Expenditure) — Average total current expenditure per enrolled student (per-pupil expenditure).\n- `MathProficiencyPercentage` (Math Proficiency %) — Percentage of students meeting or exceeding state proficiency standards in Mathematics (0–100).\n- `ElaProficiencyPercentage` (ELA Proficiency %) — Percentage of students meeting or exceeding state proficiency standards in English Language Arts (0–100).\n- `TitleIFunding` (Title I Funding) — Total federal Title I, Part A allocation received by the district for supplemental instruction and support for low-income students.\n- `TitleIiFunding` (Title II Funding) — Total federal Title II, Part A allocation for educator quality improvement, professional development, and class-size reduction.\n- `TitleIiiFunding` (Title III Funding) — Total federal Title III, Part A allocation for English Learner instruction, language development, and immigrant student programs.\n- `TitleIvFunding` (Title IV Funding) — Total federal Title IV, Part A (SSAE) allocation for well-rounded education, safe and healthy schools, and effective technology use.\n- `TitleVFunding` (Title V Funding) — Total federal Title V allocation, primarily supporting the Rural Education Achievement Program (REAP) to assist rural and low-income school districts.\n- `FederalGrantComplianceRisk` (Federal Grant Compliance Risk) — Federal grant compliance risk based on FAC Single Audit data. High means serious findings like material weakness, material noncompliance, questioned costs, or repeat findings. Medium means less severe findings like significant deficiency or modified opinion. None means checked with no relevant risk.\n- `FederalGrantComplianceCapSummary` (Federal Grant Compliance CAP Summary) — Corrective action plans reported in FAC Single Audit data for federal grant compliance findings.\n- `BuyerLocationLatitude` (Buyer Location Latitude) — The geographic latitude of the buyer's primary location. Part of a coordinate pair.\n- `BuyerLocationLongitude` (Buyer Location Longitude) — The geographic longitude of the buyer's primary location. Part of a coordinate pair."
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - Id
+            - Name
+            - CommonName
+            - ParentName
+            - ParentBuyerId
+            - Type
+            - Classifications
+            - Url
+            - LinkedinSlug
+            - Zip
+            - CountryCode
+            - StateCode
+            - StateName
+            - City
+            - County
+            - Address
+            - Street1
+            - Street2
+            - MainPhoneNumber
+            - EmailDomains
+            - Population
+            - BudgetAmount
+            - BudgetSbita
+            - BudgetUrl
+            - BudgetLatestYear
+            - BudgetConfidence
+            - SchoolDistrictType
+            - HigherEdFullTimeEnrollment
+            - HigherEdInstitutionType
+            - DepartmentName
+            - DepartmentCode
+            - AgencyName
+            - OfficeCodeArray
+            - AgencyCode
+            - AiAdoptionScore
+            - AiAdoptionSummary
+            - StartupFriendlinessScore
+            - StartupFriendlinessSummary
+            - ProcurementHellScore
+            - AngelProcurementSummary
+            - IpedsIdNumeric
+            - TotalEnrollment
+            - NcesId
+            - NcesStateDistrictId
+            - CensusIdPid6
+            - CensusIdGidId
+            - SgcId
+            - HigherEdGraduationRate
+            - HigherEdRetentionRate
+            - HigherEdAcceptanceRate
+            - HigherEdYieldRate
+            - HigherEdGraduationEnrollment
+            - HigherEdUndergradEnrollment
+            - HigherEdOnlineOnlyEnrollment
+            - HigherEdControlOfInstitution
+            - HigherEdForProfitStatus
+            - HigherEdLevelOfInstitution
+            - HigherEdRecruitmentAdmissionsCrmArray
+            - HigherEdEndowment
+            - HigherEdMascot
+            - HigherEdNumberOfOnCampusResidents
+            - HigherEdNumberOfFullTimeEmployees
+            - HigherEdSisModernizationStatus
+            - HigherEdPrimaryRegionalAccreditor
+            - HigherEdAccreditationSummary
+            - HigherEdAccreditationStatus
+            - DapipId
+            - HigherEdNextAccreditationReviewDate
+            - HigherEdSystem
+            - CommunityCollegeSystem
+            - Sis
+            - LmsArray
+            - SchoolDistrictLocale
+            - SchoolDistrictFullTimeEquivalentTeachers
+            - LowestGradeOffered
+            - HighestGradeOffered
+            - SchoolDistrictNumberOfSchools
+            - SchoolDistrictElementarySchools
+            - SchoolDistrictMiddleSchools
+            - SchoolDistrictHighSchools
+            - SchoolDistrictTotalStaff
+            - SchoolDistrictMedianHouseholdIncome
+            - SchoolDistrictSector
+            - RegionalEducationServiceAgencyName
+            - RegionalEducationServiceAgencyBuyerId
+            - SchoolManagementOrganizationName
+            - SchoolManagementOrganizationBuyerId
+            - EnglishLearners
+            - BlackPercentage
+            - LatinoPercentage
+            - WhitePercentage
+            - StudentTeacherRatio
+            - SchoolSector
+            - SchoolLevel
+            - AlternativeSchool
+            - SchoolCurriculumProgramArray
+            - ReligiousAffiliation
+            - StudentGenderComposition
+            - SchoolVirtualStatus
+            - Subentity
+            - FiscalYearStartDate
+            - FreeOrReducedLunchEligiblePercentage
+            - FdId
+            - FireDepartmentType
+            - FireDepartmentOrganizationType
+            - FireDepartmentPrimaryAgency
+            - FireDepartmentNumberOfStations
+            - FireDepartmentActiveFirefightersCareer
+            - FireDepartmentActiveFirefightersVolunteer
+            - FireDepartmentActiveFirefightersPaidPerCall
+            - FireDepartmentNonFirefightingCivilian
+            - FireDepartmentNonFirefightingVolunteer
+            - PoliceOri
+            - PoliceOfficerCt
+            - Psap
+            - StateAgencySector
+            - EmployeeFte
+            - PropensityToSpendScore
+            - PropensityToSpendSummary
+            - BudgetChangeAnalysisSourceUrls
+            - PropensityToSpend
+            - YoyChangeInEnrollment
+            - EnrollmentTrend
+            - EnrollmentTrendBasedOnFte
+            - SpecialEducationEnrollment
+            - SpecialEducationEnrollmentPercentage
+            - PerPupilExpenditure
+            - MathProficiencyPercentage
+            - ElaProficiencyPercentage
+            - TitleIFunding
+            - TitleIiFunding
+            - TitleIiiFunding
+            - TitleIvFunding
+            - TitleVFunding
+            - FederalGrantComplianceRisk
+            - FederalGrantComplianceCapSummary
+            - BuyerLocationLatitude
+            - BuyerLocationLongitude
+        style: form
+        explode: false
+      responses:
+        '200':
+          description: Requested attribute values keyed by BuyerField name, wrapped in BuyerAttributesBulkResponse.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuyerAttributesBulkResponse'
+        '400':
+          description: Invalid request body or format
+        '401':
+          description: Missing or invalid authentication
+        '403':
+          description: Unauthorized to access resource or perform action
+        '415':
+          description: Unsupported media type or request body format
+        '404':
+          description: Resource not found
+        '429':
+          description: Rate limit exceeded
+        '500':
+          description: Internal server error
+      security:
+      - apiKey: []
+      x-mcp-annotations:
+        readOnlyHint: true
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+  /api/external/bridge:
+    get:
+      operationId: listBridges
+      tags:
+      - External MCP
+      summary: List Bridges
+      description: 'List the saved Bridges (monitoring definitions) in the organization. A Bridge watches for one type of buyer activity — RFPs, meetings, purchases, conferences, contact or job changes, or other signals — within a buyer-list scope, extracts a configurable set of column values when something matches, and stores each match as a row. Use this to discover available Bridges and their identifiers.
+
+
+        Filter by `query` (name substring), `filterType`, `createdByUserId`, `userIdsHaveAccessTo`, or `buyerListId`. To paginate, start at `pageNumber=1` and increment until `pageNumber == totalPages`. For the columns defined on a specific Bridge, call `getBridgeColumnMetadata` — column metadata is no longer returned inline by this endpoint.'
+      parameters:
+      - name: sortField
+        in: query
+        schema:
+          type: string
+          default: Name
+          enum:
+          - Name
+          - RowsCount
+          - Type
+          - CreatedBy
+          - CreditUsage
+          - SharedWith
+          - LastUpdatedByUser
+          - CreatedAt
+      - name: sortDirection
+        in: query
+        schema:
+          type: string
+          default: ASC
+          enum:
+          - ASC
+          - DESC
+      - name: query
+        in: query
+        description: Filter by bridge name (substring match)
+        schema:
+          type: string
+      - name: viewMode
+        in: query
+        schema:
+          type: string
+      - name: folderId
+        in: query
+        schema:
+          type: string
+      - name: pageNumber
+        in: query
+        description: Page number, 1-based. Minimum 1.
+        schema:
+          type: integer
+          default: '1'
+      - name: pageSize
+        in: query
+        description: Page size. Must be > 0 and <= 100. Prefer <= 20.
+        schema:
+          type: integer
+          default: '10'
+      - name: filterType
+        in: query
+        description: Bridge filter type(s)
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - RFP
+            - Meeting
+            - Purchase
+            - Buyer
+            - TopBuyer
+            - Contact
+            - Signal
+            - Conference
+            - JobChange
+            - SequenceBuyer
+            - SequenceContact
+            - SequenceJobChange
+            - VendorPresence
+            - ProductCompetitorPresence
+            - CompanionPresence
+        style: form
+        explode: false
+      - name: createdByUserId
+        in: query
+        description: User ID(s) of the creator(s)
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: false
+      - name: userIdsHaveAccessTo
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: false
+      - name: buyerListId
+        in: query
+        description: Buyer list ID(s) set up for the bridges
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+        style: form
+        explode: false
+      responses:
+        '200':
+          description: Paginated list of bridges
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - pageNumber
+                - pageSize
+                - totalItems
+                - totalPages
+                - result
+                properties:
+                  pageNumber:
+                    type: integer
+                  pageSize:
+                    type: integer
+                  totalItems:
+                    type: integer
+                  totalPages:
+                    type: integer
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BridgeResponse'
+        '400':
+          description: Invalid request body or format
+        '401':
+          description: Missing or invalid authentication
+        '403':
+          description: Unauthorized to access resource or perform action
+        '415':
+          description: Unsupported media type or request body format
+        '404':
+          description: Resource not found
+        '429':
+          description: Rate limit exceeded
+        '500':
+          description: Internal server error
+      security:
+      - apiKey: []
+      x-mcp-annotations:
+        readOnlyHint: true
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+  /api/external/bridge/{bridgeId}:
+    get:
+      operationId: getBridge
+      tags:
+      - External MCP
+      summary: Get Bridge
+      description: 'Fetch the configuration of a single Bridge by ID — name, owner, filter type, current status, last-updated timestamp, and total row count. A Bridge watches for one type of buyer activity — RFPs, meetings, purchases, conferences, contact or job changes, or other signals — within a buyer-list scope, extracts a configurable set of column values when something matches, and stores each match as a row.
+
+
+        For the per-column schema (columnId, name, prompt, type, fieldFormat, etc.) needed to construct column-targeted filters in `listBridgeRows`, call `getBridgeColumnMetadata`.'
+      parameters:
+      - name: bridgeId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Bridge details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BridgeResponse'
+        '400':
+          description: Invalid request body or format
+        '401':
+          description: Missing or invalid authentication
+        '403':
+          description: Unauthorized to access resource or perform action
+        '415':
+          description: Unsupported media type or request body format
+        '404':
+          description: Resource not found
+        '429':
+          description: Rate limit exceeded
+        '500':
+          description: Internal server error
+      security:
+      - apiKey: []
+      x-mcp-annotations:
+        readOnlyHint: true
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+  /api/external/bridge/{bridgeId}/row:
+    put:
+      operationId: listBridgeRows
+      tags:
+      - External MCP
+      summary: List Bridge Rows
+      description: 'List the rows of a single Bridge — the concrete matches the Bridge has produced — with optional filtering, sorting, and full-text search. Each row carries a processing status, optional buyer/organizer association, an `updatedAt` timestamp, and the per-column values populated for that match. The per-row `columns` map is keyed by the human-readable column name (not by columnId), and values are polymorphic per the column''s `fieldFormat` (string / number / boolean / object / null).
+
+
+        Prefer narrowing server-side with `filters`, `sorts`, and `query` in the request body over scanning every page.
+
+
+        For any column-targeted filter or sort — including Match Score, Match reasoning,
+
+        and any user-defined column — first call `getBridgeColumnMetadata` to obtain that
+
+        column''s `columnId` UUID and pass it as `BridgeFilters.terms[].field` or
+
+        `RowSort.column`. The column''s display name, `key`, or any prefixed reference is
+
+        NOT a valid value. A small set of common entry-level fields (`status`, `buyerId`,
+
+        `opportunityId`, `entryName`, `triggeredAt`) is also accepted for filtering.
+
+        Sort or filter columns that are not mapped on the server return 400. See
+
+        `ListBridgeRowsRequest` for the full schema of supported filter terms,
+
+        operations, and sort columns.
+
+
+
+        To paginate, start at `pageNumber=1` and increment until `pageNumber == totalPages`.
+
+
+        Note on consistency: the data backing search/sort/filter is maintained separately from the row values returned here, and the two can briefly drift apart — especially while the service is under heavy load. As a result, recent changes (new rows, status changes, updated column values, `updatedAt`, etc.) may not be reflected in listing, sorting, or filtering immediately; they usually become consistent within a short time. If a just-changed row does not appear where you expect, retry shortly.'
+      parameters:
+      - name: bridgeId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: pageNumber
+        in: query
+        description: Page number, 1-based. Minimum 1.
+        schema:
+          type: integer
+          default: '1'
+      - name: pageSize
+        in: query
+        description: Page size. Must be > 0 and <= 100. Prefer <= 20.
+        schema:
+          type: integer
+          default: '10'
+      requestBody:
+        description: Filtering, sorting, and free-text search parameters for bridge rows. Refer to examples for proper usage.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListBridgeRowsRequest'
+      responses:
+        '200':
+          description: Paginated list of bridge rows
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - pageNumber
+                - pageSize
+                - totalItems
+                - totalPages
+                - result
+                properties:
+                  pageNumber:
+                    type: integer
+                  pageSize:
+                    type: integer
+                  totalItems:
+                    type: integer
+                  totalPages:
+                    type: integer
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BridgeRowResponse'
+        '400':
+          description: Invalid request body or format
+        '401':
+          description: Missing or invalid authentication
+        '403':
+          description: Unauthorized to access resource or perform action
+        '415':
+          description: Unsupported media type or request body format
+        '404':
+          description: Resource not found
+        '429':
+          description: Rate limit exceeded
+        '500':
+          description: Internal server error
+      security:
+      - apiKey: []
+      x-mcp-annotations:
+        readOnlyHint: true
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+  /api/external/bridge/{bridgeId}/row/{rowId}/status:
+    patch:
+      operationId: setBridgeRowStatus
+      tags:
+      - External MCP
+      summary: Set Bridge Row Status
+      description: "Set the user-facing status for a single row in a Bridge. The `rowId` must identify a row that belongs to the specified `bridgeId`. \nUse this when a caller needs to move one Bridge row to a new status without updating any other column values.\nSupported default values are `New`, `Actioned`, `Saved`, `Not Interested`. For conferences it might additionally include `Attending`, `Sponsoring`. In the UI, 'New' is shown as 'Needs action', and 'Saved' is shown as 'Starred'. Filtering on Actioned will include Sponsoring and Attending."
+      parameters:
+      - name: bridgeId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: rowId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Bridge row status update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetBridgeRowStatusRequest'
+        required: true
+      responses:
+        '200':
+          description: Bridge row status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BridgeRowResponse'
+        '400':
+          description: Invalid request body or format
+        '401':
+          description: Missing or invalid authentication
+        '403':
+          description: Unauthorized to access resource or perform action
+        '415':
+          description: Unsupported media type or request body format
+        '404':
+          description: Resource not found
+        '429':
+          description: Rate limit exceeded
+        '500':
+          description: Internal server error
+      security:
+      - apiKey: []
+      x-mcp-annotations:
+        readOnlyHint: false
+        destructiveHint: true
+        idempotentHint: false
+        openWorldHint: false
+  /api/external/bridge/{bridgeId}/column/metadata:
+    get:
+      operationId: getBridgeColumnMetadata
+      tags:
+      - External MCP
+      summary: List existing columns with their per-type settings
+      description: 'Use to inspect which columns already exist on this bridge and how they are configured.
+
+        Returns each column''s per-type settings not carried by `getBridge` (link settings,
+
+        web-agent model, vendor presence, email generation, webhook URL, cross-bridge cell mirror) plus
+
+        `additionalFields` synthetic refs (e.g. `{columnId$basis:firstName}`) usable in
+
+        prompts or as `referenceFieldPath` on `createReferenceColumn`. Cross-reference entries
+
+        to the bridge''s columns from `getBridge` by `columnId` for the base column shape.'
+      parameters:
+      - name: bridgeId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Per-column metadata for existing columns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BridgeExistingColumnMetadata'
+        '400':
+          description: Invalid request body or format
+        '401':
+          description: Missing or invalid authentication
+        '403':
+          description: Unauthorized to access resource or perform action
+        '415':
+          description: Unsupported media type or request body format
+        '404':
+          description: Resource not found
+        '429':
+          description: Rate limit exceeded
+        '500':
+          description: Internal server error
+      security:
+      - apiKey: []
+      x-mcp-annotations:
+        readOnlyHint: true
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+  /api/external/feed/all/buyer-signals:
+    get:
+      operationId: listRecentBuyerSignals
+      tags:
+      - External MCP
+      summary: List Recent Buyer Signals
+      description: Returns the most recent Starbridge signals (bridge rows) for a given buyer within the organization. A signal pairs a bridge (the monitoring definition) with a row (a concrete match). Supports filtering by bridge ids, bridge filter types, row statuses, and a relative date period. Default sort is by signal date (most recent first); pass sort=Hotness to rank by hotness score. All sorts are descending.
+      parameters:
+      - name: triggerIds
+        in: query
+        description: Limit results to signals from these bridge ids.
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+        style: form
+        explode: false
+      - name: sort
+        in: query
+        description: Sort field. Date = by signal date, Hotness = by hotness score. Always descending. Date is the default.
+        schema:
+          type: string
+          default: Date
+          enum:
+          - Date
+          - Hotness
+      - name: pageNumber
+        in: query
+        description: Page number (1-based)
+        schema:
+          type: integer
+          default: '1'
+      - name: pageSize
+        in: query
+        description: Page size
+        schema:
+          type: integer
+          default: '10'
+      - name: buyerId
+        in: query
+        description: UUID of the buyer whose signals to return.
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: filterType
+        in: query
+        description: Filter by bridge filter type (repeatable).
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - RFP
+            - Meeting
+            - Purchase
+            - Buyer
+            - TopBuyer
+            - Contact
+            - Signal
+            - Conference
+            - JobChange
+            - SequenceBuyer
+            - SequenceContact
+            - SequenceJobChange
+            - VendorPresence
+            - ProductCompetitorPresence
+            - CompanionPresence
+        style: form
+        explode: false
+      - name: status
+        in: query
+        description: Filter by row status. Defaults to New when omitted.
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - New
+            - Actioned
+            - Saved
+            - Attending
+            - Sponsoring
+            - NotInterested
+        style: form
+        explode: false
+      - name: relativeDatePeriodFrom
+        in: query
+        description: Lower bound on the signal date as a relative period.
+        schema:
+          type: string
+          default: LastOneMonths
+          enum:
+          - LastOneDay
+          - LastSevenDays
+          - LastThirtyDays
+          - LastSixtyDays
+          - LastOneMonths
+          - LastTwoMonths
+          - LastThreeMonths
+          - LastSixMonths
+          - LastNineMonths
+          - LastYear
+          - LastTwoYears
+      responses:
+        '200':
+          description: Paginated list of recent signals for the buyer.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - pageNumber
+                - pageSize
+                - totalItems
+                - totalPages
+                - result
+                properties:
+                  pageNumber:
+                    type: integer
+                  pageSize:
+                    type: integer
+                  totalItems:
+                    type: integer
+                  totalPages:
+                    type: integer
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BridgeSignalResponse'
+        '400':
+          description: Invalid request body or format
+        '401':
+          description: Missing or invalid authentication
+        '403':
+          description: Unauthorized to access resource or perform action
+        '415':
+          description: Unsupported media type or request body format
+        '404':
+          description: Resource not found
+        '429':
+          description: Rate limit exceeded
+        '500':
+          description: Internal server error
+      security:
+      - apiKey: []
+      x-mcp-annotations:
+        readOnlyHint: true
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+  /api/external/feed/all/top-signals:
+    get:
+      operationId: listTopRecentSignals
+      tags:
+      - External MCP
+      summary: List Top Recent Signals
+      description: Returns the top recent Starbridge signals (bridge rows) across the whole organization, regardless of buyer. A signal pairs a bridge (the monitoring definition) with a row (a concrete match). Supports filtering by bridge ids, bridge filter types, row statuses, and a relative date period. Default sort is by hotness score (highest first); pass sort=Date to rank by signal date. All sorts are descending.
+      parameters:
+      - name: triggerIds
+        in: query
+        description: Limit results to signals from these bridge ids.
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+        style: form
+        explode: false
+      - name: sort
+        in: query
+        description: Sort field. Hotness = by hotness score, Date = by signal date. Always descending. Hotness is the default.
+        schema:
+          type: string
+          default: Hotness
+          enum:
+          - Date
+          - Hotness
+      - name: pageNumber
+        in: query
+        description: Page number (1-based)
+        schema:
+          type: integer
+          default: '1'
+      - name: pageSize
+        in: query
+        description: Page size
+        schema:
+          type: integer
+          default: '10'
+      - name: filterType
+        in: query
+        description: Filter by bridge filter type (repeatable).
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - RFP
+            - Meeting
+            - Purchase
+            - Buyer
+            - TopBuyer
+            - Contact
+            - Signal
+            - Conference
+            - JobChange
+            - SequenceBuyer
+            - SequenceContact
+            - SequenceJobChange
+            - VendorPresence
+            - ProductCompetitorPresence
+            - CompanionPresence
+        style: form
+        explode: false
+      - name: status
+        in: query
+        description: Filter by row status. Defaults to New when omitted.
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - New
+            - Actioned
+            - Saved
+            - Attending
+            - Sponsoring
+            - NotInterested
+        style: form
+        explode: false
+      - name: relativeDatePeriodFrom
+        in: query
+        description: Lower bound on the signal date as a relative period.
+        schema:
+          type: string
+          default: LastSevenDays
+          enum:
+          - LastOneDay
+          - LastSevenDays
+          - LastThirtyDays
+          - LastSixtyDays
+          - LastOneMonths
+          - LastTwoMonths
+          - LastThreeMonths
+          - LastSixMonths
+          - LastNineMonths
+          - LastYear
+          - LastTwoYears
+      responses:
+        '200':
+          description: Paginated list of top recent signals for the organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - pageNumber
+                - pageSize
+                - totalItems
+                - totalPages
+                - result
+                properties:
+                  pageNumber:
+                    type: integer
+                  pageSize:
+                    type: integer
+                  totalItems:
+                    type: integer
+                  totalPages:
+                    type: integer
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BridgeSignalResponse'
+        '400':
+          description: Invalid request body or format
+        '401':
+          description: Missing or invalid authentication
+        '403':
+          description: Unauthorized to access resource or perform action
+        '415':
+          description: Unsupported media type or request body format
+        '404':
+          description: Resource not found
+        '429':
+          description: Rate limit exceeded
+        '500':
+          description: Internal server error
+      security:
+      - apiKey: []
+      x-mcp-annotations:
+        readOnlyHint: true
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+  /api/external/buyer/{buyerId}/summary:
+    get:
+      operationId: getBuyerSummary
+      tags:
+      - External MCP
+      summary: Get Buyer Summary
+      description: Retrieve a buyer activity summary synthesized from tracked buyer activity and available signals. Use this for buyer strategy, top priorities, momentum, risks, opportunity framing, account context across the available information, and outreach preparation. Generates on-demand if the cached summary is missing or stale. The `summary` field is structured into three sections (`whatsRecent`, `theBiggerPicture`, `areasForDeeperDiscovery`); each section's `sources` carry `triggerId`/`entryId` back-pointers so you can drill into a citation via `listBridgeRows`. The `summary` can be `null` while a (re)generation is in flight, in which case `needsRegeneration` is true. Returns 404 (`resource.buyer.summary.empty`) when no Bridges in the org are configured to track this buyer — there is nothing to summarize, so suggest the user set up a Bridge that covers this buyer rather than retrying.
+      parameters:
+      - name: buyerId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Buyer activity summary grounded in tracked account activity.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuyerSummaryResponse'
+        '400':
+          description: Invalid request body or format
+        '401':
+          description: Missing or invalid authentication
+        '403':
+          description: Unauthorized to access resource or perform action
+        '415':
+          description: Unsupported media type or request body format
+        '404':
+          description: Resource not found
+        '429':
+          description: Rate limit exceeded
+        '500':
+          description: Internal server error
+      security:
+      - apiKey: []
+      x-mcp-annotations:
+        readOnlyHint: true
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+components:
+  schemas:
+    BridgeFiltersTerm:
+      type: object
+      title: BridgeFiltersTerm
+      description: "\n        A single filter predicate of the form `<field> <operation> <value>`, evaluated against\n        one bridge row. Multiple terms in a `BridgeFilters` are combined with logical AND.\n\n        ──────────────────────────────────────────────────────────────────────────────────────\n        1) Pick a `column`.:\n           (A) A column's `columnId` UUID, returned by `getBridgeColumnMetadata`.\n               Always a bare UUID string — never the column's `key`, `name`, or any\n               prefixed reference. The value type must match that column's declared\n               format (see `BridgeRowColumnValueResponse.value`).\n\n        2) Pick an `operation` — its category determines the required shape of `value`:\n\n              category           | operations                                                                                    | value shape\n              -------------------|-----------------------------------------------------------------------------------------------|----------------------------------------\n              scalar             | Equals, DoesNotEqual, Contains, DoesNotContain, GreaterThan, LessThan                         | one JSON primitive (string/number/bool)\n              array              | Any, None, ContainsAny, ContainsAll, ContainedBy, NotContainedBy                              | JSON array of primitives\n              presence           | IsEmpty, IsNotEmpty                                                                           | null / omitted\n              column-status      | HasCellStatus, HasLookupStatus, HasLastSyncStatus, HasSyncStatusHistory                       | JSON array of status strings\n                                 | (REQUIRE `field` to be a column UUID — on a common key they silently degrade to Any/ContainsAny\n                                 |  against the row-level field, which is almost certainly wrong.)                               |\n\n           See `BridgeFilterOperation` for the per-operation semantics.\n\n        3) `value` must ALSO be type-compatible with the field:\n           - common-field types are listed in the table above\n           - for column fields, match the column's declared `fieldFormat`\n           - primitive inside an array follows the same rule (e.g. `Any` on `buyerId` takes\n             an array of UUID strings)\n\n        ──────────────────────────────────────────────────────────────────────────────────────\n        Common gotcha — filtering by `status`:\n           `status` is a single-valued scalar. Do NOT wrap values in an array for `Equals`.\n\n           Match exactly one status:\n             { \"field\": \"status\", \"operation\": \"Equals\", \"value\": \"Processed\" }\n\n           Match several statuses (OR within the term):\n             { \"field\": \"status\", \"operation\": \"Any\", \"value\": [\"Processed\", \"Failed\"] }\n\n           WRONG — array with a scalar op silently matches nothing:\n             { \"field\": \"status\", \"operation\": \"Equals\", \"value\": [\"Processed\"] }   // ✗\n           WRONG — bare string with an array op:\n             { \"field\": \"status\", \"operation\": \"Any\",    \"value\": \"Processed\" }     // ✗\n\n        Common gotcha — column-cell status filtering:\n           To filter by a column's per-cell processing status, use `HasCellStatus` with the\n           column's `columnId` and an array of status labels:\n\n             {\n               \"field\": \"<columnId UUID>\",\n               \"operation\": \"HasCellStatus\",\n               \"value\": [\"Processed\", \"Failed\"]\n             }\n\n           The server rewrites this into a phase-scoped query on the cell's status/value\n           status fields — you never address those sub-fields directly from the client.\n    "
+      required:
+      - field
+      - operation
+      properties:
+        field:
+          type: string
+          description: "\n        What to filter on. Exactly one of:\n          - a bridge column's `columnId` UUID (returned by `getBridgeColumnMetadata`)\n            as a bare UUID string. PREFER THIS for anything that appears as a column\n            on the Bridge — Match Score, Match reasoning, and any user-defined column\n            live here. Using the column's `key`, `name`, or any compound reference is\n            undefined behavior.\n          - a common entry-field key, limited to: `status`, `buyerId`, `opportunityId`,\n            `entryId`, `entryName`, `triggeredAt`, `op:added_date`, `bridge:entry_url`,\n            `adminActionCrmMatch`. Other internal field keys are not exposed and\n            return 400 if used.\n    "
+        operation:
+          type: string
+          description: "\n        Comparison operator. Its category dictates the required shape of `value`:\n        scalar ops take a single primitive, array ops take a JSON array, presence ops\n        take null, column-status ops (Has…) take a status array and require `field`\n        to be a column UUID. See the `BridgeFilterOperation` enum for full details.\n    "
+          enum:
+          - Equals
+          - DoesNotEqual
+          - Contains
+          - DoesNotContain
+          - GreaterThan
+          - LessThan
+          - IsEmpty
+          - IsNotEmpty
+          - Any
+          - None
+          - ContainsAny
+          - ContainsAll
+          - ContainedBy
+          - NotContainedBy
+          - HasCellStatus
+          - HasLookupStatus
+          - HasLastSyncStatus
+          - HasSyncStatusHistory
+        value:
+          description: "\n        Operand for the comparison. Polymorphic — shape is driven by `operation`:\n          - scalar ops (Equals, DoesNotEqual, Contains, DoesNotContain, GreaterThan,\n            LessThan) → one JSON primitive (string / number / boolean)\n          - array ops (Any, None, ContainsAny, ContainsAll, ContainedBy, NotContainedBy,\n            HasCellStatus, HasLookupStatus, HasLastSyncStatus, HasSyncStatusHistory)\n            → a JSON array of primitives; use an array even for a single element\n          - presence ops (IsEmpty, IsNotEmpty) → null or omitted\n\n        The primitive type must also match the field's underlying type: strings for\n        text / URL / enum / date / UUID / ISO-8601 fields, numbers for numeric fields,\n        booleans for boolean columns, and JSON objects for object-typed columns.\n    "
+    Section:
+      type: object
+      title: Section
+      required:
+      - title
+      - text
+      properties:
+        title:
+          type: string
+        text:
+          type: string
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntrySource'
+    BridgeRowResponse:
+      type: object
+      title: BridgeRowResponse
+      required:
+      - rowId
+      - bridgeId
+      - createdAt
+      - updatedAt
+      - status
+      - columns
+      properties:
+        rowId:
+          type: string
+          description: Unique identifier for the row
+          format: uuid
+        name:
+          type:
+          - string
+          - 'null'
+          description: Optional name or title of the row
+        bridgeId:
+          type: string
+          description: UUID of the bridge this row belongs to
+          format: uuid
+        createdAt:
+          type: string
+          description: Timestamp when the row was created (added to the bridge).
+        updatedAt:
+          type: string
+          description: "\n        Timestamp when the row was last updated. This is a technical last-updated field: in addition to\n        meaningful changes (status, column values), non-meaningful changes such as a bulk re-sync or\n        maintenance can also advance it. Sort by `rowUpdatedAt` to page through recently-changed rows.\n    "
+        status:
+          type: string
+          description: Current processing status of the row
+          enum:
+          - NotProcessed
+          - Queued
+          - Processing
+          - Processed
+          - Failed
+          - Skipped
+        buyerId:
+          type:
+          - string
+          - 'null'
+          description: UUID of the buyer associated with this row, if any
+          format: uuid
+        organizerId:
+          type:
+          - string
+          - 'null'
+          description: UUID of the conference organizer associated with this row, if any
+          format: uuid
+        entity:
+          oneOf:
+          - $ref: '#/components/schemas/BridgeRowEntityRef'
+          - type: 'null'
+        columns:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/BridgeRowColumnValueResponse'
+    SetBridgeRowStatusRequest:
+      type: object
+      title: SetBridgeRowStatusRequest
+      required:
+      - newStatus
+      properties:
+        newStatus:
+          $ref: '#/components/schemas/BridgeRowStatus'
+    BridgeObjFieldDefinition:
+      type: object
+      title: BridgeObjFieldDefinition
+      required:
+      - name
+      - type
+      properties:
+        name:
+          type: string
+          description: Name of the field
+        type:
+          type: string
+          description: Data type of the field
+          enum:
+          - text
+          - date
+          - url
+          - number
+          - enumeration
+          - list
+          - obj
+          - json
+          - phone
+          - email
+          - boolean
+          - currencyUnit
+        description:
+          type:
+          - string
+          - 'null'
+          description: Optional description of the field
+    WebContactSettings:
+      type: object
+      title: WebContactSettings
+      required:
+      - subPrompt
+      properties:
+        subPrompt:
+          type: string
+        examples:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        additionalContext:
+          type:
+          - string
+          - 'null'
+    BridgeRowColumnValueResponse:
+      type: object
+      title: BridgeRowColumnValueResponse
+      properties:
+        value:
+          description: Any JSON value - can be a string, number, boolean, object, array, or null
+        status:
+          type:
+          - string
+          - 'null'
+          description: Processing status of this column value
+          enum:
+          - NotProcessed
+          - Queued
+          - Processing
+          - Processed
+          - Failed
+          - Skipped
+        processedAt:
+          type:
+          - string
+          - 'null'
+          description: Timestamp when the value was successfully processed
+    BuyerSearchResponse:
+      type: object
+      title: BuyerSearchResponse
+      required:
+      - buyers
+      properties:
+        buyers:
+          type: array
+          description: Matching buyers (institutions) ordered by search relevance. Pick the single buyer that best fits the user's intent.
+          items:
+            $ref: '#/components/schemas/BuyerBrief'
+    RowSort:
+      type: object
+      title: RowSort
+      required:
+      - column
+      - direction
+      properties:
+        column:
+          type: string
+        direction:
+          type: string
+          enum:
+          - ASC
+          - DESC
+    TriggerFilters:
+      type: object
+      title: TriggerFilters
+      properties:
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/TriggerFiltersTermGroup'
+    BuyerAttributesBulkResponse:
+      type: object
+      title: BuyerAttributesBulkResponse
+      required:
+      - buyerId
+      properties:
+        buyerId:
+          type: string
+          format: uuid
+        buyerData:
+          type:
+          - object
+          - 'null'
+          description: Map of BuyerField attribute key to its value. A value is null when that attribute is not set on the buyer.
+          additionalProperties: true
+    BridgeFieldFormat:
+      type: object
+      title: BridgeFieldFormat
+      description: Field format specification for the column
+      required:
+      - baseFormat
+      properties:
+        baseFormat:
+          type: string
+          description: Base data type of the field (String, Integer, Boolean, etc.)
+          enum:
+          - text
+          - date
+          - url
+          - number
+          - enumeration
+          - list
+          - obj
+          - json
+          - phone
+          - email
+          - boolean
+          - currencyUnit
+        description:
+          type:
+          - string
+          - 'null'
+          description: Optional description of the field
+        enumerationValues:
+          type:
+          - array
+          - 'null'
+          description: Optional list of enumeration values if field is a select type
+          items:
+            $ref: '#/components/schemas/FieldFormatEnumerationValue'
+        currency:
+          type:
+          - string
+          - 'null'
+          description: Optional currency type if field represents a monetary value
+          enum:
+          - USD
+          - CAD
+        listElementBaseFormat:
+          type:
+          - string
+          - 'null'
+          description: Base format type for list elements if field is a list type
+          enum:
+          - text
+          - date
+          - url
+          - number
+          - enumeration
+          - list
+          - obj
+          - json
+          - phone
+          - email
+          - boolean
+          - currencyUnit
+        outputFields:
+          type:
+          - array
+          - 'null'
+          description: Optional field definitions for object type fields
+          items:
+            $ref: '#/components/schemas/BridgeObjFieldDefinition'
+    AccountScoringFitColumnConfig:
+      type: object
+      title: AccountScoringFitColumnConfig
+      required:
+      - phaseId
+      properties:
+        phaseId:
+          type: string
+          format: uuid
+        includedInScoring:
+          type: boolean
+        weight:
+          type: string
+          enum:
+          - High
+          - Medium
+          - Low
+        strongFitGuidance:
+          type:
+          - string
+          - 'null'
+    BuyerAttributeResponse:
+      type: object
+      title: BuyerAttributeResponse
+      required:
+      - buyerData
+      properties:
+        buyerData:
+          description: Any JSON value - can be a string, number, boolean, object, array, or null
+    AccountScoringConfig:
+      type: object
+      title: AccountScoringConfig
+      properties:
+        fitColumns:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/AccountScoringFitColumnConfig'
+        signalConfigs:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            $ref: '#/components/schemas/AccountScoringSignalTypeConfig'
+        fitInteractionPrompt:
+          type:
+          - string
+          - 'null'
+        signalInteractionPrompt:
+          type:
+          - string
+          - 'null'
+    BridgeLinkToCellSettings:
+      type: object
+      title: BridgeLinkToCellSettings
+      description: Cross-bridge cell-mirror settings — set on LinkToCell columns.
+      required:
+      - targetBridgeId
+      - targetColumnId
+      - sourceRowIdentity
+      properties:
+        targetBridgeId:
+          type: string
+          description: Bridge whose cell this column mirrors
+          format: uuid
+        targetColumnId:
+          type: string
+          description: Column in the target bridge whose value is mirrored
+          format: uuid
+        sourceRowIdentity:
+          type: string
+          description: How the matching target row is identified from this row (e.g. InherentOpportunityId, ContactColumn)
+    FieldFormatEnumerationValue:
+      type: object
+      title: FieldFormatEnumerationValue
+      required:
+      - value
+      properties:
+        value:
+          type: string
+        label:
+          type: string
+    BridgeExistingColumnMetadata:
+      type: object
+      title: BridgeExistingColumnMetadata
+      required:
+      - columnId
+      - bridgeId
+      - column
+      - additionalFields
+      properties:
+        columnId:
+          type: string
+          description: UUID of the existing column. Duplicated from `column.columnId` for backwards compatibility.
+          format: uuid
+        bridgeId:
+          type: string
+          description: UUID of the bridge this column belongs to. Duplicated from `column.bridgeId` for backwards compatibility.
+          format: uuid
+        column:
+          $ref: '#/components/schemas/BridgeColumnResponse'
+        additionalFields:
+          type: array
+          description: Extra reference paths exposed by this column. For basis columns (e.g. a Get Contact column that attaches contact records), these surface synthetic refs like `{columnId$basis:firstName}` you can plug into prompts or `referenceFieldPath` on createReferenceColumn.
+          items:
+            $ref: '#/components/schemas/BridgeRowAttributeOption'
+        webAgentModel:
+          type:
+          - string
+          - 'null'
+          description: Web agent model — set on web-agent columns.
+          enum:
+          - Lite
+          - Base
+          - Core
+          - Core2X
+          - Pro
+          - Ultra
+          - UltraTwoX
+          - UltraFourX
+          - UltraEightX
+        linkSettings:
+          $ref: '#/components/schemas/BridgeLinkSettings'
+        vendorPresenceSettings:
+          oneOf:
+          - $ref: '#/components/schemas/BridgeCompetitorPresenceSettings'
+          - type: 'null'
+        emailGenerationSettings:
+          oneOf:
+          - $ref: '#/components/schemas/BridgeEmailGenerationSettings'
+          - type: 'null'
+        webhookUrl:
+          type:
+          - string
+          - 'null'
+          description: Webhook URL — set on webhook columns.
+        linkToCellSettings:
+          oneOf:
+          - $ref: '#/components/schemas/BridgeLinkToCellSettings'
+          - type: 'null'
+        multiLinkSettings:
+          oneOf:
+          - $ref: '#/components/schemas/BridgeMultiLinkSettings'
+          - type: 'null'
+        webContactSettings:
+          oneOf:
+          - $ref: '#/components/schemas/WebContactSettings'
+          - type: 'null'
+        accountScoringMetadata:
+          oneOf:
+          - $ref: '#/components/schemas/AccountScoringMetadata'
+          - type: 'null'
+        runConditions:
+          $ref: '#/components/schemas/TriggerFilters'
+    BridgeBrief:
+      type: object
+      title: BridgeBrief
+      required:
+      - bridgeId
+      - name
+      - filterType
+      - columns
+      properties:
+        bridgeId:
+          type: string
+          description: Unique identifier for the bridge
+          format: uuid
+        name:
+          type: string
+          description: Name of the bridge
+        filterType:
+          type: string
+          description: Type of filter applied to the bridge
+          enum:
+          - RFP
+          - Meeting
+          - Purchase
+          - Buyer
+          - TopBuyer
+          - Contact
+          - Signal
+          - Conference
+          - JobChange
+          - SequenceBuyer
+          - SequenceContact
+          - SequenceJobChange
+          - VendorPresence
+          - ProductCompetitorPresence
+          - CompanionPresence
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/BridgeColumnResponse'
+    BridgeRowEntityRef:
+      type: object
+      title: BridgeRowEntityRef
+      description: Reference to the underlying entity (id + type) this row represents, when available.
+      required:
+      - type
+      - id
+      properties:
+        type:
+          type: string
+          description: Kind of entity `id` refers to (e.g. Conference, Buyer, Opportunity).
+          enum:
+          - RFP
+          - Meeting
+          - Purchase
+          - Buyer
+          - TopBuyer
+          - Contact
+          - Signal
+          - Conference
+          - JobChange
+          - SequenceBuyer
+          - SequenceContact
+          - SequenceJobChange
+          - VendorPresence
+          - ProductCompetitorPresence
+          - CompanionPresence
+        id:
+          type: string
+          description: Identifier of the underlying entity. Pass to entity-specific tools (e.g. opportunity line items, file downloads) to fetch detail beyond the bridge's columns.
+    BridgeResponse:
+      type: object
+      title: BridgeResponse
+      required:
+      - bridgeId
+      - name
+      - userId
+      - filterType
+      - status
+      - updatedAt
+      properties:
+        bridgeId:
+          type: string
+          description: Unique identifier for the bridge
+          format: uuid
+        name:
+          type: string
+          description: Name of the bridge
+        userId:
+          type: string
+          description: User ID who created and owns the bridge
+        filterType:
+          type: string
+          description: Type of filter applied to the bridge
+          enum:
+          - RFP
+          - Meeting
+          - Purchase
+          - Buyer
+          - TopBuyer
+          - Contact
+          - Signal
+          - Conference
+          - JobChange
+          - SequenceBuyer
+          - SequenceContact
+          - SequenceJobChange
+          - VendorPresence
+          - ProductCompetitorPresence
+          - CompanionPresence
+        status:
+          type: string
+          description: Current status of the bridge
+          enum:
+          - Initializing
+          - Matching
+          - Draft
+          - Open
+          - Failed
+          - Deleting
+        updatedAt:
+          type: string
+          description: Timestamp when a user last edited this bridge's configuration (name, columns, sharing). Does NOT indicate when new rows were added
+        rowCount:
+          type: integer
+          description: Total number of rows in the bridge
+    TriggerFiltersTermGroup:
+      type: object
+      title: TriggerFiltersTermGroup
+      properties:
+        terms:
+          type: array
+          items:
+            $ref: '#/components/schemas/TriggerFiltersTerm'
+    BridgeRowAttributeOption:
+      type: object
+      title: BridgeRowAttributeOption
+      required:
+      - key
+      - name
+      - fieldFormat
+      properties:
+        key:
+          type: string
+          description: Attribute key, e.g. `op:until_date`, `buyer:name`
+        name:
+          type: string
+          description: Human-readable label
+        fieldFormat:
+          $ref: '#/components/schemas/BridgeFieldFormat'
+    BridgeLinkSettings:
+      type: object
+      title: BridgeLinkSettings
+      required:
+      - sourceBridgeId
+      - includedStatuses
+      properties:
+        sourceBridgeId:
+          type: string
+          description: UUID of the referenced (source) bridge whose rows this link column pulls in - i.e. the other bridge, not the bridge this column belongs to
+          format: uuid
+        includedStatuses:
+          type: array
+          description: Row statuses included from the source bridge
+          items:
+            type: string
+        maxAgeRelativePeriod:
+          type:
+          - string
+          - 'null'
+          description: Max age window for source rows relative to now. Null when no age cap is applied.
+          enum:
+          - Future
+          - NextTwoYears
+          - NextYear
+          - NextNineMonths
+          - NextSixMonths
+          - NextThreeMonths
+          - NextTwoMonths
+          - NextOneMonth
+          - NextSixtyDays
+          - NextThirtyDays
+          - NextSevenDays
+          - NextOneDay
+          - Present
+          - LastOneDay
+          - LastSevenDays
+          - LastThirtyDays
+          - LastSixtyDays
+          - LastOneMonths
+          - LastTwoMonths
+          - LastThreeMonths
+          - LastSixMonths
+          - LastNineMonths
+          - LastYear
+          - LastTwoYears
+          - Past
+        filters:
+          $ref: '#/components/schemas/TriggerFilters'
+    BridgeEmailGenerationSettings:
+      type: object
+      title: BridgeEmailGenerationSettings
+      description: Email generation settings — set on email template columns.
+      required:
+      - emailSubjectTemplate
+      - emailBodyTemplate
+      properties:
+        emailSubjectTemplate:
+          type: string
+        emailBodyTemplate:
+          type: string
+        showParentColumn:
+          type: boolean
+        snippetDefinitions:
+          type:
+          - object
+          - 'null'
+          description: Map of snippet name to generation prompt. Prompts can contain {columnId} references.
+          additionalProperties:
+            type: string
+    BuyerBrief:
+      type: object
+      title: BuyerBrief
+      required:
+      - id
+      - name
+      - countryCode
+      - fromSourceFile
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        type:
+          type:
+          - string
+          - 'null'
+          enum:
+          - AdministrativeAgency
+          - City
+          - CityAttorney
+          - CityClerk
+          - CityEngineer
+          - CityManager
+          - CitySecretary
+          - County
+          - CountyAttorney
+          - CountyClerk
+          - CountyEngineer
+          - CountyManager
+          - CulturalFacility
+          - Department
+          - DiplomaticEntity
+          - District
+          - FinancialAgency
+          - HealthcareFacility
+          - HigherEducation
+          - LawEnforcementAgency
+          - LegislativeBody
+          - MilitaryOrganization
+          - NonProfitOrganization
+          - PrivateCompany
+          - PublicWorksAgency
+          - RegulatoryAgency
+          - School
+          - SchoolDistrict
+          - SpecialDistrict
+          - State
+          - StateAgency
+          - StateAttorney
+          - StateClerk
+          - StateEngineer
+          - TransportationAgency
+          - UncategorizedAgency
+          - UncategorizedClerk
+          - UncategorizedDistrict
+          - PoliceDepartment
+          - FireDepartment
+          - Library
+          - IndigenousGovernment
+          - Federal
+          - Other
+        countryCode:
+          type: string
+        stateCode:
+          type:
+          - string
+          - 'null'
+        url:
+          type:
+          - string
+          - 'null'
+        fromSourceFile:
+          type: boolean
+        tags:
+          type: array
+          items:
+            type: string
+        linkedinSlug:
+          type:
+          - string
+          - 'null'
+        logoPath:
+          type:
+          - string
+          - 'null'
+    SignalBridgeConfig:
+      type: object
+      title: SignalBridgeConfig
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+        enabled:
+          type: boolean
+    AccountScoringMetadata:
+      type: object
+      title: AccountScoringMetadata
+      properties:
+        scoringConfig:
+          $ref: '#/components/schemas/AccountScoringConfig'
+        signalBridgesByType:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/SignalBridgeConfig'
+    AccountScoringSignalTypeConfig:
+      type: object
+      title: AccountScoringSignalTypeConfig
+      properties:
+        weight:
+          type: string
+          enum:
+          - High
+          - Medium
+          - Low
+        guidance:
+          type:
+          - string
+          - 'null'
+    CompetitorPresenceSettingsServiceProvider:
+      type: object
+      title: CompetitorPresenceSettingsServiceProvider
+      required:
+      - name
+      properties:
+        name:
+          type: string
+        serviceProviderAliases:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        productNamesOrAliases:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+    BuyerSummaryResponse:
+      type: object
+      title: BuyerSummaryResponse
+      required:
+      - buyerId
+      - needsRegeneration
+      properties:
+        buyerId:
+          type: string
+          format: uuid
+        summary:
+          oneOf:
+          - $ref: '#/components/schemas/BuyerSummaryContent'
+          - type: 'null'
+        score:
+          type:
+          - integer
+          - 'null'
+        scoreReasoning:
+          type:
+          - string
+          - 'null'
+        generatedAt:
+          type:
+          - string
+          - 'null'
+        needsRegeneration:
+          type: boolean
+    ListBridgeRowsRequest:
+      type: object
+      title: ListBridgeRowsRequest
+      properties:
+        filters:
+          oneOf:
+          - $ref: '#/components/schemas/BridgeFilters'
+          - type: 'null'
+        sorts:
+          type:
+          - array
+          - 'null'
+          description: "\n        Sort specification for rows. For each sort term, `column` should be a bridge\n        column's `columnId` UUID — call `getBridgeColumnMetadata` to look it up. The\n        column's display name, `key`, or any prefixed reference is not a valid value.\n        A small set of common entry-level fields (`entryId`, `entryName`, `triggeredAt`)\n        is also accepted but discouraged. The synthetic column `rowUpdatedAt` sorts by when\n        the row was last updated — sort `DESC` to poll for recently-changed rows, matching the\n        `updatedAt` field in the response. Sort columns that are not mapped on the server return 400.\n    "
+          items:
+            $ref: '#/components/schemas/RowSort'
+        query:
+          type:
+          - string
+          - 'null'
+          description: Full-text search query
+      examples:
+      - filters:
+          terms:
+          - field: 79699ea1-b638-45b4-8b44-781d76eb88a1
+            operation: Equals
+            value: some value
+      - filters:
+          terms:
+          - field: 79699ea1-b638-45b4-8b44-781d76eb88a1
+            operation: Any
+            value:
+            - value A
+            - value B
+        query: search text
+      - filters:
+          terms:
+          - field: 79699ea1-b638-45b4-8b44-781d76eb88a1
+            operation: Contains
+            value: partial
+          - field: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+            operation: IsNotEmpty
+        sorts:
+        - column: 79699ea1-b638-45b4-8b44-781d76eb88a1
+          direction: ASC
+      - filters:
+          terms:
+          - field: 79699ea1-b638-45b4-8b44-781d76eb88a1
+            operation: HasCellStatus
+            value:
+            - Not Processed
+            - Processing
+            - Processed
+      default: {}
+    BridgeSignalResponse:
+      type: object
+      title: BridgeSignalResponse
+      required:
+      - bridge
+      - row
+      properties:
+        bridge:
+          $ref: '#/components/schemas/BridgeBrief'
+        row:
+          $ref: '#/components/schemas/BridgeRowResponse'
+    BridgeColumnResponse:
+      type: object
+      title: BridgeColumnResponse
+      required:
+      - columnId
+      - bridgeId
+      - name
+      - prompt
+      - type
+      - fieldFormat
+      - index
+      properties:
+        columnId:
+          type: string
+          description: Unique identifier for the column
+          format: uuid
+        bridgeId:
+          type: string
+          description: UUID of the bridge this column belongs to
+          format: uuid
+        name:
+          type: string
+          description: Display name of the column
+        prompt:
+          type: string
+          description: Prompt or instruction for generating column values
+        type:
+          type: string
+          description: Type of column (AiAnalysis, DataAttribute, AiAnalysisTemplate, etc.)
+          enum:
+          - AiAnalysis
+          - DataAttribute
+          - AiAnalysisTemplate
+          - WebAgentTemplate
+          - Input
+          - Link
+          - CrmLookup
+          - CrmSync
+          - LinkToCell
+          - CompetitorsPresence
+          - EmailTemplate
+          - PhoneCallTemplate
+          - Webhook
+          - MultiLink
+          - AccountScoring
+        fieldFormat:
+          $ref: '#/components/schemas/BridgeFieldFormat'
+        index:
+          type: integer
+          description: Zero-based index position of the column
+        key:
+          type:
+          - string
+          - 'null'
+          description: Optional key for referencing the column
+    BridgeMultiLinkSettings:
+      type: object
+      title: BridgeMultiLinkSettings
+      description: MultiLink settings — set on multi-link columns.
+      required:
+      - sourceBridgeIds
+      - includedStatuses
+      properties:
+        sourceBridgeIds:
+          type: array
+          description: UUIDs of the referenced (source) bridges whose rows these link columns pull in - i.e. the other bridges, not the bridge these columns belong to
+          items:
+            type: string
+            format: uuid
+        includedStatuses:
+          type: array
+          description: Row statuses included from the source bridges
+          items:
+            type: string
+        maxAgeRelativePeriod:
+          type:
+          - string
+          - 'null'
+          description: Max age window for source rows relative to now. Null when no age cap is applied.
+          enum:
+          - Future
+          - NextTwoYears
+          - NextYear
+          - NextNineMonths
+          - NextSixMonths
+          - NextThreeMonths
+          - NextTwoMonths
+          - NextOneMonth
+          - NextSixtyDays
+          - NextThirtyDays
+          - NextSevenDays
+          - NextOneDay
+          - Present
+          - LastOneDay
+          - LastSevenDays
+          - LastThirtyDays
+          - LastSixtyDays
+          - LastOneMonths
+          - LastTwoMonths
+          - LastThreeMonths
+          - LastSixMonths
+          - LastNineMonths
+          - LastYear
+          - LastTwoYears
+          - Past
+    BridgeFilters:
+      type: object
+      title: BridgeFilters
+      description: "\n        Filter criteria for bridge rows. All `terms` are combined with logical AND — a row must\n        satisfy every term to be included. Provide an empty `terms` list (or omit `filters`) to\n        return all rows.\n    "
+      properties:
+        terms:
+          type: array
+          items:
+            $ref: '#/components/schemas/BridgeFiltersTerm'
+    TriggerFiltersTerm:
+      type: object
+      title: TriggerFiltersTerm
+      required:
+      - field
+      - operation
+      properties:
+        field:
+          type: string
+        operation:
+          type: string
+          enum:
+          - Equals
+          - DoesNotEqual
+          - Contains
+          - DoesNotContain
+          - GreaterThan
+          - LessThan
+          - IsEmpty
+          - IsNotEmpty
+          - Any
+          - None
+          - ContainsAny
+          - ContainsAll
+          - ContainedBy
+          - NotContainedBy
+          - HasCellStatus
+          - HasLookupStatus
+          - HasLastSyncStatus
+          - HasSyncStatusHistory
+        value:
+          description: Any JSON value - can be a string, number, boolean, object, array, or null
+    BuyerSummaryContent:
+      type: object
+      title: BuyerSummaryContent
+      required:
+      - whatsRecent
+      - theBiggerPicture
+      - areasForDeeperDiscovery
+      properties:
+        whatsRecent:
+          $ref: '#/components/schemas/DetailSection'
+        theBiggerPicture:
+          $ref: '#/components/schemas/DetailSection'
+        areasForDeeperDiscovery:
+          $ref: '#/components/schemas/DetailSection'
+    BridgeCompetitorPresenceSettings:
+      type: object
+      title: BridgeCompetitorPresenceSettings
+      description: Vendor presence settings — set on vendor presence columns.
+      required:
+      - serviceProviders
+      - runWebPresence
+      properties:
+        serviceProviders:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompetitorPresenceSettingsServiceProvider'
+        runWebPresence:
+          type: boolean
+        contextPrompt:
+          type:
+          - string
+          - 'null'
+        runContractEstimation:
+          type: boolean
+    EntrySource:
+      type: object
+      title: EntrySource
+      required:
+      - entryId
+      - triggerId
+      properties:
+        entryId:
+          type: string
+          format: uuid
+        triggerId:
+          type: string
+          format: uuid
+        triggerType:
+          type:
+          - string
+          - 'null'
+        triggerName:
+          type:
+          - string
+          - 'null'
+        entryName:
+          type:
+          - string
+          - 'null'
+    BridgeRowStatus:
+      type: string
+      title: BridgeRowStatus
+      description: Supported default values are `New`, `Actioned`, `Saved`, `Not Interested`. For conferences it might additionally include `Attending`, `Sponsoring`. In the UI, 'New' is shown as 'Needs action', and 'Saved' is shown as 'Starred'. Filtering on Actioned will include Sponsoring and Attending.
+      enum:
+      - New
+      - Actioned
+      - Saved
+      - Attending
+      - Sponsoring
+      - NotInterested
+    DetailSection:
+      type: object
+      title: DetailSection
+      required:
+      - sections
+      properties:
+        status:
+          type: string
+          enum:
+          - Standard
+          - Fallback
+        intro:
+          type: string
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Section'
+  securitySchemes:
+    apiKey:
+      scheme: bearer
+      description: HTTP Bearer Authentication
+      type: http

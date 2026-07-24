@@ -1,0 +1,676 @@
+openapi: 3.1.1
+info:
+  title: Starbridge External Public Bridges API
+  version: '1.0'
+servers:
+- url: https://dashboard.starbridge.ai
+tags:
+- name: Bridges
+paths:
+  /api/external/bridge:
+    get:
+      operationId: listBridges
+      tags:
+      - Bridges
+      summary: List Bridges
+      description: 'List the saved Bridges (monitoring definitions) in the organization. A Bridge watches for one type of buyer activity — RFPs, meetings, purchases, conferences, contact or job changes, or other signals — within a buyer-list scope, extracts a configurable set of column values when something matches, and stores each match as a row. Use this to discover available Bridges and their identifiers.
+
+
+        Filter by `query` (name substring), `filterType`, `createdByUserId`, `userIdsHaveAccessTo`, or `buyerListId`. To paginate, start at `pageNumber=1` and increment until `pageNumber == totalPages`. For the columns defined on a specific Bridge, call `getBridgeColumnMetadata` — column metadata is no longer returned inline by this endpoint.'
+      parameters:
+      - name: sortField
+        in: query
+        schema:
+          type: string
+          default: Name
+          enum:
+          - Name
+          - RowsCount
+          - Type
+          - CreatedBy
+          - CreditUsage
+          - SharedWith
+          - LastUpdatedByUser
+          - CreatedAt
+      - name: sortDirection
+        in: query
+        schema:
+          type: string
+          default: ASC
+          enum:
+          - ASC
+          - DESC
+      - name: query
+        in: query
+        description: Filter by bridge name (substring match)
+        schema:
+          type: string
+      - name: viewMode
+        in: query
+        schema:
+          type: string
+      - name: folderId
+        in: query
+        schema:
+          type: string
+      - name: pageNumber
+        in: query
+        description: Page number, 1-based. Minimum 1.
+        schema:
+          type: integer
+          default: '1'
+      - name: pageSize
+        in: query
+        description: Page size. Must be > 0 and <= 100. Prefer <= 20.
+        schema:
+          type: integer
+          default: '10'
+      - name: filterType
+        in: query
+        description: Bridge filter type(s)
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - RFP
+            - Meeting
+            - Purchase
+            - Buyer
+            - TopBuyer
+            - Contact
+            - Signal
+            - Conference
+            - JobChange
+            - SequenceBuyer
+            - SequenceContact
+            - SequenceJobChange
+            - VendorPresence
+            - ProductCompetitorPresence
+            - CompanionPresence
+        style: form
+        explode: false
+      - name: createdByUserId
+        in: query
+        description: User ID(s) of the creator(s)
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: false
+      - name: userIdsHaveAccessTo
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: false
+      - name: buyerListId
+        in: query
+        description: Buyer list ID(s) set up for the bridges
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+        style: form
+        explode: false
+      responses:
+        '200':
+          description: Paginated list of bridges
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - pageNumber
+                - pageSize
+                - totalItems
+                - totalPages
+                - result
+                properties:
+                  pageNumber:
+                    type: integer
+                  pageSize:
+                    type: integer
+                  totalItems:
+                    type: integer
+                  totalPages:
+                    type: integer
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BridgeResponse'
+        '400':
+          description: Invalid request body or format
+        '401':
+          description: Missing or invalid authentication
+        '403':
+          description: Unauthorized to access resource or perform action
+        '415':
+          description: Unsupported media type or request body format
+        '404':
+          description: Resource not found
+        '429':
+          description: Rate limit exceeded
+        '500':
+          description: Internal server error
+      security:
+      - apiKey: []
+      x-mcp-annotations:
+        readOnlyHint: true
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+  /api/external/bridge/{bridgeId}:
+    get:
+      operationId: getBridge
+      tags:
+      - Bridges
+      summary: Get Bridge
+      description: 'Fetch the configuration of a single Bridge by ID — name, owner, filter type, current status, last-updated timestamp, and total row count. A Bridge watches for one type of buyer activity — RFPs, meetings, purchases, conferences, contact or job changes, or other signals — within a buyer-list scope, extracts a configurable set of column values when something matches, and stores each match as a row.
+
+
+        For the per-column schema (columnId, name, prompt, type, fieldFormat, etc.) needed to construct column-targeted filters in `listBridgeRows`, call `getBridgeColumnMetadata`.'
+      parameters:
+      - name: bridgeId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Bridge details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BridgeResponse'
+        '400':
+          description: Invalid request body or format
+        '401':
+          description: Missing or invalid authentication
+        '403':
+          description: Unauthorized to access resource or perform action
+        '415':
+          description: Unsupported media type or request body format
+        '404':
+          description: Resource not found
+        '429':
+          description: Rate limit exceeded
+        '500':
+          description: Internal server error
+      security:
+      - apiKey: []
+      x-mcp-annotations:
+        readOnlyHint: true
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+  /api/external/bridge/{bridgeId}/row:
+    put:
+      operationId: listBridgeRows
+      tags:
+      - Bridges
+      summary: List Bridge Rows
+      description: 'List the rows of a single Bridge — the concrete matches the Bridge has produced — with optional filtering, sorting, and full-text search. Each row carries a processing status, optional buyer/organizer association, an `updatedAt` timestamp, and the per-column values populated for that match. The per-row `columns` map is keyed by the human-readable column name (not by columnId), and values are polymorphic per the column''s `fieldFormat` (string / number / boolean / object / null).
+
+
+        Prefer narrowing server-side with `filters`, `sorts`, and `query` in the request body over scanning every page.
+
+
+        For any column-targeted filter or sort — including Match Score, Match reasoning,
+
+        and any user-defined column — first call `getBridgeColumnMetadata` to obtain that
+
+        column''s `columnId` UUID and pass it as `BridgeFilters.terms[].field` or
+
+        `RowSort.column`. The column''s display name, `key`, or any prefixed reference is
+
+        NOT a valid value. A small set of common entry-level fields (`status`, `buyerId`,
+
+        `opportunityId`, `entryName`, `triggeredAt`) is also accepted for filtering.
+
+        Sort or filter columns that are not mapped on the server return 400. See
+
+        `ListBridgeRowsRequest` for the full schema of supported filter terms,
+
+        operations, and sort columns.
+
+
+
+        To paginate, start at `pageNumber=1` and increment until `pageNumber == totalPages`.
+
+
+        Note on consistency: the data backing search/sort/filter is maintained separately from the row values returned here, and the two can briefly drift apart — especially while the service is under heavy load. As a result, recent changes (new rows, status changes, updated column values, `updatedAt`, etc.) may not be reflected in listing, sorting, or filtering immediately; they usually become consistent within a short time. If a just-changed row does not appear where you expect, retry shortly.'
+      parameters:
+      - name: bridgeId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: pageNumber
+        in: query
+        description: Page number, 1-based. Minimum 1.
+        schema:
+          type: integer
+          default: '1'
+      - name: pageSize
+        in: query
+        description: Page size. Must be > 0 and <= 100. Prefer <= 20.
+        schema:
+          type: integer
+          default: '10'
+      requestBody:
+        description: Filtering, sorting, and free-text search parameters for bridge rows. Refer to examples for proper usage.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListBridgeRowsRequest'
+      responses:
+        '200':
+          description: Paginated list of bridge rows
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - pageNumber
+                - pageSize
+                - totalItems
+                - totalPages
+                - result
+                properties:
+                  pageNumber:
+                    type: integer
+                  pageSize:
+                    type: integer
+                  totalItems:
+                    type: integer
+                  totalPages:
+                    type: integer
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BridgeRowResponse'
+        '400':
+          description: Invalid request body or format
+        '401':
+          description: Missing or invalid authentication
+        '403':
+          description: Unauthorized to access resource or perform action
+        '415':
+          description: Unsupported media type or request body format
+        '404':
+          description: Resource not found
+        '429':
+          description: Rate limit exceeded
+        '500':
+          description: Internal server error
+      security:
+      - apiKey: []
+      x-mcp-annotations:
+        readOnlyHint: true
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+  /api/external/bridge/{bridgeId}/row/{rowId}/status:
+    patch:
+      operationId: setBridgeRowStatus
+      tags:
+      - Bridges
+      summary: Set Bridge Row Status
+      description: "Set the user-facing status for a single row in a Bridge. The `rowId` must identify a row that belongs to the specified `bridgeId`. \nUse this when a caller needs to move one Bridge row to a new status without updating any other column values.\nSupported default values are `New`, `Actioned`, `Saved`, `Not Interested`. For conferences it might additionally include `Attending`, `Sponsoring`. In the UI, 'New' is shown as 'Needs action', and 'Saved' is shown as 'Starred'. Filtering on Actioned will include Sponsoring and Attending."
+      parameters:
+      - name: bridgeId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: rowId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Bridge row status update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetBridgeRowStatusRequest'
+        required: true
+      responses:
+        '200':
+          description: Bridge row status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BridgeRowResponse'
+        '400':
+          description: Invalid request body or format
+        '401':
+          description: Missing or invalid authentication
+        '403':
+          description: Unauthorized to access resource or perform action
+        '415':
+          description: Unsupported media type or request body format
+        '404':
+          description: Resource not found
+        '429':
+          description: Rate limit exceeded
+        '500':
+          description: Internal server error
+      security:
+      - apiKey: []
+      x-mcp-annotations:
+        readOnlyHint: false
+        destructiveHint: true
+        idempotentHint: false
+        openWorldHint: false
+components:
+  schemas:
+    BridgeRowResponse:
+      type: object
+      title: BridgeRowResponse
+      required:
+      - rowId
+      - bridgeId
+      - createdAt
+      - updatedAt
+      - status
+      - columns
+      properties:
+        rowId:
+          type: string
+          description: Unique identifier for the row
+          format: uuid
+        name:
+          type:
+          - string
+          - 'null'
+          description: Optional name or title of the row
+        bridgeId:
+          type: string
+          description: UUID of the bridge this row belongs to
+          format: uuid
+        createdAt:
+          type: string
+          description: Timestamp when the row was created (added to the bridge).
+        updatedAt:
+          type: string
+          description: "\n        Timestamp when the row was last updated. This is a technical last-updated field: in addition to\n        meaningful changes (status, column values), non-meaningful changes such as a bulk re-sync or\n        maintenance can also advance it. Sort by `rowUpdatedAt` to page through recently-changed rows.\n    "
+        status:
+          type: string
+          description: Current processing status of the row
+          enum:
+          - NotProcessed
+          - Queued
+          - Processing
+          - Processed
+          - Failed
+          - Skipped
+        buyerId:
+          type:
+          - string
+          - 'null'
+          description: UUID of the buyer associated with this row, if any
+          format: uuid
+        organizerId:
+          type:
+          - string
+          - 'null'
+          description: UUID of the conference organizer associated with this row, if any
+          format: uuid
+        entity:
+          oneOf:
+          - $ref: '#/components/schemas/BridgeRowEntityRef'
+          - type: 'null'
+        columns:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/BridgeRowColumnValueResponse'
+    BridgeFiltersTerm:
+      type: object
+      title: BridgeFiltersTerm
+      description: "\n        A single filter predicate of the form `<field> <operation> <value>`, evaluated against\n        one bridge row. Multiple terms in a `BridgeFilters` are combined with logical AND.\n\n        ──────────────────────────────────────────────────────────────────────────────────────\n        1) Pick a `column`.:\n           (A) A column's `columnId` UUID, returned by `getBridgeColumnMetadata`.\n               Always a bare UUID string — never the column's `key`, `name`, or any\n               prefixed reference. The value type must match that column's declared\n               format (see `BridgeRowColumnValueResponse.value`).\n\n        2) Pick an `operation` — its category determines the required shape of `value`:\n\n              category           | operations                                                                                    | value shape\n              -------------------|-----------------------------------------------------------------------------------------------|----------------------------------------\n              scalar             | Equals, DoesNotEqual, Contains, DoesNotContain, GreaterThan, LessThan                         | one JSON primitive (string/number/bool)\n              array              | Any, None, ContainsAny, ContainsAll, ContainedBy, NotContainedBy                              | JSON array of primitives\n              presence           | IsEmpty, IsNotEmpty                                                                           | null / omitted\n              column-status      | HasCellStatus, HasLookupStatus, HasLastSyncStatus, HasSyncStatusHistory                       | JSON array of status strings\n                                 | (REQUIRE `field` to be a column UUID — on a common key they silently degrade to Any/ContainsAny\n                                 |  against the row-level field, which is almost certainly wrong.)                               |\n\n           See `BridgeFilterOperation` for the per-operation semantics.\n\n        3) `value` must ALSO be type-compatible with the field:\n           - common-field types are listed in the table above\n           - for column fields, match the column's declared `fieldFormat`\n           - primitive inside an array follows the same rule (e.g. `Any` on `buyerId` takes\n             an array of UUID strings)\n\n        ──────────────────────────────────────────────────────────────────────────────────────\n        Common gotcha — filtering by `status`:\n           `status` is a single-valued scalar. Do NOT wrap values in an array for `Equals`.\n\n           Match exactly one status:\n             { \"field\": \"status\", \"operation\": \"Equals\", \"value\": \"Processed\" }\n\n           Match several statuses (OR within the term):\n             { \"field\": \"status\", \"operation\": \"Any\", \"value\": [\"Processed\", \"Failed\"] }\n\n           WRONG — array with a scalar op silently matches nothing:\n             { \"field\": \"status\", \"operation\": \"Equals\", \"value\": [\"Processed\"] }   // ✗\n           WRONG — bare string with an array op:\n             { \"field\": \"status\", \"operation\": \"Any\",    \"value\": \"Processed\" }     // ✗\n\n        Common gotcha — column-cell status filtering:\n           To filter by a column's per-cell processing status, use `HasCellStatus` with the\n           column's `columnId` and an array of status labels:\n\n             {\n               \"field\": \"<columnId UUID>\",\n               \"operation\": \"HasCellStatus\",\n               \"value\": [\"Processed\", \"Failed\"]\n             }\n\n           The server rewrites this into a phase-scoped query on the cell's status/value\n           status fields — you never address those sub-fields directly from the client.\n    "
+      required:
+      - field
+      - operation
+      properties:
+        field:
+          type: string
+          description: "\n        What to filter on. Exactly one of:\n          - a bridge column's `columnId` UUID (returned by `getBridgeColumnMetadata`)\n            as a bare UUID string. PREFER THIS for anything that appears as a column\n            on the Bridge — Match Score, Match reasoning, and any user-defined column\n            live here. Using the column's `key`, `name`, or any compound reference is\n            undefined behavior.\n          - a common entry-field key, limited to: `status`, `buyerId`, `opportunityId`,\n            `entryId`, `entryName`, `triggeredAt`, `op:added_date`, `bridge:entry_url`,\n            `adminActionCrmMatch`. Other internal field keys are not exposed and\n            return 400 if used.\n    "
+        operation:
+          type: string
+          description: "\n        Comparison operator. Its category dictates the required shape of `value`:\n        scalar ops take a single primitive, array ops take a JSON array, presence ops\n        take null, column-status ops (Has…) take a status array and require `field`\n        to be a column UUID. See the `BridgeFilterOperation` enum for full details.\n    "
+          enum:
+          - Equals
+          - DoesNotEqual
+          - Contains
+          - DoesNotContain
+          - GreaterThan
+          - LessThan
+          - IsEmpty
+          - IsNotEmpty
+          - Any
+          - None
+          - ContainsAny
+          - ContainsAll
+          - ContainedBy
+          - NotContainedBy
+          - HasCellStatus
+          - HasLookupStatus
+          - HasLastSyncStatus
+          - HasSyncStatusHistory
+        value:
+          description: "\n        Operand for the comparison. Polymorphic — shape is driven by `operation`:\n          - scalar ops (Equals, DoesNotEqual, Contains, DoesNotContain, GreaterThan,\n            LessThan) → one JSON primitive (string / number / boolean)\n          - array ops (Any, None, ContainsAny, ContainsAll, ContainedBy, NotContainedBy,\n            HasCellStatus, HasLookupStatus, HasLastSyncStatus, HasSyncStatusHistory)\n            → a JSON array of primitives; use an array even for a single element\n          - presence ops (IsEmpty, IsNotEmpty) → null or omitted\n\n        The primitive type must also match the field's underlying type: strings for\n        text / URL / enum / date / UUID / ISO-8601 fields, numbers for numeric fields,\n        booleans for boolean columns, and JSON objects for object-typed columns.\n    "
+    SetBridgeRowStatusRequest:
+      type: object
+      title: SetBridgeRowStatusRequest
+      required:
+      - newStatus
+      properties:
+        newStatus:
+          $ref: '#/components/schemas/BridgeRowStatus'
+    BridgeFilters:
+      type: object
+      title: BridgeFilters
+      description: "\n        Filter criteria for bridge rows. All `terms` are combined with logical AND — a row must\n        satisfy every term to be included. Provide an empty `terms` list (or omit `filters`) to\n        return all rows.\n    "
+      properties:
+        terms:
+          type: array
+          items:
+            $ref: '#/components/schemas/BridgeFiltersTerm'
+    ListBridgeRowsRequest:
+      type: object
+      title: ListBridgeRowsRequest
+      properties:
+        filters:
+          oneOf:
+          - $ref: '#/components/schemas/BridgeFilters'
+          - type: 'null'
+        sorts:
+          type:
+          - array
+          - 'null'
+          description: "\n        Sort specification for rows. For each sort term, `column` should be a bridge\n        column's `columnId` UUID — call `getBridgeColumnMetadata` to look it up. The\n        column's display name, `key`, or any prefixed reference is not a valid value.\n        A small set of common entry-level fields (`entryId`, `entryName`, `triggeredAt`)\n        is also accepted but discouraged. The synthetic column `rowUpdatedAt` sorts by when\n        the row was last updated — sort `DESC` to poll for recently-changed rows, matching the\n        `updatedAt` field in the response. Sort columns that are not mapped on the server return 400.\n    "
+          items:
+            $ref: '#/components/schemas/RowSort'
+        query:
+          type:
+          - string
+          - 'null'
+          description: Full-text search query
+      examples:
+      - filters:
+          terms:
+          - field: 79699ea1-b638-45b4-8b44-781d76eb88a1
+            operation: Equals
+            value: some value
+      - filters:
+          terms:
+          - field: 79699ea1-b638-45b4-8b44-781d76eb88a1
+            operation: Any
+            value:
+            - value A
+            - value B
+        query: search text
+      - filters:
+          terms:
+          - field: 79699ea1-b638-45b4-8b44-781d76eb88a1
+            operation: Contains
+            value: partial
+          - field: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+            operation: IsNotEmpty
+        sorts:
+        - column: 79699ea1-b638-45b4-8b44-781d76eb88a1
+          direction: ASC
+      - filters:
+          terms:
+          - field: 79699ea1-b638-45b4-8b44-781d76eb88a1
+            operation: HasCellStatus
+            value:
+            - Not Processed
+            - Processing
+            - Processed
+      default: {}
+    BridgeRowColumnValueResponse:
+      type: object
+      title: BridgeRowColumnValueResponse
+      properties:
+        value:
+          description: Any JSON value - can be a string, number, boolean, object, array, or null
+        status:
+          type:
+          - string
+          - 'null'
+          description: Processing status of this column value
+          enum:
+          - NotProcessed
+          - Queued
+          - Processing
+          - Processed
+          - Failed
+          - Skipped
+        processedAt:
+          type:
+          - string
+          - 'null'
+          description: Timestamp when the value was successfully processed
+    RowSort:
+      type: object
+      title: RowSort
+      required:
+      - column
+      - direction
+      properties:
+        column:
+          type: string
+        direction:
+          type: string
+          enum:
+          - ASC
+          - DESC
+    BridgeRowStatus:
+      type: string
+      title: BridgeRowStatus
+      description: Supported default values are `New`, `Actioned`, `Saved`, `Not Interested`. For conferences it might additionally include `Attending`, `Sponsoring`. In the UI, 'New' is shown as 'Needs action', and 'Saved' is shown as 'Starred'. Filtering on Actioned will include Sponsoring and Attending.
+      enum:
+      - New
+      - Actioned
+      - Saved
+      - Attending
+      - Sponsoring
+      - NotInterested
+    BridgeRowEntityRef:
+      type: object
+      title: BridgeRowEntityRef
+      description: Reference to the underlying entity (id + type) this row represents, when available.
+      required:
+      - type
+      - id
+      properties:
+        type:
+          type: string
+          description: Kind of entity `id` refers to (e.g. Conference, Buyer, Opportunity).
+          enum:
+          - RFP
+          - Meeting
+          - Purchase
+          - Buyer
+          - TopBuyer
+          - Contact
+          - Signal
+          - Conference
+          - JobChange
+          - SequenceBuyer
+          - SequenceContact
+          - SequenceJobChange
+          - VendorPresence
+          - ProductCompetitorPresence
+          - CompanionPresence
+        id:
+          type: string
+          description: Identifier of the underlying entity. Pass to entity-specific tools (e.g. opportunity line items, file downloads) to fetch detail beyond the bridge's columns.
+    BridgeResponse:
+      type: object
+      title: BridgeResponse
+      required:
+      - bridgeId
+      - name
+      - userId
+      - filterType
+      - status
+      - updatedAt
+      properties:
+        bridgeId:
+          type: string
+          description: Unique identifier for the bridge
+          format: uuid
+        name:
+          type: string
+          description: Name of the bridge
+        userId:
+          type: string
+          description: User ID who created and owns the bridge
+        filterType:
+          type: string
+          description: Type of filter applied to the bridge
+          enum:
+          - RFP
+          - Meeting
+          - Purchase
+          - Buyer
+          - TopBuyer
+          - Contact
+          - Signal
+          - Conference
+          - JobChange
+          - SequenceBuyer
+          - SequenceContact
+          - SequenceJobChange
+          - VendorPresence
+          - ProductCompetitorPresence
+          - CompanionPresence
+        status:
+          type: string
+          description: Current status of the bridge
+          enum:
+          - Initializing
+          - Matching
+          - Draft
+          - Open
+          - Failed
+          - Deleting
+        updatedAt:
+          type: string
+          description: Timestamp when a user last edited this bridge's configuration (name, columns, sharing). Does NOT indicate when new rows were added
+        rowCount:
+          type: integer
+          description: Total number of rows in the bridge
+  securitySchemes:
+    apiKey:
+      scheme: bearer
+      description: HTTP Bearer Authentication
+      type: http

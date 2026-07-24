@@ -1,0 +1,640 @@
+openapi: 3.1.1
+info:
+  title: Starbridge External Public Bridges Signal API
+  version: '1.0'
+servers:
+- url: https://dashboard.starbridge.ai
+tags:
+- name: Signal
+paths:
+  /api/external/feed/all/buyer-signals:
+    get:
+      operationId: listRecentBuyerSignals
+      tags:
+      - Signal
+      summary: List Recent Buyer Signals
+      description: Returns the most recent Starbridge signals (bridge rows) for a given buyer within the organization. A signal pairs a bridge (the monitoring definition) with a row (a concrete match). Supports filtering by bridge ids, bridge filter types, row statuses, and a relative date period. Default sort is by signal date (most recent first); pass sort=Hotness to rank by hotness score. All sorts are descending.
+      parameters:
+      - name: triggerIds
+        in: query
+        description: Limit results to signals from these bridge ids.
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+        style: form
+        explode: false
+      - name: sort
+        in: query
+        description: Sort field. Date = by signal date, Hotness = by hotness score. Always descending. Date is the default.
+        schema:
+          type: string
+          default: Date
+          enum:
+          - Date
+          - Hotness
+      - name: pageNumber
+        in: query
+        description: Page number (1-based)
+        schema:
+          type: integer
+          default: '1'
+      - name: pageSize
+        in: query
+        description: Page size
+        schema:
+          type: integer
+          default: '10'
+      - name: buyerId
+        in: query
+        description: UUID of the buyer whose signals to return.
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: filterType
+        in: query
+        description: Filter by bridge filter type (repeatable).
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - RFP
+            - Meeting
+            - Purchase
+            - Buyer
+            - TopBuyer
+            - Contact
+            - Signal
+            - Conference
+            - JobChange
+            - SequenceBuyer
+            - SequenceContact
+            - SequenceJobChange
+            - VendorPresence
+            - ProductCompetitorPresence
+            - CompanionPresence
+        style: form
+        explode: false
+      - name: status
+        in: query
+        description: Filter by row status. Defaults to New when omitted.
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - New
+            - Actioned
+            - Saved
+            - Attending
+            - Sponsoring
+            - NotInterested
+        style: form
+        explode: false
+      - name: relativeDatePeriodFrom
+        in: query
+        description: Lower bound on the signal date as a relative period.
+        schema:
+          type: string
+          default: LastOneMonths
+          enum:
+          - LastOneDay
+          - LastSevenDays
+          - LastThirtyDays
+          - LastSixtyDays
+          - LastOneMonths
+          - LastTwoMonths
+          - LastThreeMonths
+          - LastSixMonths
+          - LastNineMonths
+          - LastYear
+          - LastTwoYears
+      responses:
+        '200':
+          description: Paginated list of recent signals for the buyer.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - pageNumber
+                - pageSize
+                - totalItems
+                - totalPages
+                - result
+                properties:
+                  pageNumber:
+                    type: integer
+                  pageSize:
+                    type: integer
+                  totalItems:
+                    type: integer
+                  totalPages:
+                    type: integer
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BridgeSignalResponse'
+        '400':
+          description: Invalid request body or format
+        '401':
+          description: Missing or invalid authentication
+        '403':
+          description: Unauthorized to access resource or perform action
+        '415':
+          description: Unsupported media type or request body format
+        '404':
+          description: Resource not found
+        '429':
+          description: Rate limit exceeded
+        '500':
+          description: Internal server error
+      security:
+      - apiKey: []
+      x-mcp-annotations:
+        readOnlyHint: true
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+  /api/external/feed/all/top-signals:
+    get:
+      operationId: listTopRecentSignals
+      tags:
+      - Signal
+      summary: List Top Recent Signals
+      description: Returns the top recent Starbridge signals (bridge rows) across the whole organization, regardless of buyer. A signal pairs a bridge (the monitoring definition) with a row (a concrete match). Supports filtering by bridge ids, bridge filter types, row statuses, and a relative date period. Default sort is by hotness score (highest first); pass sort=Date to rank by signal date. All sorts are descending.
+      parameters:
+      - name: triggerIds
+        in: query
+        description: Limit results to signals from these bridge ids.
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+        style: form
+        explode: false
+      - name: sort
+        in: query
+        description: Sort field. Hotness = by hotness score, Date = by signal date. Always descending. Hotness is the default.
+        schema:
+          type: string
+          default: Hotness
+          enum:
+          - Date
+          - Hotness
+      - name: pageNumber
+        in: query
+        description: Page number (1-based)
+        schema:
+          type: integer
+          default: '1'
+      - name: pageSize
+        in: query
+        description: Page size
+        schema:
+          type: integer
+          default: '10'
+      - name: filterType
+        in: query
+        description: Filter by bridge filter type (repeatable).
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - RFP
+            - Meeting
+            - Purchase
+            - Buyer
+            - TopBuyer
+            - Contact
+            - Signal
+            - Conference
+            - JobChange
+            - SequenceBuyer
+            - SequenceContact
+            - SequenceJobChange
+            - VendorPresence
+            - ProductCompetitorPresence
+            - CompanionPresence
+        style: form
+        explode: false
+      - name: status
+        in: query
+        description: Filter by row status. Defaults to New when omitted.
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - New
+            - Actioned
+            - Saved
+            - Attending
+            - Sponsoring
+            - NotInterested
+        style: form
+        explode: false
+      - name: relativeDatePeriodFrom
+        in: query
+        description: Lower bound on the signal date as a relative period.
+        schema:
+          type: string
+          default: LastSevenDays
+          enum:
+          - LastOneDay
+          - LastSevenDays
+          - LastThirtyDays
+          - LastSixtyDays
+          - LastOneMonths
+          - LastTwoMonths
+          - LastThreeMonths
+          - LastSixMonths
+          - LastNineMonths
+          - LastYear
+          - LastTwoYears
+      responses:
+        '200':
+          description: Paginated list of top recent signals for the organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - pageNumber
+                - pageSize
+                - totalItems
+                - totalPages
+                - result
+                properties:
+                  pageNumber:
+                    type: integer
+                  pageSize:
+                    type: integer
+                  totalItems:
+                    type: integer
+                  totalPages:
+                    type: integer
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BridgeSignalResponse'
+        '400':
+          description: Invalid request body or format
+        '401':
+          description: Missing or invalid authentication
+        '403':
+          description: Unauthorized to access resource or perform action
+        '415':
+          description: Unsupported media type or request body format
+        '404':
+          description: Resource not found
+        '429':
+          description: Rate limit exceeded
+        '500':
+          description: Internal server error
+      security:
+      - apiKey: []
+      x-mcp-annotations:
+        readOnlyHint: true
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+components:
+  schemas:
+    BridgeRowResponse:
+      type: object
+      title: BridgeRowResponse
+      required:
+      - rowId
+      - bridgeId
+      - createdAt
+      - updatedAt
+      - status
+      - columns
+      properties:
+        rowId:
+          type: string
+          description: Unique identifier for the row
+          format: uuid
+        name:
+          type:
+          - string
+          - 'null'
+          description: Optional name or title of the row
+        bridgeId:
+          type: string
+          description: UUID of the bridge this row belongs to
+          format: uuid
+        createdAt:
+          type: string
+          description: Timestamp when the row was created (added to the bridge).
+        updatedAt:
+          type: string
+          description: "\n        Timestamp when the row was last updated. This is a technical last-updated field: in addition to\n        meaningful changes (status, column values), non-meaningful changes such as a bulk re-sync or\n        maintenance can also advance it. Sort by `rowUpdatedAt` to page through recently-changed rows.\n    "
+        status:
+          type: string
+          description: Current processing status of the row
+          enum:
+          - NotProcessed
+          - Queued
+          - Processing
+          - Processed
+          - Failed
+          - Skipped
+        buyerId:
+          type:
+          - string
+          - 'null'
+          description: UUID of the buyer associated with this row, if any
+          format: uuid
+        organizerId:
+          type:
+          - string
+          - 'null'
+          description: UUID of the conference organizer associated with this row, if any
+          format: uuid
+        entity:
+          oneOf:
+          - $ref: '#/components/schemas/BridgeRowEntityRef'
+          - type: 'null'
+        columns:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/BridgeRowColumnValueResponse'
+    BridgeObjFieldDefinition:
+      type: object
+      title: BridgeObjFieldDefinition
+      required:
+      - name
+      - type
+      properties:
+        name:
+          type: string
+          description: Name of the field
+        type:
+          type: string
+          description: Data type of the field
+          enum:
+          - text
+          - date
+          - url
+          - number
+          - enumeration
+          - list
+          - obj
+          - json
+          - phone
+          - email
+          - boolean
+          - currencyUnit
+        description:
+          type:
+          - string
+          - 'null'
+          description: Optional description of the field
+    FieldFormatEnumerationValue:
+      type: object
+      title: FieldFormatEnumerationValue
+      required:
+      - value
+      properties:
+        value:
+          type: string
+        label:
+          type: string
+    BridgeRowColumnValueResponse:
+      type: object
+      title: BridgeRowColumnValueResponse
+      properties:
+        value:
+          description: Any JSON value - can be a string, number, boolean, object, array, or null
+        status:
+          type:
+          - string
+          - 'null'
+          description: Processing status of this column value
+          enum:
+          - NotProcessed
+          - Queued
+          - Processing
+          - Processed
+          - Failed
+          - Skipped
+        processedAt:
+          type:
+          - string
+          - 'null'
+          description: Timestamp when the value was successfully processed
+    BridgeBrief:
+      type: object
+      title: BridgeBrief
+      required:
+      - bridgeId
+      - name
+      - filterType
+      - columns
+      properties:
+        bridgeId:
+          type: string
+          description: Unique identifier for the bridge
+          format: uuid
+        name:
+          type: string
+          description: Name of the bridge
+        filterType:
+          type: string
+          description: Type of filter applied to the bridge
+          enum:
+          - RFP
+          - Meeting
+          - Purchase
+          - Buyer
+          - TopBuyer
+          - Contact
+          - Signal
+          - Conference
+          - JobChange
+          - SequenceBuyer
+          - SequenceContact
+          - SequenceJobChange
+          - VendorPresence
+          - ProductCompetitorPresence
+          - CompanionPresence
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/BridgeColumnResponse'
+    BridgeSignalResponse:
+      type: object
+      title: BridgeSignalResponse
+      required:
+      - bridge
+      - row
+      properties:
+        bridge:
+          $ref: '#/components/schemas/BridgeBrief'
+        row:
+          $ref: '#/components/schemas/BridgeRowResponse'
+    BridgeRowEntityRef:
+      type: object
+      title: BridgeRowEntityRef
+      description: Reference to the underlying entity (id + type) this row represents, when available.
+      required:
+      - type
+      - id
+      properties:
+        type:
+          type: string
+          description: Kind of entity `id` refers to (e.g. Conference, Buyer, Opportunity).
+          enum:
+          - RFP
+          - Meeting
+          - Purchase
+          - Buyer
+          - TopBuyer
+          - Contact
+          - Signal
+          - Conference
+          - JobChange
+          - SequenceBuyer
+          - SequenceContact
+          - SequenceJobChange
+          - VendorPresence
+          - ProductCompetitorPresence
+          - CompanionPresence
+        id:
+          type: string
+          description: Identifier of the underlying entity. Pass to entity-specific tools (e.g. opportunity line items, file downloads) to fetch detail beyond the bridge's columns.
+    BridgeFieldFormat:
+      type: object
+      title: BridgeFieldFormat
+      description: Field format specification for the column
+      required:
+      - baseFormat
+      properties:
+        baseFormat:
+          type: string
+          description: Base data type of the field (String, Integer, Boolean, etc.)
+          enum:
+          - text
+          - date
+          - url
+          - number
+          - enumeration
+          - list
+          - obj
+          - json
+          - phone
+          - email
+          - boolean
+          - currencyUnit
+        description:
+          type:
+          - string
+          - 'null'
+          description: Optional description of the field
+        enumerationValues:
+          type:
+          - array
+          - 'null'
+          description: Optional list of enumeration values if field is a select type
+          items:
+            $ref: '#/components/schemas/FieldFormatEnumerationValue'
+        currency:
+          type:
+          - string
+          - 'null'
+          description: Optional currency type if field represents a monetary value
+          enum:
+          - USD
+          - CAD
+        listElementBaseFormat:
+          type:
+          - string
+          - 'null'
+          description: Base format type for list elements if field is a list type
+          enum:
+          - text
+          - date
+          - url
+          - number
+          - enumeration
+          - list
+          - obj
+          - json
+          - phone
+          - email
+          - boolean
+          - currencyUnit
+        outputFields:
+          type:
+          - array
+          - 'null'
+          description: Optional field definitions for object type fields
+          items:
+            $ref: '#/components/schemas/BridgeObjFieldDefinition'
+    BridgeColumnResponse:
+      type: object
+      title: BridgeColumnResponse
+      required:
+      - columnId
+      - bridgeId
+      - name
+      - prompt
+      - type
+      - fieldFormat
+      - index
+      properties:
+        columnId:
+          type: string
+          description: Unique identifier for the column
+          format: uuid
+        bridgeId:
+          type: string
+          description: UUID of the bridge this column belongs to
+          format: uuid
+        name:
+          type: string
+          description: Display name of the column
+        prompt:
+          type: string
+          description: Prompt or instruction for generating column values
+        type:
+          type: string
+          description: Type of column (AiAnalysis, DataAttribute, AiAnalysisTemplate, etc.)
+          enum:
+          - AiAnalysis
+          - DataAttribute
+          - AiAnalysisTemplate
+          - WebAgentTemplate
+          - Input
+          - Link
+          - CrmLookup
+          - CrmSync
+          - LinkToCell
+          - CompetitorsPresence
+          - EmailTemplate
+          - PhoneCallTemplate
+          - Webhook
+          - MultiLink
+          - AccountScoring
+        fieldFormat:
+          $ref: '#/components/schemas/BridgeFieldFormat'
+        index:
+          type: integer
+          description: Zero-based index position of the column
+        key:
+          type:
+          - string
+          - 'null'
+          description: Optional key for referencing the column
+  securitySchemes:
+    apiKey:
+      scheme: bearer
+      description: HTTP Bearer Authentication
+      type: http
