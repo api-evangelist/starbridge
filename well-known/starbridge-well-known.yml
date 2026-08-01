@@ -1,0 +1,26 @@
+generated: '2026-07-21'
+method: probed
+source: live probes of /.well-known/ on Starbridge hosts (2026-07-21)
+hosts:
+- host: dashboard.starbridge.ai
+  probes:
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    file: starbridge-oauth-authorization-server.json
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    file: starbridge-oauth-protected-resource.json
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/security.txt
+    status: 404
+- host: starbridge.ai
+  probes:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+notes: >-
+  The MCP OAuth resource metadata (oauth-protected-resource) points MCP clients at
+  the authorization server auth.starbridge.ai and declares the mcp:tools scope. The
+  authorization-server document is an Auth0-style OIDC/OAuth2 metadata record.

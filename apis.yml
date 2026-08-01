@@ -1,27 +1,196 @@
 aid: starbridge
 name: Starbridge
-description: 'Starbridge is a company surfaced as a portfolio company of craft-ventures and added to the
-  API Evangelist network as a stub for enrichment. Sector: ai. This profile is a lead awaiting the enrichment
-  pipeline.'
+description: >-
+  Starbridge is an AI-powered go-to-market and sales-intelligence platform for
+  vendors selling to the public sector and education — government agencies, K-12
+  school districts, and higher-education institutions. It surfaces early buying
+  signals (RFPs, board meetings, purchases, conferences, contact and job changes),
+  scores and enriches target accounts, and drafts personalized outbound and RFP
+  responses. Starbridge exposes an external REST API (Bearer API keys), Ed25519-signed
+  webhooks, and a hosted OAuth MCP server, plus published Agent Skills, so buyer
+  intelligence can be pulled into CRMs (Salesforce, HubSpot), Slack, Zapier, and AI
+  agents. Backed by Craft Ventures.
 url: https://raw.githubusercontent.com/api-evangelist/starbridge/refs/heads/main/apis.yml
 x-type: company
 x-source: vc-portfolio
 x-backed-by:
 - craft-ventures
-x-tier: stub
-x-tier-reason: portfolio-lead
+x-tier: provider
+x-tier-reason: public-rest-api-mcp-webhooks
+accessModel:
+  pricing: unknown
+  onboarding: self-serve
+  trial: false
+  try_now: false
+  public: false
+  label: Self-serve signup
+  confidence: medium
+  source:
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://cdn.prod.website-files.com/68a834f29776727eae1bc0f6/694fa319b9cd6a197c7be433_1_Starbridge%20Homepage%20OpenGraph.webp
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-17'
+modified: '2026-07-21'
 tags:
 - Company
 - Ai
-apis: []
+- Sales Intelligence
+- Go To Market
+- Public Sector
+- Education
+- Government
+- Procurement
+- Buyer Intelligence
+- MCP
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
+apis:
+- aid: starbridge:starbridge-bridges-api
+  name: Starbridge Bridges API
+  description: The Bridges API from Starbridge — 4 operation(s) for bridges.
+  humanURL: https://hc.starbridge.ai/api-reference/rest/overview
+  baseURL: https://dashboard.starbridge.ai
+  tags:
+  - Bridges
+  properties:
+  - type: OpenAPI
+    url: openapi/starbridge-bridges-api-openapi.yml
+  - type: ErrorCatalog
+    url: errors/starbridge-problem-types.yml
+  - type: DataModel
+    url: data-model/starbridge-data-model.yml
+- aid: starbridge:starbridge-buyer-api
+  name: Starbridge Buyer API
+  description: The Buyer API from Starbridge — 4 operation(s) for buyer.
+  humanURL: https://hc.starbridge.ai/api-reference/rest/overview
+  baseURL: https://dashboard.starbridge.ai
+  tags:
+  - Buyer
+  properties:
+  - type: OpenAPI
+    url: openapi/starbridge-buyer-api-openapi.yml
+  - type: ErrorCatalog
+    url: errors/starbridge-problem-types.yml
+  - type: DataModel
+    url: data-model/starbridge-data-model.yml
+- aid: starbridge:starbridge-columns-api
+  name: Starbridge Columns API
+  description: The Columns API from Starbridge — 1 operation(s) for columns.
+  humanURL: https://hc.starbridge.ai/api-reference/rest/overview
+  baseURL: https://dashboard.starbridge.ai
+  tags:
+  - Columns
+  properties:
+  - type: OpenAPI
+    url: openapi/starbridge-columns-api-openapi.yml
+  - type: ErrorCatalog
+    url: errors/starbridge-problem-types.yml
+  - type: DataModel
+    url: data-model/starbridge-data-model.yml
+- aid: starbridge:starbridge-external-api-api
+  name: Starbridge External API API
+  description: The External API API from Starbridge — 11 operation(s) for external api.
+  humanURL: https://hc.starbridge.ai/api-reference/rest/overview
+  baseURL: https://dashboard.starbridge.ai
+  tags:
+  - External API
+  properties:
+  - type: OpenAPI
+    url: openapi/starbridge-external-api-api-openapi.yml
+  - type: ErrorCatalog
+    url: errors/starbridge-problem-types.yml
+  - type: DataModel
+    url: data-model/starbridge-data-model.yml
+- aid: starbridge:starbridge-external-mcp-api
+  name: Starbridge External MCP API
+  description: The External MCP API from Starbridge — 11 operation(s) for external mcp.
+  humanURL: https://hc.starbridge.ai/api-reference/rest/overview
+  baseURL: https://dashboard.starbridge.ai
+  tags:
+  - External MCP
+  properties:
+  - type: OpenAPI
+    url: openapi/starbridge-external-mcp-api-openapi.yml
+  - type: ErrorCatalog
+    url: errors/starbridge-problem-types.yml
+  - type: DataModel
+    url: data-model/starbridge-data-model.yml
+- aid: starbridge:starbridge-signal-api
+  name: Starbridge Signal API
+  description: The Signal API from Starbridge — 2 operation(s) for signal.
+  humanURL: https://hc.starbridge.ai/api-reference/rest/overview
+  baseURL: https://dashboard.starbridge.ai
+  tags:
+  - Signal
+  properties:
+  - type: OpenAPI
+    url: openapi/starbridge-signal-api-openapi.yml
+  - type: ErrorCatalog
+    url: errors/starbridge-problem-types.yml
+  - type: DataModel
+    url: data-model/starbridge-data-model.yml
 common:
+- type: OpenAPI
+  url: openapi/starbridge-openapi.json
+- type: MCPServer
+  url: mcp/starbridge-mcp.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: LLMsTxt
+  url: llms/starbridge-llms.txt
+- type: Webhooks
+  url: asyncapi/starbridge-webhooks.yml
+- type: Authentication
+  url: authentication/starbridge-authentication.yml
+- type: Conventions
+  url: conventions/starbridge-conventions.yml
+- type: Idempotency
+  url: conventions/starbridge-conventions.yml
+- type: ChangeLog
+  url: changelog/starbridge-changelog.yml
+- type: Lifecycle
+  url: lifecycle/starbridge-lifecycle.yml
+- type: StatusPage
+  url: lifecycle/starbridge-lifecycle.yml
+- type: ErrorCatalog
+  url: errors/starbridge-problem-types.yml
+- type: DataModel
+  url: data-model/starbridge-data-model.yml
+- type: Conformance
+  url: conformance/starbridge-conformance.yml
+- type: WellKnown
+  url: well-known/starbridge-well-known.yml
+- type: DomainSecurity
+  url: security/starbridge-domain-security.yml
+- type: Overlay
+  url: overlays/starbridge-openapi-overlay.yaml
+- type: Documentation
+  url: https://hc.starbridge.ai
+- type: APIReference
+  url: https://hc.starbridge.ai/api-reference/rest/overview
+- type: GettingStarted
+  url: https://hc.starbridge.ai/api-reference/rest/generating-an-api-key
+- type: HelpCenter
+  url: https://hc.starbridge.ai
+- type: Blog
+  url: https://starbridge.ai/blog
+- type: GitHubOrganization
+  url: https://github.com/starbridge-ai
+- type: SignUp
+  url: https://auth.starbridge.ai/login
+- type: TermsOfService
+  url: https://starbridge.ai/terms-of-service
+- type: PrivacyPolicy
+  url: https://starbridge.ai/privacy-policy
 - type: Website
   url: https://starbridge.ai
+x-enrichment:
+  date: '2026-07-21'
+  status: enriched
+  artifacts_added: 15
+  pass: local-v1

@@ -1,0 +1,46 @@
+generated: '2026-07-21'
+method: searched
+source: https://github.com/starbridge-ai/plugin.mcp (skills/*/SKILL.md, owner Starbridge)
+# Official Agent Skills published by Starbridge in their Claude plugin marketplace
+# (starbridge-ai/plugin.mcp). Saved verbatim; grounded in the Starbridge MCP tools
+# which map to the External API operations in openapi/starbridge-openapi.json.
+api: Starbridge External Public API
+mcp: mcp/starbridge-mcp.yml
+plugin: starbridge-ai/plugin.mcp
+skills:
+- name: buyer-identification
+  file: starbridge-buyer-identification.md
+  description: Resolve which buyer (institution) a request refers to and get its Starbridge buyer id (required first step).
+  operations: [searchBuyers]
+- name: buyer-attributes
+  file: starbridge-buyer-attributes.md
+  description: Look up pre-computed structured scores and metrics for an identified buyer.
+  operations: [getBuyerAttribute, getBuyerAttributesBulk]
+- name: buyer-summary
+  file: starbridge-buyer-summary.md
+  description: Get a synthesized narrative of a buyer's tracked activity, priorities, momentum, and risks.
+  operations: [getBuyerSummary]
+- name: buyer-signals
+  file: starbridge-buyer-signals.md
+  description: Surface recent buying signals for one buyer or across followed buyers.
+  operations: [listRecentBuyerSignals, listTopRecentSignals]
+- name: bridges
+  file: starbridge-bridges.md
+  description: Navigate, read, analyze, and update the user's own Starbridge Bridges.
+  operations: [listBridges, getBridge, listBridgeRows, getBridgeColumnMetadata, setBridgeRowStatus]
+- name: contact-search
+  file: starbridge-contact-search.md
+  description: Find people at a buyer institution from Starbridge's verified contact database.
+  operations: [getBuyerAttribute]
+- name: document-research
+  file: starbridge-document-research.md
+  description: Search a buyer's internal documents (RFPs, minutes, plans, contracts) for evidence-backed answers.
+  operations: [getBuyerSummary, listRecentBuyerSignals]
+- name: general-outbound-email
+  file: starbridge-general-outbound-email.md
+  description: Draft a personalized B2B cold-outbound email grounded in real buyer and contact data.
+  operations: [getBuyerSummary, getBuyerAttribute]
+- name: bulk-request-scoping
+  file: starbridge-bulk-request-scoping.md
+  description: Scope broad bulk-enrichment requests to a Starbridge-shaped task before many slow tool calls.
+  operations: []

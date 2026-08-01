@@ -1,0 +1,1 @@
+{"resource":"https://dashboard.starbridge.ai/mcp/oauth","authorization_servers":["https://auth.starbridge.ai"],"scopes_supported":["mcp:tools"],"bearer_methods_supported":["header"]}

@@ -1,0 +1,26 @@
+generated: '2026-07-21'
+method: searched
+source: >-
+  https://hc.starbridge.ai/api-reference/rest/generating-an-api-key +
+  openapi/starbridge-openapi.json
+docs: https://hc.starbridge.ai/api-reference/rest/generating-an-api-key
+summary:
+  types:
+  - http
+schemes:
+- name: apiKey
+  type: http
+  scheme: bearer
+  description: >-
+    HTTP Bearer authentication. Create an API key in the Starbridge dashboard
+    (Settings -> API Keys, https://dashboard.starbridge.ai/settings/api-keys) and
+    send it as 'Authorization: Bearer <api_key>'. Keys are named per service/integration.
+  issuance_url: https://dashboard.starbridge.ai/settings/api-keys
+  sources:
+  - openapi/starbridge-openapi.json
+  - https://hc.starbridge.ai/api-reference/rest/generating-an-api-key
+# MCP access uses a separate OAuth 2.0 flow (auth.starbridge.ai); see mcp/starbridge-mcp.yml.
+mcp_auth:
+  type: oauth2
+  authorization_server: https://auth.starbridge.ai
+  scopes: [mcp:tools]

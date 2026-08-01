@@ -1,0 +1,129 @@
+# Starbridge Help Center
+
+## Docs
+
+- [Set up users, roles, and teams](https://hc.starbridge.ai/admins/adding-new-users-configuring-roles-and-teams-s.md)
+- [Configure single sign-on (SSO)](https://hc.starbridge.ai/admins/configuring-sso.md)
+- [Connect your CRM](https://hc.starbridge.ai/admins/connecting-your-crm.md): Authenticate Salesforce or HubSpot and configure the objects and fields Starbridge can access.
+- [Setting up your Organization Profile](https://hc.starbridge.ai/admins/organization-business-context.md): Configure your Organization Profile to personalize signals, scoring, and AI-generated content across Starbridge.
+- [Overview guide - start here!](https://hc.starbridge.ai/admins/overview-guide.md): Everything you need to configure Starbridge for your team.
+- [Example Organization Business Context](https://hc.starbridge.ai/admins/setting-up-your-workspace/example-organization-business-context-to-fill-out.md)
+- [Set up territories](https://hc.starbridge.ai/admins/setting-up-your-workspace/setup-territories.md)
+- [Usage Dashboard](https://hc.starbridge.ai/admins/usage-dashboard.md)
+- [Video walkthrough](https://hc.starbridge.ai/admins/video-walkthrough.md)
+- [Custom AI Analysis](https://hc.starbridge.ai/ai-columns.md): Analyze the data already in your Bridge with a natural-language prompt, and run it across every row at once.
+- [Get Bridge](https://hc.starbridge.ai/api-reference/bridges/get-bridge.md): Fetch the configuration of a single Bridge by ID — name, owner, filter type, current status, last-updated timestamp, and total row count. A Bridge watches for one type of buyer activity — RFPs, meetings, purchases, conferences, contact or job changes, or other signals — within a buyer-list scope, ex…
+- [List Bridge Rows](https://hc.starbridge.ai/api-reference/bridges/list-bridge-rows.md): List the rows of a single Bridge — the concrete matches the Bridge has produced — with optional filtering, sorting, and full-text search. Each row carries a processing status, optional buyer/organizer association, an `updatedAt` timestamp, and the per-column values populated for that match. The per-…
+- [List Bridges](https://hc.starbridge.ai/api-reference/bridges/list-bridges.md): List the saved Bridges (monitoring definitions) in the organization. A Bridge watches for one type of buyer activity — RFPs, meetings, purchases, conferences, contact or job changes, or other signals — within a buyer-list scope, extracts a configurable set of column values when something matches, an…
+- [Set Bridge Row Status](https://hc.starbridge.ai/api-reference/bridges/set-bridge-row-status.md): Set the user-facing status for a single row in a Bridge. The `rowId` must identify a row that belongs to the specified `bridgeId`.  Use this when a caller needs to move one Bridge row to a new status without updating any other column values. Supported default values are `New`, `Actioned`, `Saved`, `…
+- [Get Buyer Attribute](https://hc.starbridge.ai/api-reference/buyer/get-buyer-attribute.md): Retrieve a single structured attribute about a buyer (institution) by its key, as defined in the BuyerField enum. Buyers include cities, counties, higher-education institutions, school districts, police and fire departments, federal agencies, and other public-sector entities. See the `buyerAttribute…
+- [Get Buyer Summary](https://hc.starbridge.ai/api-reference/buyer/get-buyer-summary.md): Retrieve a buyer activity summary synthesized from tracked buyer activity and available signals. Use this for buyer strategy, top priorities, momentum, risks, opportunity framing, account context across the available information, and outreach preparation. Generates on-demand if the cached summary is…
+- [Search Buyers](https://hc.starbridge.ai/api-reference/buyer/search-buyers.md): Search for buyer institutions — cities, counties, school districts, higher-education institutions, police and fire departments, federal agencies, and other public-sector entities — by name. Returns a list of candidates; pick the single buyer that best fits the user's intent based on name, type, and…
+- [List existing columns with their per-type settings](https://hc.starbridge.ai/api-reference/columns/list-existing-columns-with-their-per-type-settings.md): Use to inspect which columns already exist on this bridge and how they are configured. Returns each column's per-type settings not carried by `getBridge` (link settings, web-agent model, vendor presence, email generation, webhook URL, cross-bridge cell mirror) plus `additionalFields` synthetic refs…
+- [Generating an API Key](https://hc.starbridge.ai/api-reference/rest/generating-an-api-key.md): Create an API key to authenticate requests to the Starbridge REST API.
+- [OpenAPI Spec](https://hc.starbridge.ai/api-reference/rest/openapi-spec.md): Download the Starbridge external REST API specification.
+- [Overview](https://hc.starbridge.ai/api-reference/rest/overview.md): Documentation for the Starbridge REST API.
+- [List Recent Buyer Signals](https://hc.starbridge.ai/api-reference/signal/list-recent-buyer-signals.md): Returns the most recent Starbridge signals (bridge rows) for a given buyer within the organization. A signal pairs a bridge (the monitoring definition) with a row (a concrete match). Supports filtering by bridge ids, bridge filter types, row statuses, and a relative date period. Default sort is by s…
+- [List Top Recent Signals](https://hc.starbridge.ai/api-reference/signal/list-top-recent-signals.md): Returns the top recent Starbridge signals (bridge rows) across the whole organization, regardless of buyer. A signal pairs a bridge (the monitoring definition) with a row (a concrete match). Supports filtering by bridge ids, bridge filter types, row statuses, and a relative date period. Default sort…
+- [Webhooks Overview](https://hc.starbridge.ai/api-reference/webhooks/overview.md): Receive real-time notifications when bridge rows are created or updated in Starbridge.
+- [Webhook Payloads](https://hc.starbridge.ai/api-reference/webhooks/payloads.md): Headers, event types, and payload structure for Starbridge webhook deliveries.
+- [Signature Verification](https://hc.starbridge.ai/api-reference/webhooks/verification.md): Verify that incoming webhook requests are genuinely from Starbridge using Ed25519 signatures.
+- [Bridge-specific columns](https://hc.starbridge.ai/bridge-specific-attributes.md): The structured, standardized columns available for each Bridge type — what they contain and how to use them as enrichment inputs.
+- [Bridge types](https://hc.starbridge.ai/bridge-use-cases-examples.md)
+- [Buyers Bridge](https://hc.starbridge.ai/builders/account-scoring-buyer-bridge.md): Build a Buyers Bridge to enrich, score, and activate your target account list — without search phrases, scoring criteria, or signal-based matching.
+- [Contracts & Purchase Orders Bridge](https://hc.starbridge.ai/builders/analyzing-purchase-orders-contracts.md): A deep dive into building and configuring a Contracts & Purchase Orders Bridge — covering vendor search, scoring behavior, and how to interpret results.
+- [Conferences Bridge](https://hc.starbridge.ai/builders/conferences.md): Build a Conferences Bridge to discover, score, and act on government and education conferences relevant to your target personas and verticals.
+- [Sharing Bridges with Consumers](https://hc.starbridge.ai/builders/configuring-bridges-for-consumers.md)
+- [Contacts Bridge](https://hc.starbridge.ai/builders/contacts-bridge.md): Use a Contacts Bridge to find and enrich contacts across your target accounts.
+- [Custom Web Signals Bridge](https://hc.starbridge.ai/builders/custom-web-signal-bridges.md): Build a Custom Web Signals Bridge to search the web for any signal you define — across your entire buyer list, on a recurring cadence.
+- [Contacts Bridge: Enrich an existing lead list](https://hc.starbridge.ai/builders/enrich-an-existing-lead-list.md)
+- [Enriching Bridges with Data](https://hc.starbridge.ai/builders/enriching-bridges-with-data.md): A high-level overview of the column types you can add to a Bridge to turn signals into structured, outreach-ready GTM intelligence.
+- [RFP Bridge](https://hc.starbridge.ai/builders/finding-rfps.md): Build an RFP Bridge that surfaces relevant procurement opportunities from tens of thousands of active bids — and score them against your specific requirements fit.
+- [How do credits work?](https://hc.starbridge.ai/builders/how-do-credits-work.md)
+- [How do FOIA requests work?](https://hc.starbridge.ai/builders/how-do-foia-requests-work.md): This article is only relevant if you have purchased a group of FOIA credits from Starbridge. If you are interested in collecting custom FOIA info, contract expirations or competitor proposal responses, reach out to your Starbridge CSA or Ac
+- [Building a Bridge](https://hc.starbridge.ai/builders/how-to-build-a-bridge.md): A step-by-step overview of how to create and configure a Bridge in Starbridge.
+- [Bridges Prompt Examples](https://hc.starbridge.ai/builders/how-to-create-a-bridge/bridges-prompt-examples.md)
+- [Creating a buyer list](https://hc.starbridge.ai/builders/how-to-create-a-buyer-list.md): A buyer list defines the set of accounts you want to work with in Starbridge.
+- [Meetings Bridge](https://hc.starbridge.ai/builders/meetings-bridge.md): Build a Meetings Bridge that surfaces buying signals from board meetings and strategic plans — before an RFP ever gets posted.
+- [Building Bridges](https://hc.starbridge.ai/builders/new-bridge-building-flow.md)
+- [Contacts Bridge: search contacts by title](https://hc.starbridge.ai/builders/search-contacts-by-title.md): Define your target job titles, and Starbridge returns verified contacts.
+- [Build and Send Sequences [BETA]](https://hc.starbridge.ai/builders/sequences-beta.md): Turn your Bridges into multi-step outbound and send emails directly from Starbridge.
+- [Job Changes Bridge](https://hc.starbridge.ai/builders/starbridge-for-builders/tracking-job-changes.md): Track new hires, promotions, and departures at your target accounts — and sync verified contact data to your CRM.
+- [Researching Buyers](https://hc.starbridge.ai/buyer-homepage.md): A guide to every Starbridge tool for buyer research — Buyer Pages, Ask Starbridge, the Chrome extension, MCP, and the fastest way to use them together.
+- [Ask Starbridge Chat](https://hc.starbridge.ai/consumers/ask-starbridge-chat.md): Chat with Starbridge to instantly surface buyer intelligence, signal context, and how-to answers.
+- [Exploring Bridges](https://hc.starbridge.ai/consumers/bridges-for-consumers.md): How to navigate, filter, and take action on your Bridges as a Starbridge Consumer.
+- [Buyer Page](https://hc.starbridge.ai/consumers/buyer-page.md): Everything Starbridge knows about an account in one place.
+- [Email Digest](https://hc.starbridge.ai/consumers/email-digest.md): Receive daily or weekly net new signals in your inbox.
+- [My Feed](https://hc.starbridge.ai/consumers/my-homefeed.md): Your central view for all new signals from your Starbridge Bridges.
+- [Getting started](https://hc.starbridge.ai/consumers/setting-up-sales-account.md)
+- [Consumer walkthrough](https://hc.starbridge.ai/consumers/walkthrough-video.md)
+- [CRM enrichment columns](https://hc.starbridge.ai/crm-enrichment-columns.md): Pull CRM records into Starbridge, and push Starbridge data back to your CRM.
+- [CRM integration overview](https://hc.starbridge.ai/crm-integration.md): Connect Salesforce or HubSpot to unlock territories, contact enrichment, account scoring, and CRM sync.
+- [Customer Referral Program](https://hc.starbridge.ai/customer-referral-program.md)
+- [Budget data](https://hc.starbridge.ai/data/budget-data.md): Access high-quality government budget data with over 80% verification across cities, counties, state agencies, and special districts.
+- [All Starbridge Data](https://hc.starbridge.ai/data/buyer-attributes.md): Complete reference of all buyer attributes and field metadata available in Starbridge.
+- [How we source competitors & spend](https://hc.starbridge.ai/data/competitor-presence-spend-data.md)
+- [How we source contact data](https://hc.starbridge.ai/data/contact-data.md)
+- [Custom web data](https://hc.starbridge.ai/data/custom-web-tracking-data.md): Use AI-powered web agents to scrape government and education websites with natural language queries.
+- [Federal data](https://hc.starbridge.ai/data/federal-data.md)
+- [How to navigate procurement data](https://hc.starbridge.ai/data/how-to-navigate-procurement-data.md)
+- [How we source board meetings & strategic plans](https://hc.starbridge.ai/data/meetings-data.md)
+- [How we source RFP & RFI data](https://hc.starbridge.ai/data/rfp-data.md)
+- [Generate personalized outbound](https://hc.starbridge.ai/generate-personalized-outbound.md): A deep dive on the Personalized Outbound Email column — configure ready-to-send, personalized outreach at scale, with best practices and example use cases.
+- [Starbridge Help Center](https://hc.starbridge.ai/index.md): Guides, setup, data, and release notes for Starbridge — your command center for public sector and education GTM.
+- [Account matching](https://hc.starbridge.ai/integrations/account-matching.md)
+- [Contact sync](https://hc.starbridge.ai/integrations/contact-sync.md)
+- [CRM-synced buyer lists](https://hc.starbridge.ai/integrations/crm-synced-buyer-lists.md)
+- [CRM-synced territories](https://hc.starbridge.ai/integrations/crm-territories.md)
+- [Integrations overview](https://hc.starbridge.ai/integrations/integrations-overview.md): Connect Starbridge to the tools your team already uses.
+- [Slack (Ask Starbridge)](https://hc.starbridge.ai/integrations/slack-integration.md): Set up Ask Starbridge in Slack and understand its permissions and data access policies.
+- [Sync account data to your CRM](https://hc.starbridge.ai/integrations/sync-account-data-to-your-crm.md): Write account enrichment, analysis, and scores from Starbridge into your CRM Account object.
+- [Sync contacts to your CRM](https://hc.starbridge.ai/integrations/sync-contacts-to-your-crm.md): Create and update CRM contacts from Starbridge — including deduplication, account association, and keeping contacts current over time.
+- [Sync custom objects to your CRM](https://hc.starbridge.ai/integrations/sync-custom-objects-to-your-crm.md): Push rows from a Starbridge bridge into a custom CRM object — for RFPs, meeting signals, purchase data, and other dynamic signals.
+- [Sync job changes to your CRM](https://hc.starbridge.ai/integrations/sync-job-changes-to-your-crm.md): Push job change contacts and signals into your CRM for rep actioning, automated workflows, and historical tracking.
+- [CRM sync error: DUPLICATES_DETECTED](https://hc.starbridge.ai/integrations/troubleshooting.md): What the DUPLICATES_DETECTED CRM sync error means and how to resolve it in Salesforce or HubSpot.
+- [What to sync with your CRM](https://hc.starbridge.ai/integrations/what-to-sync.md): A planning guide for deciding which Starbridge data to push into your CRM and where it should live.
+- [Zapier](https://hc.starbridge.ai/integrations/zapier-integration.md): Send data from any Bridge to Zapier and build connected workflows with 7,000+ apps.
+- [Referencing data from another Bridge](https://hc.starbridge.ai/reference-columns.md): Bring signals from your other Bridges onto a list of buyers, so you can see where and when each buyer shows up across Starbridge.
+- [April 2025: Bridges Actionability](https://hc.starbridge.ai/release-notes/2025-4-30-bridges-actionability.md)
+- [May 2025: Navigation Changes](https://hc.starbridge.ai/release-notes/2025-5-26-navigation-changes.md): We’ve split the platform into two clear sections:
+- [May 2025: New Bridges Experience](https://hc.starbridge.ai/release-notes/2025-5-26-new-bridges-experience.md)
+- [July 2025: RFP Outline Builder](https://hc.starbridge.ai/release-notes/2025-7-11-rfp-outline-builder.md): Previously, users have been limited to the RFP Outline that Starbridge automatically output. There were occasional instances where RFPs had non-standard formats and the output Outline was not what was required for the users when answers and
+- [September 2025: Chat with Buyer & AI Created Columns](https://hc.starbridge.ai/release-notes/2025-9-23-chat-with-buyer-ai-created-columns.md)
+- [January 2026: Feed Customization and Ask Starbridge Chat](https://hc.starbridge.ai/release-notes/2026-01-08-feed-customization-and-ask-starbridge-c.md)
+- [May 2026: Chrome Extension and Outbound Email Upgrades](https://hc.starbridge.ai/release-notes/May-2026-chrome-extension-and-click-to-send-email.md)
+- [April 2026: CRM-Synced Buyer Lists](https://hc.starbridge.ai/release-notes/april-2026-crm-synced-buyer-lists.md)
+- [April 2026: Usage Dashboard](https://hc.starbridge.ai/release-notes/april-2026-usage-dashboard.md)
+- [July 2026: One-click Contact Sync](https://hc.starbridge.ai/release-notes/july-2026-reps-can-sync-contacts-to-the-crm.md): One sync configuration, shared across your entire team.
+- [June 2026: Introducing the Starbridge MCP](https://hc.starbridge.ai/release-notes/june-2026-starbridge-mcp.md)
+- [March 2026: Buyer Summary](https://hc.starbridge.ai/release-notes/march-2026-buyer-summary.md)
+- [March 2026: Sync Territories from your CRM](https://hc.starbridge.ai/release-notes/march-2026-sync-territories-from-your-crm.md)
+- [May 2026: Account Matching](https://hc.starbridge.ai/release-notes/may-2026-account-matching.md)
+- [May 2026: Introducing Starbridge Search Agents and Bridge Folders](https://hc.starbridge.ai/release-notes/may-2026-introducing-starbridge-search-agents-and-bridge-folders.md)
+- [February 2026: Use-Case Bridge Templates, Personalized Outbound Email, and Ask Starbridge in Feed](https://hc.starbridge.ai/release-notes/release-notes/february-2026-bridge-templates-email-chat-with-feed.md)
+- [February 2026: Conferences and Job Changes](https://hc.starbridge.ai/release-notes/release-notes/february-2026-conferences-and-job-changes.md)
+- [March 2026: Champion Tracking](https://hc.starbridge.ai/release-notes/release-notes/march-2026-champion-tracking.md)
+- [Chrome Extension](https://hc.starbridge.ai/research/chrome-extension.md): Research any account without switching tabs. Bring buyer profiles, contacts, signals, and Ask Starbridge into your browser.
+- [Overview and Installation](https://hc.starbridge.ai/research/starbridge-mcp.md): Connect Starbridge to any AI environment that supports the Model Context Protocol — bridges, feed, signals, and buyer research, live.
+- [Sample Use Cases](https://hc.starbridge.ai/research/starbridge-mcp-use-cases.md): Ready-to-adapt prompts for putting the Starbridge MCP to work across Bridges, Feed, signals, contacts, and deep research.
+- [Drafting an RFP Response](https://hc.starbridge.ai/rfp-writer/drafting-an-rfp-response.md)
+- [Setup RFP Writer Source Materials](https://hc.starbridge.ai/rfp-writer/setup-rfp-writer-source-materials.md): Our RFP writer uses AI to generate drafted answers to RFP questions. The first step of setting up the RFP writer is to provide context on the content that drives the responses.
+- [Signal Explore](https://hc.starbridge.ai/signal-explore.md)
+- [Account Enrichment](https://hc.starbridge.ai/university/account-enrichment.md)
+- [Conference Enrichment](https://hc.starbridge.ai/university/conference-enrichment.md)
+- [Contact Enrichment](https://hc.starbridge.ai/university/contact-enrichment.md)
+- [For Admins](https://hc.starbridge.ai/university/for-admins.md)
+- [For Consumers](https://hc.starbridge.ai/university/for-consumers.md)
+- [Welcome to Starbridge University](https://hc.starbridge.ai/university/introduction.md): Everything you need to onboard onto Starbridge, explore GTM use cases, and dive deeper into key features.
+- [RFP Finder and Writer](https://hc.starbridge.ai/university/rfp-writer-and-finder.md)
+- [Starbridge 101](https://hc.starbridge.ai/university/starbridge-101.md)
+- [Market & Competitive Intelligence](https://hc.starbridge.ai/university/use-case-market-and-competitive-intelligence.md)
+- [Signals & Outbound](https://hc.starbridge.ai/university/use-case-signals-and-outbound.md)
+- [Vendor presence](https://hc.starbridge.ai/vendor-presence.md): See which buyers already work with a given vendor (competitor, complementary, or otherwise), the contract details behind that relationship, and the evidence Starbridge used to find it.
+- [How Bridges work](https://hc.starbridge.ai/what-is-a-bridge.md): A high-level overview of what a Bridge is, how AI Search Agents power it, and the ways it turns public sector data into actionable GTM workflows.
+- [What is Starbridge?](https://hc.starbridge.ai/what-is-starbridge.md)
+
+## OpenAPI Specs
+
+- [documentation](https://core-http2-157602306522.us-central1.run.app/external/public/swagger/documentation.yaml)
+- [openapi](https://hc.starbridge.ai/api-reference/openapi.json)

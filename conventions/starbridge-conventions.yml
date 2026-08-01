@@ -1,0 +1,51 @@
+generated: '2026-07-21'
+method: searched
+source: >-
+  https://hc.starbridge.ai/api-reference/ (rest overview, webhooks) +
+  openapi/starbridge-openapi.json
+# Cross-cutting runtime semantics for the Starbridge External Public API.
+auth:
+  style: HTTP Bearer token
+  header: 'Authorization: Bearer <api_key>'
+  issuance: Created in the dashboard at https://dashboard.starbridge.ai/settings/api-keys
+  scheme_name: apiKey
+  see: authentication/starbridge-authentication.yml
+base_url: https://dashboard.starbridge.ai
+path_prefix: /api/external
+pagination:
+  style: page-number
+  params:
+  - pageNumber
+  - pageSize
+  applies_to:
+  - listBridgeRows
+  - listRecentBuyerSignals
+  - listTopRecentSignals
+sorting:
+  params:
+  - sort
+  - sortField
+  - sortDirection
+idempotency:
+  request_level: >-
+    Read operations (GET) are safe/idempotent; per-operation x-mcp-annotations in the
+    OpenAPI declare readOnlyHint / idempotentHint / destructiveHint for MCP callers.
+  webhook_delivery:
+    key_header: webhook-id
+    guidance: >-
+      Use the webhook-id header as an idempotency key — store recently processed
+      webhook IDs and skip duplicates to avoid double-processing the same event.
+    see: asyncapi/starbridge-webhooks.yml
+error_envelope:
+  format: plain HTTP status codes (no RFC 9457 problem+json)
+  see: errors/starbridge-problem-types.yml
+versioning:
+  current: '1.0'
+  stability: pre-1.0, subject to change
+  see: lifecycle/starbridge-lifecycle.yml
+rate_limiting:
+  signaled: true
+  mechanism: HTTP 429 "Rate limit exceeded" on all operations
+webhooks:
+  signing: Ed25519 (Standard Webhooks spec), signature in webhook-signature header (v1a, prefix)
+  replay_protection: reject webhook-timestamp older than 5 minutes

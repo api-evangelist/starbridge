@@ -1,0 +1,62 @@
+generated: '2026-07-21'
+method: searched
+source: https://hc.starbridge.ai/research/starbridge-mcp.md
+name: Starbridge MCP
+status: official
+description: >-
+  Official hosted, remote Model Context Protocol server that brings a Starbridge
+  organization's bridges, feed, signals, and buyer research into any MCP client.
+  Installs as a Claude plugin or as a custom OAuth connector.
+transport: http
+url: https://dashboard.starbridge.ai/mcp/oauth
+auth:
+  type: oauth2
+  flow: authorization_code
+  authorization_server: https://auth.starbridge.ai
+  protected_resource: https://dashboard.starbridge.ai/.well-known/oauth-protected-resource
+  scopes:
+  - mcp:tools
+install:
+  claude_plugin_marketplace: starbridge-ai/plugin.mcp
+  plugin_repo: https://github.com/starbridge-ai/plugin.mcp
+  connector_url: https://dashboard.starbridge.ai/mcp/oauth
+docs:
+- https://hc.starbridge.ai/research/starbridge-mcp.md
+- https://hc.starbridge.ai/research/starbridge-mcp-use-cases.md
+- https://hc.starbridge.ai/release-notes/june-2026-starbridge-mcp.md
+# Tools correspond to the OpenAPI operations tagged "External MCP".
+# Each operation in openapi/starbridge-openapi.json carries x-mcp-annotations.
+tools:
+- name: searchBuyers
+  operationId: searchBuyers
+  description: Search buyer institutions by name; returns candidate buyers with ids.
+- name: getBuyerAttribute
+  operationId: getBuyerAttribute
+  description: Retrieve a single structured attribute about a buyer by key.
+- name: getBuyerAttributesBulk
+  operationId: getBuyerAttributesBulk
+  description: Retrieve multiple buyer attributes in one call.
+- name: getBuyerSummary
+  operationId: getBuyerSummary
+  description: Retrieve an AI-synthesized buyer activity summary and score.
+- name: listBridges
+  operationId: listBridges
+  description: List the organization's saved Bridges (monitoring definitions).
+- name: getBridge
+  operationId: getBridge
+  description: Fetch the configuration of a single Bridge by id.
+- name: listBridgeRows
+  operationId: listBridgeRows
+  description: List the concrete match rows of a Bridge with filtering/sorting/search.
+- name: setBridgeRowStatus
+  operationId: setBridgeRowStatus
+  description: Set the user-facing status for a single Bridge row.
+- name: getBridgeColumnMetadata
+  operationId: getBridgeColumnMetadata
+  description: Inspect the per-type settings of a Bridge's columns.
+- name: listRecentBuyerSignals
+  operationId: listRecentBuyerSignals
+  description: Return the most recent signals (bridge rows) for a given buyer.
+- name: listTopRecentSignals
+  operationId: listTopRecentSignals
+  description: Return the top recent signals across the whole organization.

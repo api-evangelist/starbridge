@@ -1,0 +1,26 @@
+generated: '2026-07-21'
+method: searched
+source: https://hc.starbridge.ai/api-reference/rest/overview + https://starbridge.statuspage.io
+versioning:
+  scheme: single version
+  current: '1.0'
+  stability: >-
+    Pre-1.0 / subject to change. Provider note: "Not all parts of the API spec are
+    fully final. While the API surface should mostly be stable, it is subject to
+    change before finalization of a 1.0 spec."
+  in_url: false
+deprecation:
+  policy_published: false
+  sunset_header: false
+  notes: No formal deprecation/Sunset (RFC 8594) policy is published for the external API.
+status_page:
+  url: https://starbridge.statuspage.io
+  provider: Atlassian Statuspage
+  status: 200
+release_notes: https://hc.starbridge.ai/release-notes
+sla:
+  published: false
+support:
+  email: support@starbridge.ai
+  help_center: https://hc.starbridge.ai
+deprecated_operations: []

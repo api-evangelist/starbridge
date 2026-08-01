@@ -1,0 +1,30 @@
+generated: '2026-07-21'
+method: derived
+source: openapi/starbridge-openapi.json (4xx/5xx responses)
+format: plain
+# The Starbridge External API declares standard HTTP status responses. No
+# application/problem+json (RFC 9457) media type is present in the spec; error
+# bodies are not schema-described, so these entries are derived from the status
+# codes and their spec descriptions.
+problem_types:
+- status: 400
+  title: Invalid request body or format
+  remediation: Check required query/body parameters and content type against the OpenAPI spec.
+- status: 401
+  title: Missing or invalid authentication
+  remediation: Supply a valid Bearer API key in the Authorization header (Settings -> API Keys).
+- status: 403
+  title: Unauthorized to access resource or perform action
+  remediation: The authenticated key lacks access to the requested organization resource.
+- status: 404
+  title: Resource not found
+  remediation: Verify the buyerId / bridgeId / rowId path parameters reference existing objects.
+- status: 415
+  title: Unsupported media type or request body format
+  remediation: Send application/json request bodies for PUT/PATCH operations.
+- status: 429
+  title: Rate limit exceeded
+  remediation: Back off and retry; reduce request rate.
+- status: 500
+  title: Internal server error
+  remediation: Transient server error; retry with backoff and contact support@starbridge.ai if persistent.

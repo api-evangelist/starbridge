@@ -1,0 +1,36 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enrichment overlay for the Starbridge External Public API
+  version: 1.0.0
+# generated: '2026-07-21'
+# method: generated
+# source: openapi/starbridge-openapi.json
+# Non-destructive OpenAPI Overlay 1.0.0. Apply over openapi/starbridge-openapi.json.
+# Captures API Evangelist enrichment metadata; never mutates the upstream spec on disk.
+extends: ../openapi/starbridge-openapi.json
+actions:
+- target: $.info
+  update:
+    x-api-evangelist:
+      slug: starbridge
+      profile: https://raw.githubusercontent.com/api-evangelist/starbridge/refs/heads/main/apis.yml
+      docs: https://hc.starbridge.ai/api-reference/rest/overview
+      auth: HTTP Bearer API key issued from https://dashboard.starbridge.ai/settings/api-keys
+      pagination: page-based via pageNumber/pageSize (list operations)
+      webhooks: Standard Webhooks, Ed25519-signed (see asyncapi/starbridge-webhooks.yml)
+      mcp: https://dashboard.starbridge.ai/mcp/oauth
+- target: $.info
+  update:
+    x-maturity: >-
+      Pre-1.0. Per the provider: "Not all parts of the API spec are fully final.
+      While the API surface should mostly be stable, it is subject to change before
+      finalization of a 1.0 spec."
+- target: $
+  update:
+    x-tag-descriptions:
+      Bridges: Saved monitoring definitions and their concrete match rows.
+      Buyer: Public-sector and education institutions Starbridge tracks.
+      Columns: Per-column configuration/metadata on a Bridge.
+      Signal: Recent buyer signals (bridge rows) across the organization.
+      External MCP: Operations also exposed as tools via the Starbridge MCP server.
+      External API: Operations exposed over the external REST API.

@@ -1,0 +1,66 @@
+generated: '2026-07-21'
+method: derived
+source: openapi/starbridge-openapi.json (components.schemas + id-reference fields)
+# Entity-relationship graph derived from OpenAPI schema $refs and id fields.
+entities:
+- name: Buyer
+  schema: BuyerBrief
+  id: id
+  domain: >-
+    Public-sector / education institution — city, county, school district,
+    higher-ed institution, police/fire department, federal agency.
+  key_fields: [id, name, type, countryCode, stateCode, url, tags, linkedinSlug]
+- name: BuyerSummary
+  schema: BuyerSummaryResponse
+  id: buyerId
+  key_fields: [buyerId, summary, score, scoreReasoning, generatedAt, needsRegeneration]
+- name: BuyerAttribute
+  schema: BuyerAttributeResponse
+  key_fields: [buyerData]
+- name: Bridge
+  schema: BridgeResponse
+  id: bridgeId
+  domain: A saved monitoring definition that watches for one type of buyer activity.
+  key_fields: [bridgeId, name, userId, filterType, status, updatedAt, rowCount]
+- name: BridgeColumn
+  schema: BridgeColumnResponse
+  id: columnId
+  key_fields: [columnId, bridgeId, name, prompt, type, fieldFormat, index, key]
+- name: BridgeRow
+  schema: BridgeRowResponse
+  id: rowId
+  domain: A concrete match produced by a Bridge.
+  key_fields: [rowId, name, bridgeId, createdAt, updatedAt, status, buyerId, organizerId, entity, columns]
+- name: Signal
+  schema: BridgeSignalResponse
+  domain: A pairing of a Bridge (monitoring definition) with a Row (concrete match).
+  key_fields: [bridge, row]
+relationships:
+- from: Bridge
+  type: has_many
+  to: BridgeRow
+  via: bridgeId
+- from: Bridge
+  type: has_many
+  to: BridgeColumn
+  via: bridgeId
+- from: BridgeRow
+  type: belongs_to
+  to: Bridge
+  via: bridgeId
+- from: BridgeRow
+  type: has_one
+  to: Buyer
+  via: buyerId
+- from: BuyerSummary
+  type: belongs_to
+  to: Buyer
+  via: buyerId
+- from: Signal
+  type: has_one
+  to: Bridge
+  via: bridge
+- from: Signal
+  type: has_one
+  to: BridgeRow
+  via: row

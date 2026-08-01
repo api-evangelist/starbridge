@@ -1,0 +1,31 @@
+generated: '2026-07-21'
+method: searched
+source: https://hc.starbridge.ai/release-notes
+scheme: dated release notes (month-titled entries)
+current_version: '1.0'
+url: https://hc.starbridge.ai/release-notes
+# Recent window of published release-notes entries (most recent first).
+entries:
+- date: '2026-07'
+  title: 'One-click Contact Sync'
+  highlights: One sync configuration, shared across your entire team.
+  breaking: false
+- date: '2026-06'
+  title: 'Introducing the Starbridge MCP'
+  highlights: Hosted OAuth MCP server exposing bridges, feed, signals, and buyer research.
+  breaking: false
+- date: '2026-05'
+  title: 'Chrome Extension and Outbound Email Upgrades; Account Matching; Search Agents and Bridge Folders'
+  breaking: false
+- date: '2026-04'
+  title: 'CRM-Synced Buyer Lists; Usage Dashboard'
+  breaking: false
+- date: '2026-03'
+  title: 'Buyer Summary; Sync Territories from your CRM; Champion Tracking'
+  breaking: false
+- date: '2026-02'
+  title: 'Use-Case Bridge Templates, Personalized Outbound Email, Ask Starbridge in Feed; Conferences and Job Changes'
+  breaking: false
+- date: '2026-01'
+  title: 'Feed Customization and Ask Starbridge Chat'
+  breaking: false

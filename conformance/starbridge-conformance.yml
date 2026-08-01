@@ -1,0 +1,45 @@
+generated: '2026-07-21'
+method: derived
+source: openapi/starbridge-openapi.json + Starbridge API/webhook docs
+# Cross-cutting standards assertions. conforms=true only where evidenced.
+standards:
+- id: oauth2
+  conforms: true
+  evidence: >-
+    MCP access uses OAuth 2.0 (authorization_code) via auth.starbridge.ai; advertised at
+    /.well-known/oauth-authorization-server and /.well-known/oauth-protected-resource.
+    Note: the REST API itself uses static HTTP Bearer API keys, not OAuth.
+- id: oidc
+  conforms: true
+  evidence: >-
+    Authorization server metadata advertises OpenID Connect scopes/response types
+    (openid, profile, jwks_uri, userinfo_endpoint).
+- id: standard-webhooks
+  conforms: true
+  evidence: >-
+    Webhooks implement the Standard Webhooks spec with Ed25519 signatures and
+    webhook-id / webhook-timestamp / webhook-signature headers.
+- id: rfc9457
+  conforms: false
+  evidence: No application/problem+json responses declared; plain HTTP status codes only.
+- id: pagination
+  conforms: true
+  evidence: Page-based pagination (pageNumber/pageSize) on list operations.
+- id: idempotency
+  conforms: true
+  evidence: Webhook deliveries carry a webhook-id idempotency key; GET operations are idempotent.
+- id: fhir
+  conforms: false
+  evidence: Not a healthcare data API.
+- id: fapi
+  conforms: false
+  evidence: No FAPI profile claimed.
+- id: scim
+  conforms: false
+  evidence: No SCIM user-provisioning endpoints.
+- id: odata
+  conforms: false
+  evidence: Not an OData service.
+- id: json_api
+  conforms: false
+  evidence: Responses are plain JSON, not JSON:API media type.

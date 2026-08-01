@@ -1,0 +1,48 @@
+generated: '2026-07-21'
+method: searched
+source: >-
+  https://hc.starbridge.ai/api-reference/webhooks/overview,
+  https://hc.starbridge.ai/api-reference/webhooks/payloads,
+  https://hc.starbridge.ai/api-reference/webhooks/verification
+# Webhook catalog. Starbridge documents webhooks but does not publish an AsyncAPI
+# document, so this captures the catalog (type: Webhooks). No AsyncAPI fabricated.
+kind: Webhooks
+delivery:
+  transport: HTTP POST
+  configuration: >-
+    Add a "Webhook column" to a Bridge (Configure Integration -> Trigger Webhook)
+    and set the destination Webhook URL and trigger mode.
+  trigger_modes:
+  - Row Addition
+  - Row Addition and Each Update
+  content_type: application/json
+signing:
+  spec: Standard Webhooks (https://github.com/standard-webhooks/standard-webhooks)
+  algorithm: Ed25519
+  signed_message: '{webhook-id}.{webhook-timestamp}.{raw_body}'
+  signature_header: webhook-signature
+  signature_prefix: 'v1a,'
+  public_key_prefix: 'whpk_'
+  replay_protection: reject webhook-timestamp older than 5 minutes
+  idempotency_key: webhook-id
+headers:
+- name: webhook-id
+  description: Unique identifier for this webhook delivery (also the idempotency key).
+- name: webhook-timestamp
+  description: Unix timestamp (seconds) when the request was sent.
+- name: webhook-signature
+  description: Ed25519 signature, prefixed with 'v1a,'.
+events:
+- type: bridge.row.created
+  description: A new row was added to the bridge.
+- type: bridge.row.updated
+  description: An existing bridge row was updated.
+payload_example:
+  type: bridge.row.created
+  timestamp: '2026-04-09T15:57:42.586897Z'
+  data:
+    rowId: 3c39eb0d-61f5-4cd4-9b77-93b6daeb59b3
+    name: City of Fort Worth
+    bridgeId: 201377ef-0ae3-4103-988c-ed6ebfac03a6
+    updatedAt: '2026-04-09T15:57:11.197818Z'
+    status: Processed

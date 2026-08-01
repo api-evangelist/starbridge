@@ -1,0 +1,24 @@
+{
+  "provider": "starbridge",
+  "sources": [
+    "starbridge-bridges-api-openapi.yml",
+    "starbridge-buyer-api-openapi.yml",
+    "starbridge-columns-api-openapi.yml",
+    "starbridge-external-api-api-openapi.yml",
+    "starbridge-external-mcp-api-openapi.yml",
+    "starbridge-signal-api-openapi.yml"
+  ],
+  "outputs": [
+    "starbridge-bridges-api-openapi.yml",
+    "starbridge-buyer-api-openapi.yml",
+    "starbridge-columns-api-openapi.yml",
+    "starbridge-external-api-api-openapi.yml",
+    "starbridge-external-mcp-api-openapi.yml",
+    "starbridge-signal-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
