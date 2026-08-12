@@ -136,7 +136,7 @@ apis:
     url: data-model/starbridge-data-model.yml
 common:
 - type: OpenAPI
-  url: openapi/starbridge-openapi.json
+  url: openapi/_original/starbridge-openapi.json
 - type: MCPServer
   url: mcp/starbridge-mcp.yml
 - type: AgentSkill
