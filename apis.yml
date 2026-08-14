@@ -18,21 +18,27 @@ x-backed-by:
 x-tier: provider
 x-tier-reason: public-rest-api-mcp-webhooks
 accessModel:
-  pricing: unknown
-  onboarding: self-serve
+  pricing: contact-sales
+  onboarding: demo-gated
   trial: false
   try_now: false
   public: false
-  label: Self-serve signup
-  confidence: medium
+  label: Book a demo / contact sales
+  confidence: high
   source:
+  - plans/starbridge-plans-pricing.yml
   - authentication
-  generated: '2026-07-22'
-  method: derived
+  note: >-
+    Corrected 2026-08-14. starbridge.ai/pricing and /plans both 404 and the marketing
+    sitemap carries no pricing page; the only commercial path is
+    https://starbridge.ai/book-demo. auth.starbridge.ai/login signs in provisioned
+    accounts — there is no public self-serve signup.
+  generated: '2026-08-14'
+  method: searched
 image: https://cdn.prod.website-files.com/68a834f29776727eae1bc0f6/694fa319b9cd6a197c7be433_1_Starbridge%20Homepage%20OpenGraph.webp
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-21'
+modified: '2026-08-14'
 tags:
 - Company
 - Ai
@@ -139,8 +145,24 @@ common:
   url: openapi/_original/starbridge-openapi.json
 - type: MCPServer
   url: mcp/starbridge-mcp.yml
+- type: ToolCrosswalk
+  url: mcp/starbridge-tool-crosswalk.yml
+- type: AgentCard
+  url: a2a/starbridge-a2a.yml
 - type: AgentSkill
   url: skills/_index.yml
+- type: Packages
+  url: packages/starbridge-packages.yml
+- type: OAuthScopes
+  url: scopes/starbridge-scopes.yml
+- type: Plans
+  url: plans/starbridge-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/starbridge-rate-limits.yml
+- type: TrustCenter
+  url: security/starbridge-trust-center.yml
+- type: Compliance
+  url: security/starbridge-trust-center.yml
 - type: LLMsTxt
   url: llms/starbridge-llms.txt
 - type: Webhooks
@@ -153,6 +175,10 @@ common:
   url: conventions/starbridge-conventions.yml
 - type: ChangeLog
   url: changelog/starbridge-changelog.yml
+- type: ChangeLog
+  url: https://hc.starbridge.ai/release-notes
+- type: StatusPage
+  url: https://starbridge.statuspage.io
 - type: Lifecycle
   url: lifecycle/starbridge-lifecycle.yml
 - type: StatusPage
@@ -190,7 +216,7 @@ common:
 - type: Website
   url: https://starbridge.ai
 x-enrichment:
-  date: '2026-07-21'
+  date: '2026-08-14'
   status: enriched
-  artifacts_added: 15
+  artifacts_added: 9
   pass: local-v1
