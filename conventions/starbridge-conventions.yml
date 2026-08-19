@@ -46,6 +46,19 @@ versioning:
 rate_limiting:
   signaled: true
   mechanism: HTTP 429 "Rate limit exceeded" on all operations
+  headers: none documented (no RateLimit-*, X-RateLimit-* or Retry-After)
+  published_limits: false
+  see: rate-limits/starbridge-rate-limits.yml
+search:
+  style: free-text query parameter
+  param: query
+  applies_to:
+  - listBridgeRows
+  - listRecentBuyerSignals
+  - listTopRecentSignals
+  note: >-
+    `query` was added to the two signal operations after the 2026-07-21 harvest with
+    no version bump; see changelog/starbridge-changelog.yml spec_drift.
 webhooks:
   signing: Ed25519 (Standard Webhooks spec), signature in webhook-signature header (v1a, prefix)
   replay_protection: reject webhook-timestamp older than 5 minutes

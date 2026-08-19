@@ -1,0 +1,65 @@
+generated: '2026-08-14'
+method: probed
+source: >-
+  https://dashboard.starbridge.ai/.well-known/oauth-protected-resource (200) +
+  https://dashboard.starbridge.ai/.well-known/oauth-authorization-server (200)
+docs: https://hc.starbridge.ai/research/starbridge-mcp
+# OAuth scopes are NOT declared in the OpenAPI: the REST API is protected by a
+# static HTTP Bearer API key with no securityScheme of type oauth2, so
+# derive-oauth-scopes.py finds zero. The scopes below are read verbatim from the
+# two RFC 8414 / RFC 9728 metadata documents Starbridge serves for its MCP surface,
+# saved in well-known/.
+applies_to:
+  surface: MCP (hosted OAuth server)
+  resource: https://dashboard.starbridge.ai/mcp/oauth
+  authorization_server: https://auth.starbridge.ai
+  rest_api: >-
+    Not scoped. The External Public API uses a single opaque Bearer API key issued at
+    https://dashboard.starbridge.ai/settings/api-keys; it carries no scope parameter.
+scope_count: 1
+scopes:
+- name: mcp:tools
+  description: >-
+    Grants an MCP client the ability to list and call the Starbridge MCP tools for the
+    authenticated user's organization. This is the only resource scope Starbridge
+    advertises; data access is further constrained by the user's own territory and
+    permission assignments in the platform.
+  source: /.well-known/oauth-protected-resource (scopes_supported)
+  file: well-known/starbridge-oauth-protected-resource.json
+identity_scopes:
+  note: >-
+    The authorization server is an Auth0 tenant and advertises the standard OIDC
+    identity scopes below. They authenticate the user; they do not grant Starbridge
+    data access.
+  source: /.well-known/oauth-authorization-server (scopes_supported)
+  file: well-known/starbridge-oauth-authorization-server.json
+  scopes:
+  - openid
+  - profile
+  - offline_access
+  - name
+  - given_name
+  - family_name
+  - nickname
+  - email
+  - email_verified
+  - picture
+  - created_at
+  - identities
+  - phone
+  - address
+flows:
+  authorization_code: true
+  pkce: true
+  pkce_methods: [S256, plain]
+  dynamic_client_registration: true
+  registration_endpoint: https://auth.starbridge.ai/oidc/register
+  refresh_token: true
+  device_code: true
+  bearer_methods_supported: [header]
+notes: >-
+  Dynamic client registration plus PKCE means an MCP client can complete the flow
+  with no pre-provisioned credentials, which is why the plugin and custom-connector
+  install paths need only a URL. Scope granularity is coarse — a single mcp:tools
+  scope covers all eleven tools, including the one write tool (setBridgeRowStatus),
+  so a read-only MCP grant is not expressible.

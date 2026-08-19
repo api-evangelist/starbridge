@@ -1,8 +1,45 @@
-generated: '2026-07-21'
-method: derived
-source: openapi/starbridge-openapi.json + Starbridge API/webhook docs
+generated: '2026-08-14'
+method: searched
+source: >-
+  openapi/_original/starbridge-openapi.json + Starbridge API/webhook docs +
+  https://trust.starbridge.ai/ (200) +
+  https://starbridge.ai/blog/starbridge-is-soc-2-type-ii-certified +
+  https://dashboard.starbridge.ai/.well-known/oauth-authorization-server (200)
 # Cross-cutting standards assertions. conforms=true only where evidenced.
 standards:
+- id: soc2
+  conforms: true
+  evidence: >-
+    SOC 2 Type II, covering security, availability and confidentiality, announced by
+    Starbridge on 2026-01-13 and fronted by a Vanta trust center at
+    https://trust.starbridge.ai/ (HTTP 200). Auditor and report period are not
+    published; the report is request-gated. See security/starbridge-trust-center.yml.
+- id: a2a
+  conforms: true
+  evidence: >-
+    A2A AgentCard served at https://hc.starbridge.ai/.well-known/agent-card.json
+    (HTTP 200). Passes every A2A 1.0.0 hard check (capabilities object,
+    protocolVersion present, skills array) but declares protocolVersion 0.3 and omits
+    the required top-level description. Graded conformant with deviations in
+    a2a/starbridge-a2a.yml.
+- id: mcp
+  conforms: true
+  evidence: >-
+    Hosted remote MCP server at https://dashboard.starbridge.ai/mcp/oauth with OAuth
+    2.1-style discovery — RFC 9728 protected-resource metadata and RFC 8414
+    authorization-server metadata both served at /.well-known/, dynamic client
+    registration and PKCE (S256) supported. Live tools/list is auth-gated (401).
+- id: rfc8414
+  conforms: true
+  evidence: /.well-known/oauth-authorization-server returns a complete OAuth 2.0 authorization server metadata document.
+- id: rfc9728
+  conforms: true
+  evidence: >-
+    /.well-known/oauth-protected-resource returns protected-resource metadata naming
+    the authorization server and the mcp:tools scope.
+- id: rfc9116
+  conforms: false
+  evidence: No security.txt on starbridge.ai, dashboard.starbridge.ai or hc.starbridge.ai (all 404).
 - id: oauth2
   conforms: true
   evidence: >-

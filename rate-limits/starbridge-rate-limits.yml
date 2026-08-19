@@ -1,0 +1,51 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  https://hc.starbridge.ai/api-reference/rest/overview,
+  Starbridge Help Center docs MCP search for "rate limit" (2026-08-14),
+  openapi/_original/starbridge-openapi.json
+# Starbridge enforces rate limiting but publishes no numbers and no headers.
+limit_count: 0
+published_limits: false
+enforcement:
+  observed: declared-in-spec
+  status_code: 429
+  response_description: Rate limit exceeded
+  applies_to: >-
+    All 11 operations in the External Public API declare a 429 response; none declares
+    a schema or media type for it.
+  source: openapi/_original/starbridge-openapi.json
+headers:
+  documented: false
+  ratelimit_standard: null
+  x_ratelimit: null
+  retry_after: null
+  note: >-
+    No RateLimit-*, X-RateLimit-* or Retry-After header is documented anywhere in the
+    API reference, and the 429 response in the OpenAPI declares no headers block. A
+    client cannot discover its remaining budget or a correct backoff interval from the
+    contract — it can only observe a 429 and guess. Header values were not observed
+    live because every operation requires an authenticated Bearer key.
+searches_run:
+- query: rate limit
+  surface: https://starbridge.main-kill-isr.mintlify.me/mcp (search_starbridge_help_center)
+  status: 200
+  result: >-
+    No rate-limiting page returned. Top hits were operation reference pages
+    (list-top-recent-signals, etc.) matched on the word "limit" as a pagination
+    parameter, not a rate limit.
+- url: https://hc.starbridge.ai/api-reference/rest/overview
+  status: 200
+  result: >-
+    The overview covers scope and stability only ("subject to change before
+    finalization of a 1.0 spec"). No limits, no quotas, no throttling policy.
+related_quota:
+  model: credits
+  note: >-
+    Volume on certain data types is governed by the organization's credit balance
+    rather than a request-rate limit; see plans/starbridge-plans-pricing.yml. Credit
+    exhaustion is a commercial limit, not a 429.
+notes: >-
+  An honest zero. The 429 is real and declared, but no published limit, window,
+  burst or runtime header exists — this is the single clearest documentation gap on
+  the Starbridge API for an agent or an unattended integration.

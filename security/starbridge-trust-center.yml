@@ -1,0 +1,55 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  https://trust.starbridge.ai/ (HTTP 200) +
+  https://starbridge.ai/blog/starbridge-is-soc-2-type-ii-certified
+# Trust center. probe-security-programs.py did not find this surface (it reported
+# trust=none) because trust.starbridge.ai is not linked from the paths it walks and
+# the page is a JS-rendered Vanta app; it was found by direct subdomain probe.
+trust_center:
+  url: https://trust.starbridge.ai/
+  http_status: 200
+  platform: Vanta
+  platform_evidence: >-
+    Response HTML is the Vanta trust-report bundle — canonical
+    https://trust.starbridge.ai, assets under assets.vanta.com/static/vite/,
+    og:image https://app.vanta.com/doc?s=..., title "Starbridge Trust Center".
+  machine_readable: false
+  machine_readable_note: >-
+    The page renders entirely client-side from a signed Vanta API response; there is
+    no unauthenticated JSON endpoint, so the live control/certification list could not
+    be read. Certifications below are recorded ONLY from Starbridge's own published
+    announcement, not from the trust center itself.
+  checked: '2026-08-14'
+certifications:
+- name: SOC 2 Type II
+  status: certified
+  scope: security, availability, confidentiality
+  announced: '2026-01-13'
+  auditor: not published
+  report_period: not published
+  evidence: https://starbridge.ai/blog/starbridge-is-soc-2-type-ii-certified
+  method: searched
+  note: >-
+    Starbridge's own blog announces SOC 2 Type II certification, describing
+    "strong safeguards around security, availability, and confidentiality" verified
+    over an extended audit period. No auditor, report date or period is named
+    publicly, and the report itself is not offered for download without a request.
+frameworks_not_claimed:
+- ISO 27001
+- HIPAA
+- FedRAMP
+- PCI DSS
+- StateRAMP
+- TX-RAMP
+- GDPR (no dedicated public page found)
+- FERPA (no dedicated public page found)
+notes: >-
+  Starbridge sells into K-12, higher education and government, where StateRAMP /
+  TX-RAMP / FERPA posture is routinely asked for in procurement. None of those is
+  publicly claimed. There is no public link from starbridge.ai to
+  trust.starbridge.ai that this pass could find — /security, /trust and
+  /trust-center all return 404 — so the trust center is effectively unlisted.
+report_access:
+  self_serve_download: false
+  mechanism: Request through the Vanta trust center (NDA/approval flow) or via support@starbridge.ai

@@ -1,11 +1,29 @@
-generated: '2026-07-21'
+generated: '2026-08-14'
 method: searched
-source: https://hc.starbridge.ai/release-notes
+source: https://hc.starbridge.ai/release-notes (index re-read via https://hc.starbridge.ai/llms.txt)
 scheme: dated release notes (month-titled entries)
 current_version: '1.0'
 url: https://hc.starbridge.ai/release-notes
+# The release notes are PRODUCT notes; there is no separate API changelog and no
+# versioned diff of the OpenAPI. Spec changes ship silently — see spec_drift below.
+api_changelog_published: false
+spec_drift:
+  observed: '2026-08-14'
+  method: probed
+  source: https://dashboard.starbridge.ai/swagger/documentation.yaml
+  finding: >-
+    The live OpenAPI has changed since the 2026-07-21 harvest with no release note and
+    no version bump — info.version is still "1.0". A free-text `query` parameter was
+    added to listRecentBuyerSignals and listTopRecentSignals, and the BuyerField enum
+    behind getBuyerAttribute / getBuyerAttributesBulk was expanded. Same 11 paths, same
+    11 operationIds, same 42 component schemas. Additive only; nothing removed.
+  breaking: false
 # Recent window of published release-notes entries (most recent first).
 entries:
+- date: '2026-07'
+  title: 'Account Context in My Feed'
+  highlights: CRM account context surfaced alongside signals in My Feed.
+  breaking: false
 - date: '2026-07'
   title: 'One-click Contact Sync'
   highlights: One sync configuration, shared across your entire team.

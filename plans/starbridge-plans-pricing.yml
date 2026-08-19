@@ -1,0 +1,71 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  https://starbridge.ai/sitemap/sitemap-marketing.xml,
+  https://starbridge.ai/pricing (404), https://starbridge.ai/plans (404),
+  https://hc.starbridge.ai/builders/how-do-credits-work,
+  https://hc.starbridge.ai/builders/sequences-beta
+# Starbridge publishes NO pricing. This artifact records that absence with the
+# probes that establish it, plus the quota model the help center does describe.
+plan_count: 0
+public_pricing: false
+pricing_page: null
+probes:
+- url: https://starbridge.ai/pricing
+  status: 404
+- url: https://starbridge.ai/plans
+  status: 404
+- url: https://starbridge.ai/sitemap/sitemap-marketing.xml
+  status: 200
+  finding: >-
+    The complete marketing sitemap contains no pricing or plans URL. The commercial
+    call to action across the site is https://starbridge.ai/book-demo and
+    https://starbridge.ai/lp/request-a-demo.
+sales_motion: demo-gated / contact-sales only
+signup:
+  self_serve: false
+  login: https://auth.starbridge.ai/login
+  note: >-
+    auth.starbridge.ai/login is a sign-in for provisioned accounts; there is no
+    public self-serve signup or free tier.
+metering:
+  model: credits
+  docs: https://hc.starbridge.ai/builders/how-do-credits-work
+  method: searched
+  description: >-
+    Credits meter consumption of certain web-sourced data. Starbridge states it
+    offers "three different credit packages"; the package names, credit counts and
+    prices are not published — a customer sees their package in the product UI or
+    asks their CSM.
+  package_count: 3
+  package_names_published: false
+  prices_published: false
+  free_of_credits:
+  - RFPs
+  - Meeting Minutes
+  - Strategic Plans
+  - Base Purchases & Contract Expirations
+  - AI analysis
+  credit_consuming:
+  - Job Changes bridges
+  - Contacts bridges
+  - Custom Web Signals bridges
+  - FOIA requests (sold as a separate credit block)
+add_ons:
+- name: Sequences
+  status: beta / early access
+  docs: https://hc.starbridge.ai/builders/sequences-beta
+  pricing: >-
+    "At general availability, Sequences will be a paid add-on module with usage tiers
+    based on concurrently enrolled contacts." Early-access partners get complimentary
+    access through GA + 60 days with a limit of 25,000 concurrently enrolled contacts.
+    Tier prices are not published.
+api_pricing:
+  published: false
+  note: >-
+    No separate price, quota or metering is documented for the External Public API or
+    the MCP server. API access appears to be included with a platform subscription and
+    to draw on the same organization credit balance for credit-consuming data types.
+notes: >-
+  An honest zero: Starbridge is an enterprise, demo-gated seller. A buyer cannot
+  determine cost, entitlement or API quota from anything public.

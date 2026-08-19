@@ -1,0 +1,508 @@
+{
+  "item": [
+    {
+      "id": "c7d2bc75-0d25-4e7a-acc5-b1141e5d5bbc",
+      "name": "Columns",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "09fde89d-6e30-4e98-86c3-4ad14046e654",
+          "name": "List existing columns with their per-type settings",
+          "request": {
+            "name": "List existing columns with their per-type settings",
+            "description": {
+              "content": "Use to inspect which columns already exist on this bridge and how they are configured.\nReturns each column's per-type settings not carried by `getBridge` (link settings,\nweb-agent model, vendor presence, email generation, webhook URL, cross-bridge cell mirror) plus\n`additionalFields` synthetic refs (e.g. `{columnId$basis:firstName}`) usable in\nprompts or as `referenceFieldPath` on `createReferenceColumn`. Cross-reference entries\nto the bridge's columns from `getBridge` by `columnId` for the base column shape.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "external",
+                "bridge",
+                ":bridgeId",
+                "column",
+                "metadata"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "bridgeId",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "e8a0fe6d-b090-4b81-b17a-8e97d347d3a4",
+              "name": "Per-column metadata for existing columns",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "external",
+                    "bridge",
+                    ":bridgeId",
+                    "column",
+                    "metadata"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "bridgeId",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"columnId\": \"46efb851-2205-f075-51fb-325a4fc4973c\",\n    \"bridgeId\": \"989794c6-c697-99e5-1252-e3291e70d683\",\n    \"column\": {\n      \"columnId\": \"0e9781f5-640f-eec7-484a-fa04e1c717ad\",\n      \"bridgeId\": \"de9a5348-559f-5eb6-65b7-ff5a9d2cd05e\",\n      \"name\": \"string\",\n      \"prompt\": \"string\",\n      \"type\": \"WebAgentTemplate\",\n      \"fieldFormat\": {\n        \"baseFormat\": \"email\",\n        \"description\": \"string\",\n        \"enumerationValues\": [\n          {\n            \"value\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"label\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          },\n          {\n            \"value\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"label\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          }\n        ],\n        \"currency\": \"USD\",\n        \"listElementBaseFormat\": \"date\",\n        \"outputFields\": [\n          {\n            \"name\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"type\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"description\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          },\n          {\n            \"name\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"type\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"description\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          }\n        ]\n      },\n      \"index\": 9480,\n      \"key\": \"string\"\n    },\n    \"additionalFields\": [\n      {\n        \"key\": \"string\",\n        \"name\": \"string\",\n        \"fieldFormat\": {\n          \"baseFormat\": \"currencyUnit\",\n          \"description\": \"string\",\n          \"enumerationValues\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"currency\": \"USD\",\n          \"listElementBaseFormat\": \"json\",\n          \"outputFields\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      },\n      {\n        \"key\": \"string\",\n        \"name\": \"string\",\n        \"fieldFormat\": {\n          \"baseFormat\": \"currencyUnit\",\n          \"description\": \"string\",\n          \"enumerationValues\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"currency\": \"CAD\",\n          \"listElementBaseFormat\": \"enumeration\",\n          \"outputFields\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      }\n    ],\n    \"webAgentModel\": \"Ultra\",\n    \"linkSettings\": {\n      \"sourceBridgeId\": \"213b0fee-00e1-50ee-85fe-0ef9f08103dc\",\n      \"includedStatuses\": [\n        \"string\",\n        \"string\"\n      ],\n      \"maxAgeRelativePeriod\": \"NextSixMonths\",\n      \"filters\": {\n        \"groups\": [\n          {\n            \"terms\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          },\n          {\n            \"terms\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          }\n        ]\n      }\n    },\n    \"vendorPresenceSettings\": {\n      \"serviceProviders\": [\n        {\n          \"name\": \"string\",\n          \"serviceProviderAliases\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"productNamesOrAliases\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        },\n        {\n          \"name\": \"string\",\n          \"serviceProviderAliases\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"productNamesOrAliases\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      ],\n      \"runWebPresence\": false,\n      \"contextPrompt\": \"string\",\n      \"runContractEstimation\": true\n    },\n    \"emailGenerationSettings\": {\n      \"emailSubjectTemplate\": \"string\",\n      \"emailBodyTemplate\": \"string\",\n      \"showParentColumn\": false,\n      \"snippetDefinitions\": {\n        \"key_0\": \"string\"\n      }\n    },\n    \"webhookUrl\": \"string\",\n    \"linkToCellSettings\": {\n      \"targetBridgeId\": \"c41ac7a3-eed6-88f5-85ea-1bf0ae0f68dc\",\n      \"targetColumnId\": \"9e7718e0-4906-c9d8-6758-b67a35ebff6e\",\n      \"sourceRowIdentity\": \"string\"\n    },\n    \"multiLinkSettings\": {\n      \"sourceBridgeIds\": [\n        \"9c16c3f9-d6c3-cb98-6612-7dea1cd5c991\",\n        \"b319e691-6123-bb8e-0e70-1fd59ec67c77\"\n      ],\n      \"includedStatuses\": [\n        \"string\",\n        \"string\"\n      ],\n      \"maxAgeRelativePeriod\": \"NextSixMonths\"\n    },\n    \"webContactSettings\": {\n      \"subPrompt\": \"string\",\n      \"examples\": [\n        \"string\",\n        \"string\"\n      ],\n      \"additionalContext\": \"string\"\n    },\n    \"accountScoringMetadata\": {\n      \"scoringConfig\": {\n        \"fitColumns\": [\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        ],\n        \"signalConfigs\": {\n          \"key_0\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"key_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        \"fitInteractionPrompt\": \"string\",\n        \"signalInteractionPrompt\": \"string\"\n      },\n      \"signalBridgesByType\": {\n        \"key_0\": {\n          \"id\": \"740a34c3-2110-1c6b-57eb-c5abe7088548\",\n          \"enabled\": true\n        }\n      }\n    },\n    \"runConditions\": {\n      \"groups\": [\n        {\n          \"terms\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        },\n        {\n          \"terms\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      ]\n    }\n  },\n  {\n    \"columnId\": \"0198b1a0-0335-e985-f5a0-8f5815e94c30\",\n    \"bridgeId\": \"e2deb6ad-6872-7130-672d-292baad75b01\",\n    \"column\": {\n      \"columnId\": \"695f8015-cf7f-fd4e-a67c-e5479217b374\",\n      \"bridgeId\": \"721a8dd9-4e0c-de60-621e-8293e7e45242\",\n      \"name\": \"string\",\n      \"prompt\": \"string\",\n      \"type\": \"AccountScoring\",\n      \"fieldFormat\": {\n        \"baseFormat\": \"url\",\n        \"description\": \"string\",\n        \"enumerationValues\": [\n          {\n            \"value\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"label\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          },\n          {\n            \"value\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"label\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          }\n        ],\n        \"currency\": \"CAD\",\n        \"listElementBaseFormat\": \"obj\",\n        \"outputFields\": [\n          {\n            \"name\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"type\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"description\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          },\n          {\n            \"name\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"type\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"description\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          }\n        ]\n      },\n      \"index\": 5104,\n      \"key\": \"string\"\n    },\n    \"additionalFields\": [\n      {\n        \"key\": \"string\",\n        \"name\": \"string\",\n        \"fieldFormat\": {\n          \"baseFormat\": \"obj\",\n          \"description\": \"string\",\n          \"enumerationValues\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"currency\": \"USD\",\n          \"listElementBaseFormat\": \"currencyUnit\",\n          \"outputFields\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      },\n      {\n        \"key\": \"string\",\n        \"name\": \"string\",\n        \"fieldFormat\": {\n          \"baseFormat\": \"list\",\n          \"description\": \"string\",\n          \"enumerationValues\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"currency\": \"USD\",\n          \"listElementBaseFormat\": \"list\",\n          \"outputFields\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      }\n    ],\n    \"webAgentModel\": \"Lite\",\n    \"linkSettings\": {\n      \"sourceBridgeId\": \"9ab839cf-42b3-d259-537e-923f33dc73d6\",\n      \"includedStatuses\": [\n        \"string\",\n        \"string\"\n      ],\n      \"maxAgeRelativePeriod\": \"NextNineMonths\",\n      \"filters\": {\n        \"groups\": [\n          {\n            \"terms\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          },\n          {\n            \"terms\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          }\n        ]\n      }\n    },\n    \"vendorPresenceSettings\": {\n      \"serviceProviders\": [\n        {\n          \"name\": \"string\",\n          \"serviceProviderAliases\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"productNamesOrAliases\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        },\n        {\n          \"name\": \"string\",\n          \"serviceProviderAliases\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"productNamesOrAliases\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      ],\n      \"runWebPresence\": false,\n      \"contextPrompt\": \"string\",\n      \"runContractEstimation\": false\n    },\n    \"emailGenerationSettings\": {\n      \"emailSubjectTemplate\": \"string\",\n      \"emailBodyTemplate\": \"string\",\n      \"showParentColumn\": true,\n      \"snippetDefinitions\": {\n        \"key_0\": \"string\"\n      }\n    },\n    \"webhookUrl\": \"string\",\n    \"linkToCellSettings\": {\n      \"targetBridgeId\": \"723dd02f-4d1a-08a4-ee4d-cef8323ed695\",\n      \"targetColumnId\": \"468f239a-b972-25d4-0e88-66173471d905\",\n      \"sourceRowIdentity\": \"string\"\n    },\n    \"multiLinkSettings\": {\n      \"sourceBridgeIds\": [\n        \"9d63498e-c679-110f-2d16-39e332ef13a2\",\n        \"efc49b1e-f0c8-e513-c01f-838420842e88\"\n      ],\n      \"includedStatuses\": [\n        \"string\",\n        \"string\"\n      ],\n      \"maxAgeRelativePeriod\": \"NextThirtyDays\"\n    },\n    \"webContactSettings\": {\n      \"subPrompt\": \"string\",\n      \"examples\": [\n        \"string\",\n        \"string\"\n      ],\n      \"additionalContext\": \"string\"\n    },\n    \"accountScoringMetadata\": {\n      \"scoringConfig\": {\n        \"fitColumns\": [\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        ],\n        \"signalConfigs\": {\n          \"key_0\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"key_1\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"key_2\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        \"fitInteractionPrompt\": \"string\",\n        \"signalInteractionPrompt\": \"string\"\n      },\n      \"signalBridgesByType\": {\n        \"key_0\": {\n          \"id\": \"b2dea598-fcd6-2be5-b408-512a4a1adb5b\",\n          \"enabled\": true\n        },\n        \"key_1\": {\n          \"id\": \"9d20e53a-6cd2-e121-06c2-ede115a4ef60\",\n          \"enabled\": false\n        }\n      }\n    },\n    \"runConditions\": {\n      \"groups\": [\n        {\n          \"terms\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        },\n        {\n          \"terms\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      ]\n    }\n  }\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "526f4d45-ed85-4c1c-af86-0e1e17073a79",
+              "name": "Invalid request body or format",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "external",
+                    "bridge",
+                    ":bridgeId",
+                    "column",
+                    "metadata"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "bridgeId",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "ab0ded91-295f-437f-bb94-d8f74c36aca0",
+              "name": "Missing or invalid authentication",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "external",
+                    "bridge",
+                    ":bridgeId",
+                    "column",
+                    "metadata"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "bridgeId",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "07c749a6-b96a-4b19-a3c1-fbac0891e7eb",
+              "name": "Unauthorized to access resource or perform action",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "external",
+                    "bridge",
+                    ":bridgeId",
+                    "column",
+                    "metadata"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "bridgeId",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "3389ba26-4a00-446c-a3a4-9593ad6ab0be",
+              "name": "Resource not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "external",
+                    "bridge",
+                    ":bridgeId",
+                    "column",
+                    "metadata"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "bridgeId",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "20a14040-23c2-43cf-bbfd-32ffc79cea8c",
+              "name": "Unsupported media type or request body format",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "external",
+                    "bridge",
+                    ":bridgeId",
+                    "column",
+                    "metadata"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "bridgeId",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unsupported Media Type",
+              "code": 415,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "6317dd0d-16c3-4b0c-963f-bdac99e69583",
+              "name": "Rate limit exceeded",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "external",
+                    "bridge",
+                    ":bridgeId",
+                    "column",
+                    "metadata"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "bridgeId",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "a45e3fcc-3019-47a1-95e7-3ba6fde307a9",
+              "name": "Internal server error",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "external",
+                    "bridge",
+                    ":bridgeId",
+                    "column",
+                    "metadata"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "bridgeId",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://dashboard.starbridge.ai",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "69adbf71-a15a-4362-b1f8-3be56281abd2",
+    "name": "Starbridge External Public Bridges Columns API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "",
+      "type": "text/plain"
+    }
+  }
+}

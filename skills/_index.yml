@@ -1,6 +1,8 @@
-generated: '2026-07-21'
+generated: '2026-08-14'
 method: searched
-source: https://github.com/starbridge-ai/plugin.mcp (skills/*/SKILL.md, owner Starbridge)
+source: >-
+  https://github.com/starbridge-ai/plugin.mcp (skills/*/SKILL.md, owner Starbridge) +
+  https://hc.starbridge.ai/.well-known/agent-skills/starbridge/skill.md (HTTP 200, 2026-08-14)
 # Official Agent Skills published by Starbridge in their Claude plugin marketplace
 # (starbridge-ai/plugin.mcp). Saved verbatim; grounded in the Starbridge MCP tools
 # which map to the External API operations in openapi/starbridge-openapi.json.
@@ -43,4 +45,18 @@ skills:
 - name: bulk-request-scoping
   file: starbridge-bulk-request-scoping.md
   description: Scope broad bulk-enrichment requests to a Starbridge-shaped task before many slow tool calls.
+  operations: []
+# Second, separate publication path: the Starbridge Help Center serves a single
+# umbrella Agent Skill at a /.well-known/ URL, referenced by the A2A agent card.
+# Saved verbatim, unedited.
+- name: starbridge
+  file: starbridge-published-skill.md
+  description: >-
+    Provider-published umbrella skill covering Bridge building and configuration,
+    buyer/contact enrichment, CRM sync, and REST API access. Served at
+    https://hc.starbridge.ai/.well-known/agent-skills/starbridge/skill.md
+  method: searched
+  source: https://hc.starbridge.ai/.well-known/agent-skills/starbridge/skill.md
+  http_status: 200
+  referenced_by: a2a/starbridge-agent-card.json
   operations: []

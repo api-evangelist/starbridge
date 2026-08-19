@@ -1,6 +1,6 @@
-generated: '2026-07-21'
+generated: '2026-08-14'
 method: probed
-source: live probes of /.well-known/ on Starbridge hosts (2026-07-21)
+source: live probes of /.well-known/ on every Starbridge host (2026-07-21, re-probed 2026-08-14)
 hosts:
 - host: dashboard.starbridge.ai
   probes:
@@ -14,13 +14,61 @@ hosts:
     status: 404
   - path: /.well-known/security.txt
     status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+- host: hc.starbridge.ai
+  probes:
+  - path: /.well-known/agent-card.json
+    status: 200
+    file: ../a2a/starbridge-agent-card.json
+    note: Real A2A AgentCard. Graded in a2a/starbridge-a2a.yml.
+  - path: /.well-known/mcp.json
+    status: 200
+    note: >-
+      MCP discovery document advertising the Mintlify-hosted documentation MCP at
+      https://starbridge.main-kill-isr.mintlify.me/mcp (transport http, auth none).
+      Recorded in mcp/starbridge-mcp.yml under additional_servers.
+  - path: /.well-known/agent-skills/starbridge/skill.md
+    status: 200
+    file: ../skills/starbridge-published-skill.md
+    note: Provider-published Agent Skill, referenced by the agent card. Saved verbatim.
+  - path: /.well-known/security.txt
+    status: 404
 - host: starbridge.ai
   probes:
   - path: /.well-known/security.txt
     status: 404
+  - path: /security.txt
+    status: 404
   - path: /.well-known/ai-plugin.json
     status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  note: >-
+    The Webflow-hosted marketing site answers every /.well-known/ path with an HTML
+    body reading "Invalid .well-known request" under a 404 status. Correctly counted
+    as misses.
+summary:
+  hits: 5
+  hosts_serving_documents: 2
+  documents:
+  - dashboard.starbridge.ai /.well-known/oauth-authorization-server
+  - dashboard.starbridge.ai /.well-known/oauth-protected-resource
+  - hc.starbridge.ai /.well-known/agent-card.json
+  - hc.starbridge.ai /.well-known/mcp.json
+  - hc.starbridge.ai /.well-known/agent-skills/starbridge/skill.md
+  security_txt: false
 notes: >-
-  The MCP OAuth resource metadata (oauth-protected-resource) points MCP clients at
-  the authorization server auth.starbridge.ai and declares the mcp:tools scope. The
-  authorization-server document is an Auth0-style OIDC/OAuth2 metadata record.
+  The MCP OAuth resource metadata points MCP clients at auth.starbridge.ai and
+  declares the single mcp:tools scope (see scopes/starbridge-scopes.yml); the
+  authorization-server document is an Auth0 OIDC/OAuth2 metadata record with dynamic
+  client registration and PKCE. No security.txt (RFC 9116) is served on any host, so
+  no SecurityTxt pointer is emitted.

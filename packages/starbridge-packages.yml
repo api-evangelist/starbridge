@@ -1,0 +1,75 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  registry.npmjs.org search, pypi.org, api.github.com/repos/starbridge-ai/plugin.mcp,
+  https://hc.starbridge.ai/research/chrome-extension,
+  https://hc.starbridge.ai/api-reference/rest/overview
+# First-party distributable artifacts published by Starbridge. Starbridge does NOT
+# ship a client SDK in any language registry — the REST API is documented as raw
+# HTTP with a Bearer key, and the OpenAPI at
+# https://dashboard.starbridge.ai/swagger/documentation.yaml is offered for
+# generating your own client. What Starbridge does publish is an agent plugin and a
+# browser extension; both are recorded here with their real versions and dates.
+sdk_count: 0
+package_count: 2
+packages:
+- name: starbridge-mcp
+  kind: agent-plugin
+  official: true
+  registry: github
+  url: https://github.com/starbridge-ai/plugin.mcp
+  marketplace: starbridge-ai/plugin.mcp
+  version: 1.2.1
+  published: '2026-08-05'
+  version_source: >-
+    .claude-plugin/marketplace.json (plugins[0].version) in
+    starbridge-ai/plugin.mcp; date is the repository pushed_at from the GitHub API.
+    The repo publishes no tagged releases (GET /releases returns []), so there is no
+    release-dated version to read.
+  description: >-
+    Claude plugin bundling the Starbridge hosted OAuth MCP server plus nine packaged
+    Agent Skills (buyer identification, buyer attributes, buyer summary, buyer
+    signals, bridges, contact search, document research, general outbound email,
+    bulk-request scoping).
+  see:
+  - mcp/starbridge-mcp.yml
+  - skills/_index.yml
+- name: Starbridge Intelligence for Chrome
+  kind: browser-extension
+  official: true
+  registry: chrome-web-store
+  url: https://chromewebstore.google.com/detail/starbridge-intelligence-f/ebdnaicgibgcpefidllibinnibmjkagi
+  extension_id: ebdnaicgibgcpefidllibinnibmjkagi
+  version: null
+  published: null
+  version_source: >-
+    The Chrome Web Store publishes no unauthenticated metadata endpoint equivalent
+    to registry.npmjs.org / pypi.org, and the listing page is JS-rendered, so no
+    version or release date could be read. Checked 2026-08-14 — an honest gap, not
+    a guess.
+  description: >-
+    Browser extension that surfaces Starbridge buyer profiles, contacts, signals and
+    Ask Starbridge inline while browsing; authenticates with the same credentials as
+    the web app.
+  docs: https://hc.starbridge.ai/research/chrome-extension
+registries_searched:
+- registry: npm
+  query: https://registry.npmjs.org/-/v1/search?text=starbridge
+  result: >-
+    1 hit — "starbridge-cli" 1.2.25 (2026-07-11), published by an unrelated
+    individual maintainer (kazehayaryouma), described as "StarBridge CLI tool for
+    autonomous deployments". NOT Starbridge.ai. Excluded.
+  checked: '2026-08-14'
+- registry: pypi
+  query: https://pypi.org/pypi/starbridge/json
+  result: >-
+    1 hit — "starbridge" by Helmut Hoffer von Ankershoffen, an unrelated MIT-licensed
+    MCP project for Confluence/Atlassian. NOT Starbridge.ai. Excluded.
+  checked: '2026-08-14'
+- registry: [maven-central, nuget, pkg.go.dev, rubygems, packagist, crates.io]
+  result: Not searched individually — the provider documents no client library in any language.
+notes: >-
+  No official SDK exists in any package registry, so no `type: SDKs` pointer is
+  emitted in apis.yml. The provider's own integration guidance is: create a Bearer
+  API key in the dashboard, call the REST API directly, or generate a client from
+  the published OpenAPI 3.1 document.

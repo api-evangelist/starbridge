@@ -1,0 +1,40 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Starbridge External Public Bridges Columns API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Columns",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List existing columns with their per-type settings",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://dashboard.starbridge.ai/api/external/bridge/:bridgeId/column/metadata",
+            "params": [
+              {
+                "name": "bridgeId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Use to inspect which columns already exist on this bridge and how they are configured.\nReturns each column's per-type settings not carried by `getBridge` (link settings,\nweb-agent model, vendor presence, email generation, webhook URL, cross-bridge cell mirror) plus\n`additionalFields` synthetic refs (e.g. `{columnId$basis:firstName}`) usable in\nprompts or as `referenceFieldPath` on `createReferenceColumn`. Cross-reference entries\nto the bridge's columns from `getBridge` by `columnId` for the base"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

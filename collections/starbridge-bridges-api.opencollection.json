@@ -1,0 +1,187 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Starbridge External Public Bridges API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Bridges",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Bridges",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://dashboard.starbridge.ai/api/external/bridge",
+            "params": [
+              {
+                "name": "sortField",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "sortDirection",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "query",
+                "value": "",
+                "type": "query",
+                "description": "Filter by bridge name (substring match)"
+              },
+              {
+                "name": "viewMode",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "folderId",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "pageNumber",
+                "value": "",
+                "type": "query",
+                "description": "Page number, 1-based. Minimum 1."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Page size. Must be > 0 and <= 100. Prefer <= 20."
+              },
+              {
+                "name": "filterType",
+                "value": "",
+                "type": "query",
+                "description": "Bridge filter type(s)"
+              },
+              {
+                "name": "createdByUserId",
+                "value": "",
+                "type": "query",
+                "description": "User ID(s) of the creator(s)"
+              },
+              {
+                "name": "userIdsHaveAccessTo",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "buyerListId",
+                "value": "",
+                "type": "query",
+                "description": "Buyer list ID(s) set up for the bridges"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "List the saved Bridges (monitoring definitions) in the organization. A Bridge watches for one type of buyer activity — RFPs, meetings, purchases, conferences, contact or job changes, or other signals — within a buyer-list scope, extracts a configurable set of column values when something matches, and stores each match as a row. Use this to discover available Bridges and their identifiers.\n\nFilter by `query` (name substring), `filterType`, `createdByUserId`, `userIdsHaveAccessTo`, or `buyerListId"
+        },
+        {
+          "info": {
+            "name": "Get Bridge",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://dashboard.starbridge.ai/api/external/bridge/:bridgeId",
+            "params": [
+              {
+                "name": "bridgeId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Fetch the configuration of a single Bridge by ID — name, owner, filter type, current status, last-updated timestamp, and total row count. A Bridge watches for one type of buyer activity — RFPs, meetings, purchases, conferences, contact or job changes, or other signals — within a buyer-list scope, extracts a configurable set of column values when something matches, and stores each match as a row.\n\nFor the per-column schema (columnId, name, prompt, type, fieldFormat, etc.) needed to construct colu"
+        },
+        {
+          "info": {
+            "name": "List Bridge Rows",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://dashboard.starbridge.ai/api/external/bridge/:bridgeId/row",
+            "params": [
+              {
+                "name": "bridgeId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "pageNumber",
+                "value": "",
+                "type": "query",
+                "description": "Page number, 1-based. Minimum 1."
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Page size. Must be > 0 and <= 100. Prefer <= 20."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "List the rows of a single Bridge — the concrete matches the Bridge has produced — with optional filtering, sorting, and full-text search. Each row carries a processing status, optional buyer/organizer association, an `updatedAt` timestamp, and the per-column values populated for that match. The per-row `columns` map is keyed by the human-readable column name (not by columnId), and values are polymorphic per the column's `fieldFormat` (string / number / boolean / object / null).\n\nPrefer narrowing"
+        },
+        {
+          "info": {
+            "name": "Set Bridge Row Status",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://dashboard.starbridge.ai/api/external/bridge/:bridgeId/row/:rowId/status",
+            "params": [
+              {
+                "name": "bridgeId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "rowId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Set the user-facing status for a single row in a Bridge. The `rowId` must identify a row that belongs to the specified `bridgeId`. \nUse this when a caller needs to move one Bridge row to a new status without updating any other column values.\nSupported default values are `New`, `Actioned`, `Saved`, `Not Interested`. For conferences it might additionally include `Attending`, `Sponsoring`. In the UI, 'New' is shown as 'Needs action', and 'Saved' is shown as 'Starred'. Filtering on Actioned will inc"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

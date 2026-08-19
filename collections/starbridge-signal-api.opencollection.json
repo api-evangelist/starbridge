@@ -1,0 +1,142 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Starbridge External Public Bridges Signal API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Signal",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Recent Buyer Signals",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://dashboard.starbridge.ai/api/external/feed/all/buyer-signals",
+            "params": [
+              {
+                "name": "triggerIds",
+                "value": "",
+                "type": "query",
+                "description": "Limit results to signals from these bridge ids."
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "Sort field. Date = by signal date, Hotness = by hotness score. Always descending. Date is the default."
+              },
+              {
+                "name": "pageNumber",
+                "value": "",
+                "type": "query",
+                "description": "Page number (1-based)"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Page size"
+              },
+              {
+                "name": "buyerId",
+                "value": "",
+                "type": "query",
+                "description": "UUID of the buyer whose signals to return."
+              },
+              {
+                "name": "filterType",
+                "value": "",
+                "type": "query",
+                "description": "Filter by bridge filter type (repeatable)."
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "Filter by row status. Defaults to New when omitted."
+              },
+              {
+                "name": "relativeDatePeriodFrom",
+                "value": "",
+                "type": "query",
+                "description": "Lower bound on the signal date as a relative period."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns the most recent Starbridge signals (bridge rows) for a given buyer within the organization. A signal pairs a bridge (the monitoring definition) with a row (a concrete match). Supports filtering by bridge ids, bridge filter types, row statuses, and a relative date period. Default sort is by signal date (most recent first); pass sort=Hotness to rank by hotness score. All sorts are descending."
+        },
+        {
+          "info": {
+            "name": "List Top Recent Signals",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://dashboard.starbridge.ai/api/external/feed/all/top-signals",
+            "params": [
+              {
+                "name": "triggerIds",
+                "value": "",
+                "type": "query",
+                "description": "Limit results to signals from these bridge ids."
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "Sort field. Hotness = by hotness score, Date = by signal date. Always descending. Hotness is the default."
+              },
+              {
+                "name": "pageNumber",
+                "value": "",
+                "type": "query",
+                "description": "Page number (1-based)"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Page size"
+              },
+              {
+                "name": "filterType",
+                "value": "",
+                "type": "query",
+                "description": "Filter by bridge filter type (repeatable)."
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "Filter by row status. Defaults to New when omitted."
+              },
+              {
+                "name": "relativeDatePeriodFrom",
+                "value": "",
+                "type": "query",
+                "description": "Lower bound on the signal date as a relative period."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns the top recent Starbridge signals (bridge rows) across the whole organization, regardless of buyer. A signal pairs a bridge (the monitoring definition) with a row (a concrete match). Supports filtering by bridge ids, bridge filter types, row statuses, and a relative date period. Default sort is by hotness score (highest first); pass sort=Date to rank by signal date. All sorts are descending."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

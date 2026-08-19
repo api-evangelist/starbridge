@@ -1,0 +1,128 @@
+generated: '2026-08-14'
+method: derived
+source: >-
+  openapi/_original/starbridge-openapi.json (operationIds, tags, x-mcp-annotations) +
+  mcp/starbridge-mcp.yml (tool list from https://hc.starbridge.ai/research/starbridge-mcp)
+# Binds each Starbridge MCP tool to the REST operation that backs it. Starbridge
+# publishes the mapping itself: every operation in the External Public API carries
+# the "External MCP" tag and an x-mcp-annotations block, and the MCP tool name is
+# the OpenAPI operationId verbatim. Nothing here is invented — every row is a
+# name-identical, annotation-confirmed pair.
+api: Starbridge External Public API
+surfaces:
+  openapi:
+    file: openapi/_original/starbridge-openapi.json
+    canonical_url: https://dashboard.starbridge.ai/swagger/documentation.yaml
+    status: 200
+    gated: false
+  mcp:
+    url: https://dashboard.starbridge.ai/mcp/oauth
+    transport: http
+    gated: true
+    gate: >-
+      POST tools/list returns HTTP 401 {"error":"invalid_token"} — the live tool
+      schemas require an authenticated OAuth session, so the inputSchema for each
+      tool is inherited from the backing OpenAPI operation rather than read live.
+    probed: '2026-08-14'
+  mcp_docs:
+    url: https://starbridge.main-kill-isr.mintlify.me/mcp
+    advertised_at: https://hc.starbridge.ai/.well-known/mcp.json
+    transport: http
+    gated: false
+    note: >-
+      Separate Mintlify-hosted documentation MCP (2 tools, anonymous). It answers
+      questions about the Help Center; it does not call the Starbridge product API,
+      so it has no REST backing and is listed under mcp_only[].
+  graphql: null
+crosswalk:
+- tool: searchBuyers
+  category: buyer
+  rest: [searchBuyers]
+  binding: GET /api/external/buyer/quick/search
+  confidence: high
+  annotations: {readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false}
+- tool: getBuyerAttribute
+  category: buyer
+  rest: [getBuyerAttribute]
+  binding: GET /api/external/buyer/{buyerId}/attribute/{buyerAttribute}
+  confidence: high
+  annotations: {readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false}
+- tool: getBuyerAttributesBulk
+  category: buyer
+  rest: [getBuyerAttributesBulk]
+  binding: GET /api/external/buyer/{buyerId}/attributes
+  confidence: high
+  annotations: {readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false}
+- tool: getBuyerSummary
+  category: buyer
+  rest: [getBuyerSummary]
+  binding: GET /api/external/buyer/{buyerId}/summary
+  confidence: high
+  annotations: {readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false}
+- tool: listBridges
+  category: bridges
+  rest: [listBridges]
+  binding: GET /api/external/bridge
+  confidence: high
+  annotations: {readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false}
+- tool: getBridge
+  category: bridges
+  rest: [getBridge]
+  binding: GET /api/external/bridge/{bridgeId}
+  confidence: high
+  annotations: {readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false}
+- tool: listBridgeRows
+  category: bridges
+  rest: [listBridgeRows]
+  binding: PUT /api/external/bridge/{bridgeId}/row
+  confidence: high
+  note: >-
+    A read that uses PUT so a large filter/sort/search body can be sent; the spec
+    still annotates it readOnlyHint true / idempotentHint true.
+  annotations: {readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false}
+- tool: setBridgeRowStatus
+  category: bridges
+  rest: [setBridgeRowStatus]
+  binding: PATCH /api/external/bridge/{bridgeId}/row/{rowId}/status
+  confidence: high
+  note: >-
+    The only write tool in the server. Annotated destructiveHint true /
+    idempotentHint false — an agent must confirm before calling it.
+  annotations: {readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false}
+- tool: getBridgeColumnMetadata
+  category: columns
+  rest: [getBridgeColumnMetadata]
+  binding: GET /api/external/bridge/{bridgeId}/column/metadata
+  confidence: high
+  annotations: {readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false}
+- tool: listRecentBuyerSignals
+  category: signal
+  rest: [listRecentBuyerSignals]
+  binding: GET /api/external/feed/all/buyer-signals
+  confidence: high
+  annotations: {readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false}
+- tool: listTopRecentSignals
+  category: signal
+  rest: [listTopRecentSignals]
+  binding: GET /api/external/feed/all/top-signals
+  confidence: high
+  annotations: {readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false}
+mcp_only:
+- tool: search_starbridge_help_center
+  server: mcp_docs
+  reason: Documentation search over the Help Center corpus; no product REST operation backs it.
+- tool: query_docs_filesystem_starbridge_help_center
+  server: mcp_docs
+  reason: Read-only virtual filesystem over documentation pages; no product REST operation backs it.
+rest_only: []
+coverage:
+  rest_operations: 11
+  mcp_product_tools: 11
+  mapped: 11
+  mapped_high_confidence: 11
+  rest_only: 0
+  mcp_only: 2
+  note: >-
+    The product MCP server is a complete 1:1 projection of the public REST surface.
+    Every documented operation is reachable as a tool and every product tool has a
+    public REST equivalent.

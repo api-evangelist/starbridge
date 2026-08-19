@@ -1,0 +1,1410 @@
+{
+  "item": [
+    {
+      "id": "0f3e87ca-27e7-4769-a6f9-7ab2cf5bd433",
+      "name": "Signal",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "2cdef212-3b66-400b-858f-05704ee553db",
+          "name": "List Recent Buyer Signals",
+          "request": {
+            "name": "List Recent Buyer Signals",
+            "description": {
+              "content": "Returns the most recent Starbridge signals (bridge rows) for a given buyer within the organization. A signal pairs a bridge (the monitoring definition) with a row (a concrete match). Supports filtering by bridge ids, bridge filter types, row statuses, and a relative date period. Default sort is by signal date (most recent first); pass sort=Hotness to rank by hotness score. All sorts are descending.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "external",
+                "feed",
+                "all",
+                "buyer-signals"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "triggerIds",
+                  "value": "<uuid>,<uuid>",
+                  "description": "Limit results to signals from these bridge ids."
+                },
+                {
+                  "disabled": false,
+                  "key": "sort",
+                  "value": "Date",
+                  "description": "Sort field. Date = by signal date, Hotness = by hotness score. Always descending. Date is the default."
+                },
+                {
+                  "disabled": false,
+                  "key": "pageNumber",
+                  "value": "1",
+                  "description": "Page number (1-based)"
+                },
+                {
+                  "disabled": false,
+                  "key": "pageSize",
+                  "value": "10",
+                  "description": "Page size"
+                },
+                {
+                  "disabled": false,
+                  "key": "buyerId",
+                  "value": "<uuid>",
+                  "description": "(Required) UUID of the buyer whose signals to return."
+                },
+                {
+                  "disabled": false,
+                  "key": "filterType",
+                  "value": "<string>,<string>",
+                  "description": "Filter by bridge filter type (repeatable)."
+                },
+                {
+                  "disabled": false,
+                  "key": "status",
+                  "value": "<string>,<string>",
+                  "description": "Filter by row status. Defaults to New when omitted."
+                },
+                {
+                  "disabled": false,
+                  "key": "relativeDatePeriodFrom",
+                  "value": "LastOneMonths",
+                  "description": "Lower bound on the signal date as a relative period."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "2e28fe02-61f3-445e-8590-d5247565e709",
+              "name": "Paginated list of recent signals for the buyer.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "external",
+                    "feed",
+                    "all",
+                    "buyer-signals"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "triggerIds",
+                      "value": "<uuid>,<uuid>"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "Date"
+                    },
+                    {
+                      "key": "pageNumber",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    },
+                    {
+                      "key": "buyerId",
+                      "value": "<uuid>"
+                    },
+                    {
+                      "key": "filterType",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "status",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "relativeDatePeriodFrom",
+                      "value": "LastOneMonths"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"pageNumber\": 1007,\n  \"pageSize\": 2947,\n  \"totalItems\": 7513,\n  \"totalPages\": 7247,\n  \"result\": [\n    {\n      \"bridge\": {\n        \"bridgeId\": \"f03e507e-8d19-5b8f-15f8-128033bf1e47\",\n        \"name\": \"string\",\n        \"filterType\": \"Signal\",\n        \"columns\": [\n          {\n            \"columnId\": \"90390976-1e44-57c2-4cbb-c383f6db449e\",\n            \"bridgeId\": \"c521d89e-226e-1e33-ed24-e28d08718924\",\n            \"name\": \"string\",\n            \"prompt\": \"string\",\n            \"type\": \"CrmSync\",\n            \"fieldFormat\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"index\": 2940,\n            \"key\": \"string\"\n          },\n          {\n            \"columnId\": \"3c076b39-e9bf-b9c0-d0df-294f53a77c3f\",\n            \"bridgeId\": \"be3e061c-b3c5-c898-42f4-239a96343372\",\n            \"name\": \"string\",\n            \"prompt\": \"string\",\n            \"type\": \"AiAnalysisTemplate\",\n            \"fieldFormat\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"index\": 7116,\n            \"key\": \"string\"\n          }\n        ]\n      },\n      \"row\": {\n        \"rowId\": \"d8f814b5-c95b-cf16-5572-fdba291f552f\",\n        \"bridgeId\": \"eec304be-1302-0f9e-685e-9b025d87d1b5\",\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"status\": \"Processed\",\n        \"columns\": {\n          \"key_0\": {\n            \"value\": {},\n            \"status\": \"NotProcessed\",\n            \"processedAt\": \"string\"\n          },\n          \"key_1\": {\n            \"value\": {},\n            \"status\": \"NotProcessed\",\n            \"processedAt\": \"string\"\n          },\n          \"key_2\": {\n            \"value\": {},\n            \"status\": \"NotProcessed\",\n            \"processedAt\": null\n          },\n          \"key_3\": {\n            \"value\": {},\n            \"status\": \"Failed\",\n            \"processedAt\": null\n          }\n        },\n        \"name\": \"string\",\n        \"buyerId\": \"c86ee6da-0ab0-9ee1-e975-5680ed73d3ff\",\n        \"organizerId\": \"ca7bf736-1e9f-a0f8-6b2b-be5c3aac772c\",\n        \"entity\": {\n          \"type\": \"Conference\",\n          \"id\": \"string\"\n        }\n      }\n    },\n    {\n      \"bridge\": {\n        \"bridgeId\": \"97ba3ef7-bd7f-0845-9642-62dbdd3f8f20\",\n        \"name\": \"string\",\n        \"filterType\": \"ProductCompetitorPresence\",\n        \"columns\": [\n          {\n            \"columnId\": \"65a884a1-6345-c710-e998-8f2a9e7017af\",\n            \"bridgeId\": \"f3005b68-f519-7f7e-032c-3a4b2da6420e\",\n            \"name\": \"string\",\n            \"prompt\": \"string\",\n            \"type\": \"Link\",\n            \"fieldFormat\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"index\": 8490,\n            \"key\": \"string\"\n          },\n          {\n            \"columnId\": \"4209204c-00c1-ef76-00c4-5cd91d9d9037\",\n            \"bridgeId\": \"b3d02048-2afd-871d-7bfd-bbbe0364f113\",\n            \"name\": \"string\",\n            \"prompt\": \"string\",\n            \"type\": \"Link\",\n            \"fieldFormat\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"index\": 8147,\n            \"key\": \"string\"\n          }\n        ]\n      },\n      \"row\": {\n        \"rowId\": \"934de0ff-d45b-9791-f5a8-813776489f67\",\n        \"bridgeId\": \"985a86a9-75f7-ff05-99d8-33765c81f38e\",\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"status\": \"Processing\",\n        \"columns\": {\n          \"key_0\": {\n            \"value\": {},\n            \"status\": \"Processed\",\n            \"processedAt\": null\n          },\n          \"key_1\": {\n            \"value\": {},\n            \"status\": \"Processing\",\n            \"processedAt\": \"string\"\n          }\n        },\n        \"name\": \"string\",\n        \"buyerId\": \"b1c71423-6b34-2a92-4adb-83e04a0669b9\",\n        \"organizerId\": \"f5e16c1e-f196-8533-69d2-c168335d6387\",\n        \"entity\": {\n          \"type\": \"RFP\",\n          \"id\": \"string\"\n        }\n      }\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "bb211fda-5abd-46b8-8cd7-0d5a68422c3a",
+              "name": "Invalid request body or format",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "external",
+                    "feed",
+                    "all",
+                    "buyer-signals"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "triggerIds",
+                      "value": "<uuid>,<uuid>"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "Date"
+                    },
+                    {
+                      "key": "pageNumber",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    },
+                    {
+                      "key": "buyerId",
+                      "value": "<uuid>"
+                    },
+                    {
+                      "key": "filterType",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "status",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "relativeDatePeriodFrom",
+                      "value": "LastOneMonths"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "f11c9635-39da-4df7-94df-eb385aab70a4",
+              "name": "Missing or invalid authentication",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "external",
+                    "feed",
+                    "all",
+                    "buyer-signals"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "triggerIds",
+                      "value": "<uuid>,<uuid>"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "Date"
+                    },
+                    {
+                      "key": "pageNumber",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    },
+                    {
+                      "key": "buyerId",
+                      "value": "<uuid>"
+                    },
+                    {
+                      "key": "filterType",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "status",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "relativeDatePeriodFrom",
+                      "value": "LastOneMonths"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "3911f38f-b669-40d0-be50-a52cee47ffba",
+              "name": "Unauthorized to access resource or perform action",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "external",
+                    "feed",
+                    "all",
+                    "buyer-signals"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "triggerIds",
+                      "value": "<uuid>,<uuid>"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "Date"
+                    },
+                    {
+                      "key": "pageNumber",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    },
+                    {
+                      "key": "buyerId",
+                      "value": "<uuid>"
+                    },
+                    {
+                      "key": "filterType",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "status",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "relativeDatePeriodFrom",
+                      "value": "LastOneMonths"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "1ced5e6a-dcc7-4a91-97db-3bacb30a16bb",
+              "name": "Resource not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "external",
+                    "feed",
+                    "all",
+                    "buyer-signals"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "triggerIds",
+                      "value": "<uuid>,<uuid>"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "Date"
+                    },
+                    {
+                      "key": "pageNumber",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    },
+                    {
+                      "key": "buyerId",
+                      "value": "<uuid>"
+                    },
+                    {
+                      "key": "filterType",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "status",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "relativeDatePeriodFrom",
+                      "value": "LastOneMonths"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "43a33aa0-e275-4275-bb63-bd8667238090",
+              "name": "Unsupported media type or request body format",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "external",
+                    "feed",
+                    "all",
+                    "buyer-signals"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "triggerIds",
+                      "value": "<uuid>,<uuid>"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "Date"
+                    },
+                    {
+                      "key": "pageNumber",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    },
+                    {
+                      "key": "buyerId",
+                      "value": "<uuid>"
+                    },
+                    {
+                      "key": "filterType",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "status",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "relativeDatePeriodFrom",
+                      "value": "LastOneMonths"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unsupported Media Type",
+              "code": 415,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "7d4d94f9-39b5-4819-bcfe-d60659430305",
+              "name": "Rate limit exceeded",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "external",
+                    "feed",
+                    "all",
+                    "buyer-signals"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "triggerIds",
+                      "value": "<uuid>,<uuid>"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "Date"
+                    },
+                    {
+                      "key": "pageNumber",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    },
+                    {
+                      "key": "buyerId",
+                      "value": "<uuid>"
+                    },
+                    {
+                      "key": "filterType",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "status",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "relativeDatePeriodFrom",
+                      "value": "LastOneMonths"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "c381e466-0927-470a-9d5c-cb4305132be3",
+              "name": "Internal server error",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "external",
+                    "feed",
+                    "all",
+                    "buyer-signals"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "triggerIds",
+                      "value": "<uuid>,<uuid>"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "Date"
+                    },
+                    {
+                      "key": "pageNumber",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    },
+                    {
+                      "key": "buyerId",
+                      "value": "<uuid>"
+                    },
+                    {
+                      "key": "filterType",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "status",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "relativeDatePeriodFrom",
+                      "value": "LastOneMonths"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "95400a27-7457-4972-b2ba-0d42995deae0",
+          "name": "List Top Recent Signals",
+          "request": {
+            "name": "List Top Recent Signals",
+            "description": {
+              "content": "Returns the top recent Starbridge signals (bridge rows) across the whole organization, regardless of buyer. A signal pairs a bridge (the monitoring definition) with a row (a concrete match). Supports filtering by bridge ids, bridge filter types, row statuses, and a relative date period. Default sort is by hotness score (highest first); pass sort=Date to rank by signal date. All sorts are descending.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "external",
+                "feed",
+                "all",
+                "top-signals"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "triggerIds",
+                  "value": "<uuid>,<uuid>",
+                  "description": "Limit results to signals from these bridge ids."
+                },
+                {
+                  "disabled": false,
+                  "key": "sort",
+                  "value": "Hotness",
+                  "description": "Sort field. Hotness = by hotness score, Date = by signal date. Always descending. Hotness is the default."
+                },
+                {
+                  "disabled": false,
+                  "key": "pageNumber",
+                  "value": "1",
+                  "description": "Page number (1-based)"
+                },
+                {
+                  "disabled": false,
+                  "key": "pageSize",
+                  "value": "10",
+                  "description": "Page size"
+                },
+                {
+                  "disabled": false,
+                  "key": "filterType",
+                  "value": "<string>,<string>",
+                  "description": "Filter by bridge filter type (repeatable)."
+                },
+                {
+                  "disabled": false,
+                  "key": "status",
+                  "value": "<string>,<string>",
+                  "description": "Filter by row status. Defaults to New when omitted."
+                },
+                {
+                  "disabled": false,
+                  "key": "relativeDatePeriodFrom",
+                  "value": "LastSevenDays",
+                  "description": "Lower bound on the signal date as a relative period."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "13457b82-12e1-42d5-a00f-39f5273cac0b",
+              "name": "Paginated list of top recent signals for the organization.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "external",
+                    "feed",
+                    "all",
+                    "top-signals"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "triggerIds",
+                      "value": "<uuid>,<uuid>"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "Hotness"
+                    },
+                    {
+                      "key": "pageNumber",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    },
+                    {
+                      "key": "filterType",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "status",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "relativeDatePeriodFrom",
+                      "value": "LastSevenDays"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"pageNumber\": 1007,\n  \"pageSize\": 2947,\n  \"totalItems\": 7513,\n  \"totalPages\": 7247,\n  \"result\": [\n    {\n      \"bridge\": {\n        \"bridgeId\": \"f03e507e-8d19-5b8f-15f8-128033bf1e47\",\n        \"name\": \"string\",\n        \"filterType\": \"Signal\",\n        \"columns\": [\n          {\n            \"columnId\": \"90390976-1e44-57c2-4cbb-c383f6db449e\",\n            \"bridgeId\": \"c521d89e-226e-1e33-ed24-e28d08718924\",\n            \"name\": \"string\",\n            \"prompt\": \"string\",\n            \"type\": \"CrmSync\",\n            \"fieldFormat\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"index\": 2940,\n            \"key\": \"string\"\n          },\n          {\n            \"columnId\": \"3c076b39-e9bf-b9c0-d0df-294f53a77c3f\",\n            \"bridgeId\": \"be3e061c-b3c5-c898-42f4-239a96343372\",\n            \"name\": \"string\",\n            \"prompt\": \"string\",\n            \"type\": \"AiAnalysisTemplate\",\n            \"fieldFormat\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"index\": 7116,\n            \"key\": \"string\"\n          }\n        ]\n      },\n      \"row\": {\n        \"rowId\": \"d8f814b5-c95b-cf16-5572-fdba291f552f\",\n        \"bridgeId\": \"eec304be-1302-0f9e-685e-9b025d87d1b5\",\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"status\": \"Processed\",\n        \"columns\": {\n          \"key_0\": {\n            \"value\": {},\n            \"status\": \"NotProcessed\",\n            \"processedAt\": \"string\"\n          },\n          \"key_1\": {\n            \"value\": {},\n            \"status\": \"NotProcessed\",\n            \"processedAt\": \"string\"\n          },\n          \"key_2\": {\n            \"value\": {},\n            \"status\": \"NotProcessed\",\n            \"processedAt\": null\n          },\n          \"key_3\": {\n            \"value\": {},\n            \"status\": \"Failed\",\n            \"processedAt\": null\n          }\n        },\n        \"name\": \"string\",\n        \"buyerId\": \"c86ee6da-0ab0-9ee1-e975-5680ed73d3ff\",\n        \"organizerId\": \"ca7bf736-1e9f-a0f8-6b2b-be5c3aac772c\",\n        \"entity\": {\n          \"type\": \"Conference\",\n          \"id\": \"string\"\n        }\n      }\n    },\n    {\n      \"bridge\": {\n        \"bridgeId\": \"97ba3ef7-bd7f-0845-9642-62dbdd3f8f20\",\n        \"name\": \"string\",\n        \"filterType\": \"ProductCompetitorPresence\",\n        \"columns\": [\n          {\n            \"columnId\": \"65a884a1-6345-c710-e998-8f2a9e7017af\",\n            \"bridgeId\": \"f3005b68-f519-7f7e-032c-3a4b2da6420e\",\n            \"name\": \"string\",\n            \"prompt\": \"string\",\n            \"type\": \"Link\",\n            \"fieldFormat\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"index\": 8490,\n            \"key\": \"string\"\n          },\n          {\n            \"columnId\": \"4209204c-00c1-ef76-00c4-5cd91d9d9037\",\n            \"bridgeId\": \"b3d02048-2afd-871d-7bfd-bbbe0364f113\",\n            \"name\": \"string\",\n            \"prompt\": \"string\",\n            \"type\": \"Link\",\n            \"fieldFormat\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"index\": 8147,\n            \"key\": \"string\"\n          }\n        ]\n      },\n      \"row\": {\n        \"rowId\": \"934de0ff-d45b-9791-f5a8-813776489f67\",\n        \"bridgeId\": \"985a86a9-75f7-ff05-99d8-33765c81f38e\",\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"status\": \"Processing\",\n        \"columns\": {\n          \"key_0\": {\n            \"value\": {},\n            \"status\": \"Processed\",\n            \"processedAt\": null\n          },\n          \"key_1\": {\n            \"value\": {},\n            \"status\": \"Processing\",\n            \"processedAt\": \"string\"\n          }\n        },\n        \"name\": \"string\",\n        \"buyerId\": \"b1c71423-6b34-2a92-4adb-83e04a0669b9\",\n        \"organizerId\": \"f5e16c1e-f196-8533-69d2-c168335d6387\",\n        \"entity\": {\n          \"type\": \"RFP\",\n          \"id\": \"string\"\n        }\n      }\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "1314ddef-3581-4c55-99c8-b0662211d175",
+              "name": "Invalid request body or format",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "external",
+                    "feed",
+                    "all",
+                    "top-signals"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "triggerIds",
+                      "value": "<uuid>,<uuid>"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "Hotness"
+                    },
+                    {
+                      "key": "pageNumber",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    },
+                    {
+                      "key": "filterType",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "status",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "relativeDatePeriodFrom",
+                      "value": "LastSevenDays"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "cd5460db-7289-4e44-8d29-e79a8454d87b",
+              "name": "Missing or invalid authentication",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "external",
+                    "feed",
+                    "all",
+                    "top-signals"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "triggerIds",
+                      "value": "<uuid>,<uuid>"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "Hotness"
+                    },
+                    {
+                      "key": "pageNumber",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    },
+                    {
+                      "key": "filterType",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "status",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "relativeDatePeriodFrom",
+                      "value": "LastSevenDays"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "e9fc554a-59d7-4a2f-8fa3-4ee02b1b64cc",
+              "name": "Unauthorized to access resource or perform action",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "external",
+                    "feed",
+                    "all",
+                    "top-signals"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "triggerIds",
+                      "value": "<uuid>,<uuid>"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "Hotness"
+                    },
+                    {
+                      "key": "pageNumber",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    },
+                    {
+                      "key": "filterType",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "status",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "relativeDatePeriodFrom",
+                      "value": "LastSevenDays"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "4451830d-4b0c-4f57-986b-28864519026a",
+              "name": "Resource not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "external",
+                    "feed",
+                    "all",
+                    "top-signals"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "triggerIds",
+                      "value": "<uuid>,<uuid>"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "Hotness"
+                    },
+                    {
+                      "key": "pageNumber",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    },
+                    {
+                      "key": "filterType",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "status",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "relativeDatePeriodFrom",
+                      "value": "LastSevenDays"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "877ac227-0127-481e-b83c-d04e14ad296d",
+              "name": "Unsupported media type or request body format",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "external",
+                    "feed",
+                    "all",
+                    "top-signals"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "triggerIds",
+                      "value": "<uuid>,<uuid>"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "Hotness"
+                    },
+                    {
+                      "key": "pageNumber",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    },
+                    {
+                      "key": "filterType",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "status",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "relativeDatePeriodFrom",
+                      "value": "LastSevenDays"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unsupported Media Type",
+              "code": 415,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "e7d6447a-7d4b-490e-8d63-f9b54076d3d3",
+              "name": "Rate limit exceeded",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "external",
+                    "feed",
+                    "all",
+                    "top-signals"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "triggerIds",
+                      "value": "<uuid>,<uuid>"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "Hotness"
+                    },
+                    {
+                      "key": "pageNumber",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    },
+                    {
+                      "key": "filterType",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "status",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "relativeDatePeriodFrom",
+                      "value": "LastSevenDays"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "c2cba0fc-9947-47a6-8867-bcfb2758f5a8",
+              "name": "Internal server error",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "external",
+                    "feed",
+                    "all",
+                    "top-signals"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "triggerIds",
+                      "value": "<uuid>,<uuid>"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "Hotness"
+                    },
+                    {
+                      "key": "pageNumber",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    },
+                    {
+                      "key": "filterType",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "status",
+                      "value": "<string>,<string>"
+                    },
+                    {
+                      "key": "relativeDatePeriodFrom",
+                      "value": "LastSevenDays"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://dashboard.starbridge.ai",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "da134ea8-0010-4071-9ce7-2bfca775cda6",
+    "name": "Starbridge External Public Bridges Signal API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "",
+      "type": "text/plain"
+    }
+  }
+}
