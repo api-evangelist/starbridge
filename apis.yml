@@ -109,20 +109,6 @@ apis:
     url: errors/starbridge-problem-types.yml
   - type: DataModel
     url: data-model/starbridge-data-model.yml
-- aid: starbridge:starbridge-external-api-api
-  name: Starbridge External API API
-  description: The External API API from Starbridge — 11 operation(s) for external api.
-  humanURL: https://hc.starbridge.ai/api-reference/rest/overview
-  baseURL: https://dashboard.starbridge.ai
-  tags:
-  - External API
-  properties:
-  - type: OpenAPI
-    url: openapi/starbridge-external-api-api-openapi.yml
-  - type: ErrorCatalog
-    url: errors/starbridge-problem-types.yml
-  - type: DataModel
-    url: data-model/starbridge-data-model.yml
 - aid: starbridge:starbridge-external-mcp-api
   name: Starbridge External MCP API
   description: The External MCP API from Starbridge — 11 operation(s) for external mcp.
