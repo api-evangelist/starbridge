@@ -224,6 +224,8 @@ common:
   url: https://starbridge.ai/privacy-policy
 - type: Website
   url: https://starbridge.ai
+- type: Support
+  url: mailto:support@starbridge.ai
 x-enrichment:
   date: '2026-08-14'
   status: enriched
