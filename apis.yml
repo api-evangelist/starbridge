@@ -85,6 +85,8 @@ apis:
   humanURL: https://hc.starbridge.ai/api-reference/rest/overview
   baseURL: https://dashboard.starbridge.ai
   tags:
+  - Bridge
+  tags_raw:
   - Bridges
   properties:
   - type: OpenAPI
