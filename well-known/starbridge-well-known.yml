@@ -1,4 +1,4 @@
-generated: '2026-08-14'
+generated: '2026-09-19'
 method: probed
 source: live probes of /.well-known/ on every Starbridge host (2026-07-21, re-probed 2026-08-14)
 hosts:
@@ -20,6 +20,12 @@ hosts:
     status: 404
   - path: /.well-known/api-catalog
     status: 404
+  documents:
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    file: starbridge-dashboard-oauth-protected-resource.json
+    bytes: 183
+  path_echo_control: passed
 - host: hc.starbridge.ai
   probes:
   - path: /.well-known/agent-card.json
@@ -28,10 +34,8 @@ hosts:
     note: Real A2A AgentCard. Graded in a2a/starbridge-a2a.yml.
   - path: /.well-known/mcp.json
     status: 200
-    note: >-
-      MCP discovery document advertising the Mintlify-hosted documentation MCP at
-      https://starbridge.main-kill-isr.mintlify.me/mcp (transport http, auth none).
-      Recorded in mcp/starbridge-mcp.yml under additional_servers.
+    note: MCP discovery document advertising the Mintlify-hosted documentation MCP at https://starbridge.main-kill-isr.mintlify.me/mcp
+      (transport http, auth none). Recorded in mcp/starbridge-mcp.yml under additional_servers.
   - path: /.well-known/agent-skills/starbridge/skill.md
     status: 200
     file: ../skills/starbridge-published-skill.md
@@ -52,10 +56,15 @@ hosts:
     status: 404
   - path: /.well-known/api-catalog
     status: 404
-  note: >-
-    The Webflow-hosted marketing site answers every /.well-known/ path with an HTML
-    body reading "Invalid .well-known request" under a 404 status. Correctly counted
-    as misses.
+  note: The Webflow-hosted marketing site answers every /.well-known/ path with an HTML body reading "Invalid
+    .well-known request" under a 404 status. Correctly counted as misses.
+- host: https://auth.starbridge.ai
+  documents:
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    file: starbridge-auth-oauth-authorization-server.json
+    bytes: 2645
+  path_echo_control: passed
 summary:
   hits: 5
   hosts_serving_documents: 2
@@ -66,9 +75,23 @@ summary:
   - hc.starbridge.ai /.well-known/mcp.json
   - hc.starbridge.ai /.well-known/agent-skills/starbridge/skill.md
   security_txt: false
-notes: >-
-  The MCP OAuth resource metadata points MCP clients at auth.starbridge.ai and
-  declares the single mcp:tools scope (see scopes/starbridge-scopes.yml); the
-  authorization-server document is an Auth0 OIDC/OAuth2 metadata record with dynamic
-  client registration and PKCE. No security.txt (RFC 9116) is served on any host, so
-  no SecurityTxt pointer is emitted.
+notes: The MCP OAuth resource metadata points MCP clients at auth.starbridge.ai and declares the single
+  mcp:tools scope (see scopes/starbridge-scopes.yml); the authorization-server document is an Auth0 OIDC/OAuth2
+  metadata record with dynamic client registration and PKCE. No security.txt (RFC 9116) is served on any
+  host, so no SecurityTxt pointer is emitted.
+x-mcp-probe:
+  probed: '2026-09-19'
+  issue: roadmap#321, roadmap#337
+  documents:
+  - host: https://dashboard.starbridge.ai
+    path: /.well-known/oauth-protected-resource
+    file: starbridge-dashboard-oauth-protected-resource.json
+  - host: https://auth.starbridge.ai
+    path: /.well-known/oauth-authorization-server
+    file: starbridge-auth-oauth-authorization-server.json
+  validated_on: resource (RFC 9728) / issuer (RFC 8414, OIDC)
+  negative_control: one per host; a 2xx JSON object at an impossible path discards the host
+note: 'MCP-host OAuth discovery added 2026-09-19 (roadmap#321/#337): the harvest visits a provider''s
+  primary hosts, and RFC 9728 protected-resource metadata lives on the MCP host, so these documents existed
+  and were invisible to the scorer. Fetched live and validated on `resource`/`issuer`; one negative control
+  per host.'

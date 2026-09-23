@@ -5,7 +5,8 @@ source: https://hc.starbridge.ai/.well-known/agent-card.json
 # host and saved VERBATIM to a2a/starbridge-agent-card.json. Nothing here is
 # generated or derived — this artifact records only what the provider serves.
 name: Starbridge Help Center
-card: a2a/starbridge-agent-card.json
+card:
+  file: a2a/starbridge-agent-card.json
 discovery:
   path: /.well-known/agent-card.json
   canonical: true
@@ -41,6 +42,8 @@ card_summary:
   - id: starbridge
     name: Starbridge
     url: https://hc.starbridge.ai/.well-known/agent-skills/starbridge/skill.md
+conformance:
+  grade: conformant
 grade:
   against: A2A 1.0.0
   verdict: conformant

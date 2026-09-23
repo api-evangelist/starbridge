@@ -1,4 +1,4 @@
-openapi: 3.1.1
+openapi: 3.2.0
 info:
   title: Starbridge External Public Bridges API
   version: '1.0'
@@ -16,7 +16,10 @@ paths:
       description: 'List the saved Bridges (monitoring definitions) in the organization. A Bridge watches for one type of buyer activity — RFPs, meetings, purchases, conferences, contact or job changes, or other signals — within a buyer-list scope, extracts a configurable set of column values when something matches, and stores each match as a row. Use this to discover available Bridges and their identifiers.
 
 
-        Filter by `query` (name substring), `filterType`, `createdByUserId`, `userIdsHaveAccessTo`, or `buyerListId`. To paginate, start at `pageNumber=1` and increment until `pageNumber == totalPages`. For the columns defined on a specific Bridge, call `getBridgeColumnMetadata` — column metadata is no longer returned inline by this endpoint.'
+        Filter by `query` (name substring), `filterType`, `createdByUserId`, `userIdsHaveAccessTo`, or `buyerListId`. To paginate, start at `pageNumber=1` and increment until `pageNumber == totalPages`. For the columns defined on a specific Bridge, call `getBridgeColumnMetadata`; this endpoint does not return column metadata inline.
+
+
+        A Bridge''s `filterType` says what its rows represent, so it is also how you reach the underlying entities: `filterType=RFP` finds the Bridges whose rows are RFPs.'
       parameters:
       - name: sortField
         in: query
@@ -239,7 +242,6 @@ paths:
         operations, and sort columns.
 
 
-
         To paginate, start at `pageNumber=1` and increment until `pageNumber == totalPages`.
 
 
@@ -321,7 +323,11 @@ paths:
       tags:
       - Bridges
       summary: Set Bridge Row Status
-      description: "Set the user-facing status for a single row in a Bridge. The `rowId` must identify a row that belongs to the specified `bridgeId`. \nUse this when a caller needs to move one Bridge row to a new status without updating any other column values.\nSupported default values are `New`, `Actioned`, `Saved`, `Not Interested`. For conferences it might additionally include `Attending`, `Sponsoring`. In the UI, 'New' is shown as 'Needs action', and 'Saved' is shown as 'Starred'. Filtering on Actioned will include Sponsoring and Attending."
+      description: 'Set the user-facing status for a single row in a Bridge. The `rowId` must identify a row that belongs to the specified `bridgeId`.
+
+        Use this when a caller needs to move one Bridge row to a new status without updating any other column values.
+
+        Supported default values are `New`, `Actioned`, `Saved`, `Not Interested`. For conferences it might additionally include `Attending`, `Sponsoring`. In the UI, ''New'' is shown as ''Needs action'', and ''Saved'' is shown as ''Starred''. Filtering on Actioned will include Sponsoring and Attending.'
       parameters:
       - name: bridgeId
         in: path
@@ -370,6 +376,20 @@ paths:
         openWorldHint: false
 components:
   schemas:
+    RowSort:
+      type: object
+      title: RowSort
+      required:
+      - column
+      - direction
+      properties:
+        column:
+          type: string
+        direction:
+          type: string
+          enum:
+          - ASC
+          - DESC
     BridgeRowResponse:
       type: object
       title: BridgeRowResponse
@@ -397,9 +417,11 @@ components:
         createdAt:
           type: string
           description: Timestamp when the row was created (added to the bridge).
+          format: date-time
         updatedAt:
           type: string
           description: "\n        Timestamp when the row was last updated. This is a technical last-updated field: in addition to\n        meaningful changes (status, column values), non-meaningful changes such as a bulk re-sync or\n        maintenance can also advance it. Sort by `rowUpdatedAt` to page through recently-changed rows.\n    "
+          format: date-time
         status:
           type: string
           description: Current processing status of the row
@@ -430,41 +452,47 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/BridgeRowColumnValueResponse'
-    BridgeFiltersTerm:
+    BridgeRowStatus:
+      type: string
+      title: BridgeRowStatus
+      description: Supported default values are `New`, `Actioned`, `Saved`, `Not Interested`. For conferences it might additionally include `Attending`, `Sponsoring`. In the UI, 'New' is shown as 'Needs action', and 'Saved' is shown as 'Starred'. Filtering on Actioned will include Sponsoring and Attending.
+      enum:
+      - New
+      - Actioned
+      - Saved
+      - Attending
+      - Sponsoring
+      - NotInterested
+    BridgeRowEntityRef:
       type: object
-      title: BridgeFiltersTerm
-      description: "\n        A single filter predicate of the form `<field> <operation> <value>`, evaluated against\n        one bridge row. Multiple terms in a `BridgeFilters` are combined with logical AND.\n\n        ──────────────────────────────────────────────────────────────────────────────────────\n        1) Pick a `column`.:\n           (A) A column's `columnId` UUID, returned by `getBridgeColumnMetadata`.\n               Always a bare UUID string — never the column's `key`, `name`, or any\n               prefixed reference. The value type must match that column's declared\n               format (see `BridgeRowColumnValueResponse.value`).\n\n        2) Pick an `operation` — its category determines the required shape of `value`:\n\n              category           | operations                                                                                    | value shape\n              -------------------|-----------------------------------------------------------------------------------------------|----------------------------------------\n              scalar             | Equals, DoesNotEqual, Contains, DoesNotContain, GreaterThan, LessThan                         | one JSON primitive (string/number/bool)\n              array              | Any, None, ContainsAny, ContainsAll, ContainedBy, NotContainedBy                              | JSON array of primitives\n              presence           | IsEmpty, IsNotEmpty                                                                           | null / omitted\n              column-status      | HasCellStatus, HasLookupStatus, HasLastSyncStatus, HasSyncStatusHistory                       | JSON array of status strings\n                                 | (REQUIRE `field` to be a column UUID — on a common key they silently degrade to Any/ContainsAny\n                                 |  against the row-level field, which is almost certainly wrong.)                               |\n\n           See `BridgeFilterOperation` for the per-operation semantics.\n\n        3) `value` must ALSO be type-compatible with the field:\n           - common-field types are listed in the table above\n           - for column fields, match the column's declared `fieldFormat`\n           - primitive inside an array follows the same rule (e.g. `Any` on `buyerId` takes\n             an array of UUID strings)\n\n        ──────────────────────────────────────────────────────────────────────────────────────\n        Common gotcha — filtering by `status`:\n           `status` is a single-valued scalar. Do NOT wrap values in an array for `Equals`.\n\n           Match exactly one status:\n             { \"field\": \"status\", \"operation\": \"Equals\", \"value\": \"Processed\" }\n\n           Match several statuses (OR within the term):\n             { \"field\": \"status\", \"operation\": \"Any\", \"value\": [\"Processed\", \"Failed\"] }\n\n           WRONG — array with a scalar op silently matches nothing:\n             { \"field\": \"status\", \"operation\": \"Equals\", \"value\": [\"Processed\"] }   // ✗\n           WRONG — bare string with an array op:\n             { \"field\": \"status\", \"operation\": \"Any\",    \"value\": \"Processed\" }     // ✗\n\n        Common gotcha — column-cell status filtering:\n           To filter by a column's per-cell processing status, use `HasCellStatus` with the\n           column's `columnId` and an array of status labels:\n\n             {\n               \"field\": \"<columnId UUID>\",\n               \"operation\": \"HasCellStatus\",\n               \"value\": [\"Processed\", \"Failed\"]\n             }\n\n           The server rewrites this into a phase-scoped query on the cell's status/value\n           status fields — you never address those sub-fields directly from the client.\n    "
+      title: BridgeRowEntityRef
+      description: Reference to the underlying entity (id + type) this row represents, when available.
       required:
-      - field
-      - operation
+      - type
+      - id
       properties:
-        field:
+        type:
           type: string
-          description: "\n        What to filter on. Exactly one of:\n          - a bridge column's `columnId` UUID (returned by `getBridgeColumnMetadata`)\n            as a bare UUID string. PREFER THIS for anything that appears as a column\n            on the Bridge — Match Score, Match reasoning, and any user-defined column\n            live here. Using the column's `key`, `name`, or any compound reference is\n            undefined behavior.\n          - a common entry-field key, limited to: `status`, `buyerId`, `opportunityId`,\n            `entryId`, `entryName`, `triggeredAt`, `op:added_date`, `bridge:entry_url`,\n            `adminActionCrmMatch`. Other internal field keys are not exposed and\n            return 400 if used.\n    "
-        operation:
-          type: string
-          description: "\n        Comparison operator. Its category dictates the required shape of `value`:\n        scalar ops take a single primitive, array ops take a JSON array, presence ops\n        take null, column-status ops (Has…) take a status array and require `field`\n        to be a column UUID. See the `BridgeFilterOperation` enum for full details.\n    "
+          description: Kind of entity `id` refers to — matches the bridge's `filterType` (e.g. RFP, Buyer, Conference).
           enum:
-          - Equals
-          - DoesNotEqual
-          - Contains
-          - DoesNotContain
-          - GreaterThan
-          - LessThan
-          - IsEmpty
-          - IsNotEmpty
-          - Any
-          - None
-          - ContainsAny
-          - ContainsAll
-          - ContainedBy
-          - NotContainedBy
-          - HasCellStatus
-          - HasLookupStatus
-          - HasLastSyncStatus
-          - HasSyncStatusHistory
-        value:
-          description: "\n        Operand for the comparison. Polymorphic — shape is driven by `operation`:\n          - scalar ops (Equals, DoesNotEqual, Contains, DoesNotContain, GreaterThan,\n            LessThan) → one JSON primitive (string / number / boolean)\n          - array ops (Any, None, ContainsAny, ContainsAll, ContainedBy, NotContainedBy,\n            HasCellStatus, HasLookupStatus, HasLastSyncStatus, HasSyncStatusHistory)\n            → a JSON array of primitives; use an array even for a single element\n          - presence ops (IsEmpty, IsNotEmpty) → null or omitted\n\n        The primitive type must also match the field's underlying type: strings for\n        text / URL / enum / date / UUID / ISO-8601 fields, numbers for numeric fields,\n        booleans for boolean columns, and JSON objects for object-typed columns.\n    "
+          - RFP
+          - Meeting
+          - Purchase
+          - Buyer
+          - TopBuyer
+          - Contact
+          - Signal
+          - Conference
+          - JobChange
+          - SequenceBuyer
+          - SequenceContact
+          - SequenceJobChange
+          - VendorPresence
+          - ProductCompetitorPresence
+          - CompanionPresence
+        id:
+          type: string
+          description: Identifier of the underlying entity. Pass to entity-specific tools (e.g. opportunity line items, file downloads) to fetch detail beyond the bridge's columns.
     SetBridgeRowStatusRequest:
       type: object
       title: SetBridgeRowStatusRequest
@@ -473,15 +501,63 @@ components:
       properties:
         newStatus:
           $ref: '#/components/schemas/BridgeRowStatus'
-    BridgeFilters:
+    BridgeResponse:
       type: object
-      title: BridgeFilters
-      description: "\n        Filter criteria for bridge rows. All `terms` are combined with logical AND — a row must\n        satisfy every term to be included. Provide an empty `terms` list (or omit `filters`) to\n        return all rows.\n    "
+      title: BridgeResponse
+      required:
+      - bridgeId
+      - name
+      - userId
+      - filterType
+      - status
+      - updatedAt
       properties:
-        terms:
-          type: array
-          items:
-            $ref: '#/components/schemas/BridgeFiltersTerm'
+        bridgeId:
+          type: string
+          description: Unique identifier for the bridge
+          format: uuid
+        name:
+          type: string
+          description: Name of the bridge
+        userId:
+          type: string
+          description: User ID who created and owns the bridge
+        filterType:
+          type: string
+          description: Type of filter applied to the bridge — also what each of its rows represents, surfaced per row as `entity`. `RFP` bridges match RFPs.
+          enum:
+          - RFP
+          - Meeting
+          - Purchase
+          - Buyer
+          - TopBuyer
+          - Contact
+          - Signal
+          - Conference
+          - JobChange
+          - SequenceBuyer
+          - SequenceContact
+          - SequenceJobChange
+          - VendorPresence
+          - ProductCompetitorPresence
+          - CompanionPresence
+        status:
+          type: string
+          description: Current status of the bridge
+          enum:
+          - Initializing
+          - Matching
+          - Draft
+          - Open
+          - Failed
+          - Deleting
+        updatedAt:
+          type: string
+          description: Timestamp when a user last edited this bridge's configuration (name, columns, sharing). Does NOT indicate when new rows were added
+          format: date-time
+        rowCount:
+          type: integer
+          description: Total number of rows in the bridge
     ListBridgeRowsRequest:
       type: object
       title: ListBridgeRowsRequest
@@ -535,6 +611,50 @@ components:
             - Processing
             - Processed
       default: {}
+    BridgeFilters:
+      type: object
+      title: BridgeFilters
+      description: "\n        Filter criteria for bridge rows. All `terms` are combined with logical AND — a row must\n        satisfy every term to be included. Provide an empty `terms` list (or omit `filters`) to\n        return all rows.\n    "
+      properties:
+        terms:
+          type: array
+          items:
+            $ref: '#/components/schemas/BridgeFiltersTerm'
+    BridgeFiltersTerm:
+      type: object
+      title: BridgeFiltersTerm
+      description: "\n        A single filter predicate of the form `<field> <operation> <value>`, evaluated against\n        one bridge row. Multiple terms in a `BridgeFilters` are combined with logical AND.\n\n        ──────────────────────────────────────────────────────────────────────────────────────\n        1) Pick a `column`.:\n           (A) A column's `columnId` UUID, returned by `getBridgeColumnMetadata`.\n               Always a bare UUID string — never the column's `key`, `name`, or any\n               prefixed reference. The value type must match that column's declared\n               format (see `BridgeRowColumnValueResponse.value`).\n\n        2) Pick an `operation` — its category determines the required shape of `value`:\n\n              category           | operations                                                                                    | value shape\n              -------------------|-----------------------------------------------------------------------------------------------|----------------------------------------\n              scalar             | Equals, DoesNotEqual, Contains, DoesNotContain, GreaterThan, LessThan                         | one JSON primitive (string/number/bool)\n              array              | Any, None, ContainsAny, ContainsAll, ContainedBy, NotContainedBy                              | JSON array of primitives\n              presence           | IsEmpty, IsNotEmpty                                                                           | null / omitted\n              column-status      | HasCellStatus, HasLookupStatus, HasLastSyncStatus, HasSyncStatusHistory                       | JSON array of status strings\n                                 | (REQUIRE `field` to be a column UUID — on a common key they silently degrade to Any/ContainsAny\n                                 |  against the row-level field, which is almost certainly wrong.)                               |\n\n           See `BridgeFilterOperation` for the per-operation semantics.\n\n        3) `value` must ALSO be type-compatible with the field:\n           - common-field types are listed in the table above\n           - for column fields, match the column's declared `fieldFormat`\n           - primitive inside an array follows the same rule (e.g. `Any` on `buyerId` takes\n             an array of UUID strings)\n\n        ──────────────────────────────────────────────────────────────────────────────────────\n        Common gotcha — filtering by `status`:\n           `status` is a single-valued scalar. Do NOT wrap values in an array for `Equals`.\n\n           Match exactly one status:\n             { \"field\": \"status\", \"operation\": \"Equals\", \"value\": \"Processed\" }\n\n           Match several statuses (OR within the term):\n             { \"field\": \"status\", \"operation\": \"Any\", \"value\": [\"Processed\", \"Failed\"] }\n\n           WRONG — array with a scalar op silently matches nothing:\n             { \"field\": \"status\", \"operation\": \"Equals\", \"value\": [\"Processed\"] }   // ✗\n           WRONG — bare string with an array op:\n             { \"field\": \"status\", \"operation\": \"Any\",    \"value\": \"Processed\" }     // ✗\n\n        Common gotcha — column-cell status filtering:\n           To filter by a column's per-cell processing status, use `HasCellStatus` with the\n           column's `columnId` and an array of status labels:\n\n             {\n               \"field\": \"<columnId UUID>\",\n               \"operation\": \"HasCellStatus\",\n               \"value\": [\"Processed\", \"Failed\"]\n             }\n\n           The server rewrites this into a phase-scoped query on the cell's status/value\n           status fields — you never address those sub-fields directly from the client.\n    "
+      required:
+      - field
+      - operation
+      properties:
+        field:
+          type: string
+          description: "\n        What to filter on. Exactly one of:\n          - a bridge column's `columnId` UUID (returned by `getBridgeColumnMetadata`)\n            as a bare UUID string. PREFER THIS for anything that appears as a column\n            on the Bridge — Match Score, Match reasoning, and any user-defined column\n            live here. Using the column's `key`, `name`, or any compound reference is\n            undefined behavior.\n          - a common entry-field key, limited to: `status`, `buyerId`, `opportunityId`,\n            `entryId`, `entryName`, `triggeredAt`, `op:added_date`, `bridge:entry_url`,\n            `adminActionCrmMatch`. Other internal field keys are not exposed and\n            return 400 if used.\n    "
+        operation:
+          type: string
+          description: "\n        Comparison operator. Its category dictates the required shape of `value`:\n        scalar ops take a single primitive, array ops take a JSON array, presence ops\n        take null, column-status ops (Has…) take a status array and require `field`\n        to be a column UUID. See the `BridgeFilterOperation` enum for full details.\n    "
+          enum:
+          - Equals
+          - DoesNotEqual
+          - Contains
+          - DoesNotContain
+          - GreaterThan
+          - LessThan
+          - IsEmpty
+          - IsNotEmpty
+          - Any
+          - None
+          - ContainsAny
+          - ContainsAll
+          - ContainedBy
+          - NotContainedBy
+          - HasCellStatus
+          - HasLookupStatus
+          - HasLastSyncStatus
+          - HasSyncStatusHistory
+        value:
+          description: "\n        Operand for the comparison. Polymorphic — shape is driven by `operation`:\n          - scalar ops (Equals, DoesNotEqual, Contains, DoesNotContain, GreaterThan,\n            LessThan) → one JSON primitive (string / number / boolean)\n          - array ops (Any, None, ContainsAny, ContainsAll, ContainedBy, NotContainedBy,\n            HasCellStatus, HasLookupStatus, HasLastSyncStatus, HasSyncStatusHistory)\n            → a JSON array of primitives; use an array even for a single element\n          - presence ops (IsEmpty, IsNotEmpty) → null or omitted\n\n        The primitive type must also match the field's underlying type: strings for\n        text / URL / enum / date / UUID / ISO-8601 fields, numbers for numeric fields,\n        booleans for boolean columns, and JSON objects for object-typed columns.\n    "
     BridgeRowColumnValueResponse:
       type: object
       title: BridgeRowColumnValueResponse
@@ -558,117 +678,7 @@ components:
           - string
           - 'null'
           description: Timestamp when the value was successfully processed
-    RowSort:
-      type: object
-      title: RowSort
-      required:
-      - column
-      - direction
-      properties:
-        column:
-          type: string
-        direction:
-          type: string
-          enum:
-          - ASC
-          - DESC
-    BridgeRowStatus:
-      type: string
-      title: BridgeRowStatus
-      description: Supported default values are `New`, `Actioned`, `Saved`, `Not Interested`. For conferences it might additionally include `Attending`, `Sponsoring`. In the UI, 'New' is shown as 'Needs action', and 'Saved' is shown as 'Starred'. Filtering on Actioned will include Sponsoring and Attending.
-      enum:
-      - New
-      - Actioned
-      - Saved
-      - Attending
-      - Sponsoring
-      - NotInterested
-    BridgeRowEntityRef:
-      type: object
-      title: BridgeRowEntityRef
-      description: Reference to the underlying entity (id + type) this row represents, when available.
-      required:
-      - type
-      - id
-      properties:
-        type:
-          type: string
-          description: Kind of entity `id` refers to (e.g. Conference, Buyer, Opportunity).
-          enum:
-          - RFP
-          - Meeting
-          - Purchase
-          - Buyer
-          - TopBuyer
-          - Contact
-          - Signal
-          - Conference
-          - JobChange
-          - SequenceBuyer
-          - SequenceContact
-          - SequenceJobChange
-          - VendorPresence
-          - ProductCompetitorPresence
-          - CompanionPresence
-        id:
-          type: string
-          description: Identifier of the underlying entity. Pass to entity-specific tools (e.g. opportunity line items, file downloads) to fetch detail beyond the bridge's columns.
-    BridgeResponse:
-      type: object
-      title: BridgeResponse
-      required:
-      - bridgeId
-      - name
-      - userId
-      - filterType
-      - status
-      - updatedAt
-      properties:
-        bridgeId:
-          type: string
-          description: Unique identifier for the bridge
-          format: uuid
-        name:
-          type: string
-          description: Name of the bridge
-        userId:
-          type: string
-          description: User ID who created and owns the bridge
-        filterType:
-          type: string
-          description: Type of filter applied to the bridge
-          enum:
-          - RFP
-          - Meeting
-          - Purchase
-          - Buyer
-          - TopBuyer
-          - Contact
-          - Signal
-          - Conference
-          - JobChange
-          - SequenceBuyer
-          - SequenceContact
-          - SequenceJobChange
-          - VendorPresence
-          - ProductCompetitorPresence
-          - CompanionPresence
-        status:
-          type: string
-          description: Current status of the bridge
-          enum:
-          - Initializing
-          - Matching
-          - Draft
-          - Open
-          - Failed
-          - Deleting
-        updatedAt:
-          type: string
-          description: Timestamp when a user last edited this bridge's configuration (name, columns, sharing). Does NOT indicate when new rows were added
-        rowCount:
-          type: integer
-          description: Total number of rows in the bridge
+          format: date-time
   securitySchemes:
     apiKey:
       scheme: bearer

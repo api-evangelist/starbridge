@@ -1,24 +1,35 @@
 {
   "provider": "starbridge",
   "sources": [
-    "starbridge-bridges-api-openapi.yml",
-    "starbridge-buyer-api-openapi.yml",
-    "starbridge-columns-api-openapi.yml",
-    "starbridge-external-api-api-openapi.yml",
-    "starbridge-external-mcp-api-openapi.yml",
-    "starbridge-signal-api-openapi.yml"
+    "_original/starbridge-openapi.json"
   ],
   "outputs": [
     "starbridge-bridges-api-openapi.yml",
     "starbridge-buyer-api-openapi.yml",
     "starbridge-columns-api-openapi.yml",
-    "starbridge-external-api-api-openapi.yml",
     "starbridge-external-mcp-api-openapi.yml",
     "starbridge-signal-api-openapi.yml"
   ],
   "archived": [],
   "errors": [],
   "warnings": [],
-  "notes": [],
-  "skipped": []
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "starbridge-openapi.json: upgraded openapi 3.1.1 -> OpenAPI 3.2.0",
+    "starbridge-openapi.json: declared missing tag: Bridges",
+    "starbridge-openapi.json: declared missing tag: Buyer",
+    "starbridge-openapi.json: declared missing tag: Columns",
+    "starbridge-openapi.json: declared missing tag: External API",
+    "starbridge-openapi.json: declared missing tag: External MCP",
+    "starbridge-openapi.json: declared missing tag: Signal",
+    "starbridge-openapi.json: multi-axis tagging (6 tags, 5 first tags, 3.00x duplication over 11 operations) \u2014 split on first tag, 11 operations narrowed",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "starbridge-bridges-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "starbridge-buyer-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "starbridge-columns-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "starbridge-external-mcp-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "starbridge-signal-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }
