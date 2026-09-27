@@ -339,6 +339,21 @@ components:
       properties:
         buyerData:
           description: Any JSON value - can be a string, number, boolean, object, array, or null
+    Section:
+      type: object
+      title: Section
+      required:
+      - title
+      - text
+      properties:
+        title:
+          type: string
+        text:
+          type: string
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntrySource'
     BuyerBrief:
       type: object
       title: BuyerBrief
@@ -426,21 +441,48 @@ components:
           type:
           - string
           - 'null'
-    Section:
+    DetailSection:
       type: object
-      title: Section
+      title: DetailSection
       required:
-      - title
-      - text
+      - sections
       properties:
-        title:
+        status:
           type: string
-        text:
+          enum:
+          - Standard
+          - Fallback
+        intro:
           type: string
-        sources:
+        sections:
           type: array
           items:
-            $ref: '#/components/schemas/EntrySource'
+            $ref: '#/components/schemas/Section'
+    EntrySource:
+      type: object
+      title: EntrySource
+      required:
+      - entryId
+      - triggerId
+      properties:
+        entryId:
+          type: string
+          format: uuid
+        triggerId:
+          type: string
+          format: uuid
+        triggerType:
+          type:
+          - string
+          - 'null'
+        triggerName:
+          type:
+          - string
+          - 'null'
+        entryName:
+          type:
+          - string
+          - 'null'
     BuyerSummaryResponse:
       type: object
       title: BuyerSummaryResponse
@@ -470,48 +512,6 @@ components:
           format: date-time
         needsRegeneration:
           type: boolean
-    EntrySource:
-      type: object
-      title: EntrySource
-      required:
-      - entryId
-      - triggerId
-      properties:
-        entryId:
-          type: string
-          format: uuid
-        triggerId:
-          type: string
-          format: uuid
-        triggerType:
-          type:
-          - string
-          - 'null'
-        triggerName:
-          type:
-          - string
-          - 'null'
-        entryName:
-          type:
-          - string
-          - 'null'
-    DetailSection:
-      type: object
-      title: DetailSection
-      required:
-      - sections
-      properties:
-        status:
-          type: string
-          enum:
-          - Standard
-          - Fallback
-        intro:
-          type: string
-        sections:
-          type: array
-          items:
-            $ref: '#/components/schemas/Section'
   securitySchemes:
     apiKey:
       scheme: bearer

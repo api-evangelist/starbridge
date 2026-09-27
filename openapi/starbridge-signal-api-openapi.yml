@@ -316,45 +316,6 @@ paths:
         openWorldHint: false
 components:
   schemas:
-    BridgeBrief:
-      type: object
-      title: BridgeBrief
-      required:
-      - bridgeId
-      - name
-      - filterType
-      - columns
-      properties:
-        bridgeId:
-          type: string
-          description: Unique identifier for the bridge
-          format: uuid
-        name:
-          type: string
-          description: Name of the bridge
-        filterType:
-          type: string
-          description: Type of filter applied to the bridge — also what each of its rows represents, surfaced per row as `entity`. `RFP` bridges match RFPs.
-          enum:
-          - RFP
-          - Meeting
-          - Purchase
-          - Buyer
-          - TopBuyer
-          - Contact
-          - Signal
-          - Conference
-          - JobChange
-          - SequenceBuyer
-          - SequenceContact
-          - SequenceJobChange
-          - VendorPresence
-          - ProductCompetitorPresence
-          - CompanionPresence
-        columns:
-          type: array
-          items:
-            $ref: '#/components/schemas/BridgeColumnResponse'
     BridgeRowResponse:
       type: object
       title: BridgeRowResponse
@@ -417,6 +378,56 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/BridgeRowColumnValueResponse'
+    BridgeBrief:
+      type: object
+      title: BridgeBrief
+      required:
+      - bridgeId
+      - name
+      - filterType
+      - columns
+      properties:
+        bridgeId:
+          type: string
+          description: Unique identifier for the bridge
+          format: uuid
+        name:
+          type: string
+          description: Name of the bridge
+        filterType:
+          type: string
+          description: Type of filter applied to the bridge — also what each of its rows represents, surfaced per row as `entity`. `RFP` bridges match RFPs.
+          enum:
+          - RFP
+          - Meeting
+          - Purchase
+          - Buyer
+          - TopBuyer
+          - Contact
+          - Signal
+          - Conference
+          - JobChange
+          - SequenceBuyer
+          - SequenceContact
+          - SequenceJobChange
+          - VendorPresence
+          - ProductCompetitorPresence
+          - CompanionPresence
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/BridgeColumnResponse'
+    BridgeSignalResponse:
+      type: object
+      title: BridgeSignalResponse
+      required:
+      - bridge
+      - row
+      properties:
+        bridge:
+          $ref: '#/components/schemas/BridgeBrief'
+        row:
+          $ref: '#/components/schemas/BridgeRowResponse'
     BridgeFieldFormat:
       type: object
       title: BridgeFieldFormat
@@ -515,40 +526,6 @@ components:
         id:
           type: string
           description: Identifier of the underlying entity. Pass to entity-specific tools (e.g. opportunity line items, file downloads) to fetch detail beyond the bridge's columns.
-    FieldFormatEnumerationValue:
-      type: object
-      title: FieldFormatEnumerationValue
-      required:
-      - value
-      properties:
-        value:
-          type: string
-        label:
-          type: string
-    BridgeRowColumnValueResponse:
-      type: object
-      title: BridgeRowColumnValueResponse
-      properties:
-        value:
-          description: Any JSON value - can be a string, number, boolean, object, array, or null
-        status:
-          type:
-          - string
-          - 'null'
-          description: Processing status of this column value
-          enum:
-          - NotProcessed
-          - Queued
-          - Processing
-          - Processed
-          - Failed
-          - Skipped
-        processedAt:
-          type:
-          - string
-          - 'null'
-          description: Timestamp when the value was successfully processed
-          format: date-time
     BridgeColumnResponse:
       type: object
       title: BridgeColumnResponse
@@ -604,6 +581,30 @@ components:
           - string
           - 'null'
           description: Optional key for referencing the column
+    BridgeRowColumnValueResponse:
+      type: object
+      title: BridgeRowColumnValueResponse
+      properties:
+        value:
+          description: Any JSON value - can be a string, number, boolean, object, array, or null
+        status:
+          type:
+          - string
+          - 'null'
+          description: Processing status of this column value
+          enum:
+          - NotProcessed
+          - Queued
+          - Processing
+          - Processed
+          - Failed
+          - Skipped
+        processedAt:
+          type:
+          - string
+          - 'null'
+          description: Timestamp when the value was successfully processed
+          format: date-time
     BridgeObjFieldDefinition:
       type: object
       title: BridgeObjFieldDefinition
@@ -635,17 +636,16 @@ components:
           - string
           - 'null'
           description: Optional description of the field
-    BridgeSignalResponse:
+    FieldFormatEnumerationValue:
       type: object
-      title: BridgeSignalResponse
+      title: FieldFormatEnumerationValue
       required:
-      - bridge
-      - row
+      - value
       properties:
-        bridge:
-          $ref: '#/components/schemas/BridgeBrief'
-        row:
-          $ref: '#/components/schemas/BridgeRowResponse'
+        value:
+          type: string
+        label:
+          type: string
   securitySchemes:
     apiKey:
       scheme: bearer

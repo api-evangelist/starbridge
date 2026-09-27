@@ -62,6 +62,7 @@ tags:
 - Procurement
 - Buyer Intelligence
 - MCP
+- A2A
 tags_raw:
 - Company
 - Ai
@@ -73,6 +74,7 @@ tags_raw:
 - Procurement
 - Buyer Intelligence
 - MCP
+- A2A
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -233,3 +235,10 @@ x-enrichment:
   status: enriched
   artifacts_added: 9
   pass: local-v1
+x-a2a:
+  verified: true
+  probed: '2026-09-26'
+  url: "https://hc.starbridge.ai/.well-known/agent-card.json"
+  grade: "conformant"
+  protocol_version: "0.3"
+  control: 404

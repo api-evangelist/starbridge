@@ -376,20 +376,14 @@ paths:
         openWorldHint: false
 components:
   schemas:
-    RowSort:
+    SetBridgeRowStatusRequest:
       type: object
-      title: RowSort
+      title: SetBridgeRowStatusRequest
       required:
-      - column
-      - direction
+      - newStatus
       properties:
-        column:
-          type: string
-        direction:
-          type: string
-          enum:
-          - ASC
-          - DESC
+        newStatus:
+          $ref: '#/components/schemas/BridgeRowStatus'
     BridgeRowResponse:
       type: object
       title: BridgeRowResponse
@@ -463,44 +457,59 @@ components:
       - Attending
       - Sponsoring
       - NotInterested
-    BridgeRowEntityRef:
+    ListBridgeRowsRequest:
       type: object
-      title: BridgeRowEntityRef
-      description: Reference to the underlying entity (id + type) this row represents, when available.
-      required:
-      - type
-      - id
+      title: ListBridgeRowsRequest
       properties:
-        type:
-          type: string
-          description: Kind of entity `id` refers to — matches the bridge's `filterType` (e.g. RFP, Buyer, Conference).
-          enum:
-          - RFP
-          - Meeting
-          - Purchase
-          - Buyer
-          - TopBuyer
-          - Contact
-          - Signal
-          - Conference
-          - JobChange
-          - SequenceBuyer
-          - SequenceContact
-          - SequenceJobChange
-          - VendorPresence
-          - ProductCompetitorPresence
-          - CompanionPresence
-        id:
-          type: string
-          description: Identifier of the underlying entity. Pass to entity-specific tools (e.g. opportunity line items, file downloads) to fetch detail beyond the bridge's columns.
-    SetBridgeRowStatusRequest:
-      type: object
-      title: SetBridgeRowStatusRequest
-      required:
-      - newStatus
-      properties:
-        newStatus:
-          $ref: '#/components/schemas/BridgeRowStatus'
+        filters:
+          oneOf:
+          - $ref: '#/components/schemas/BridgeFilters'
+          - type: 'null'
+        sorts:
+          type:
+          - array
+          - 'null'
+          description: "\n        Sort specification for rows. For each sort term, `column` should be a bridge\n        column's `columnId` UUID — call `getBridgeColumnMetadata` to look it up. The\n        column's display name, `key`, or any prefixed reference is not a valid value.\n        A small set of common entry-level fields (`entryId`, `entryName`, `triggeredAt`)\n        is also accepted but discouraged. The synthetic column `rowUpdatedAt` sorts by when\n        the row was last updated — sort `DESC` to poll for recently-changed rows, matching the\n        `updatedAt` field in the response. Sort columns that are not mapped on the server return 400.\n    "
+          items:
+            $ref: '#/components/schemas/RowSort'
+        query:
+          type:
+          - string
+          - 'null'
+          description: Full-text search query
+      examples:
+      - filters:
+          terms:
+          - field: 79699ea1-b638-45b4-8b44-781d76eb88a1
+            operation: Equals
+            value: some value
+      - filters:
+          terms:
+          - field: 79699ea1-b638-45b4-8b44-781d76eb88a1
+            operation: Any
+            value:
+            - value A
+            - value B
+        query: search text
+      - filters:
+          terms:
+          - field: 79699ea1-b638-45b4-8b44-781d76eb88a1
+            operation: Contains
+            value: partial
+          - field: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+            operation: IsNotEmpty
+        sorts:
+        - column: 79699ea1-b638-45b4-8b44-781d76eb88a1
+          direction: ASC
+      - filters:
+          terms:
+          - field: 79699ea1-b638-45b4-8b44-781d76eb88a1
+            operation: HasCellStatus
+            value:
+            - Not Processed
+            - Processing
+            - Processed
+      default: {}
     BridgeResponse:
       type: object
       title: BridgeResponse
@@ -558,68 +567,50 @@ components:
         rowCount:
           type: integer
           description: Total number of rows in the bridge
-    ListBridgeRowsRequest:
+    RowSort:
       type: object
-      title: ListBridgeRowsRequest
+      title: RowSort
+      required:
+      - column
+      - direction
       properties:
-        filters:
-          oneOf:
-          - $ref: '#/components/schemas/BridgeFilters'
-          - type: 'null'
-        sorts:
-          type:
-          - array
-          - 'null'
-          description: "\n        Sort specification for rows. For each sort term, `column` should be a bridge\n        column's `columnId` UUID — call `getBridgeColumnMetadata` to look it up. The\n        column's display name, `key`, or any prefixed reference is not a valid value.\n        A small set of common entry-level fields (`entryId`, `entryName`, `triggeredAt`)\n        is also accepted but discouraged. The synthetic column `rowUpdatedAt` sorts by when\n        the row was last updated — sort `DESC` to poll for recently-changed rows, matching the\n        `updatedAt` field in the response. Sort columns that are not mapped on the server return 400.\n    "
-          items:
-            $ref: '#/components/schemas/RowSort'
-        query:
-          type:
-          - string
-          - 'null'
-          description: Full-text search query
-      examples:
-      - filters:
-          terms:
-          - field: 79699ea1-b638-45b4-8b44-781d76eb88a1
-            operation: Equals
-            value: some value
-      - filters:
-          terms:
-          - field: 79699ea1-b638-45b4-8b44-781d76eb88a1
-            operation: Any
-            value:
-            - value A
-            - value B
-        query: search text
-      - filters:
-          terms:
-          - field: 79699ea1-b638-45b4-8b44-781d76eb88a1
-            operation: Contains
-            value: partial
-          - field: a1b2c3d4-e5f6-7890-abcd-ef1234567890
-            operation: IsNotEmpty
-        sorts:
-        - column: 79699ea1-b638-45b4-8b44-781d76eb88a1
-          direction: ASC
-      - filters:
-          terms:
-          - field: 79699ea1-b638-45b4-8b44-781d76eb88a1
-            operation: HasCellStatus
-            value:
-            - Not Processed
-            - Processing
-            - Processed
-      default: {}
-    BridgeFilters:
+        column:
+          type: string
+        direction:
+          type: string
+          enum:
+          - ASC
+          - DESC
+    BridgeRowEntityRef:
       type: object
-      title: BridgeFilters
-      description: "\n        Filter criteria for bridge rows. All `terms` are combined with logical AND — a row must\n        satisfy every term to be included. Provide an empty `terms` list (or omit `filters`) to\n        return all rows.\n    "
+      title: BridgeRowEntityRef
+      description: Reference to the underlying entity (id + type) this row represents, when available.
+      required:
+      - type
+      - id
       properties:
-        terms:
-          type: array
-          items:
-            $ref: '#/components/schemas/BridgeFiltersTerm'
+        type:
+          type: string
+          description: Kind of entity `id` refers to — matches the bridge's `filterType` (e.g. RFP, Buyer, Conference).
+          enum:
+          - RFP
+          - Meeting
+          - Purchase
+          - Buyer
+          - TopBuyer
+          - Contact
+          - Signal
+          - Conference
+          - JobChange
+          - SequenceBuyer
+          - SequenceContact
+          - SequenceJobChange
+          - VendorPresence
+          - ProductCompetitorPresence
+          - CompanionPresence
+        id:
+          type: string
+          description: Identifier of the underlying entity. Pass to entity-specific tools (e.g. opportunity line items, file downloads) to fetch detail beyond the bridge's columns.
     BridgeFiltersTerm:
       type: object
       title: BridgeFiltersTerm
@@ -655,6 +646,15 @@ components:
           - HasSyncStatusHistory
         value:
           description: "\n        Operand for the comparison. Polymorphic — shape is driven by `operation`:\n          - scalar ops (Equals, DoesNotEqual, Contains, DoesNotContain, GreaterThan,\n            LessThan) → one JSON primitive (string / number / boolean)\n          - array ops (Any, None, ContainsAny, ContainsAll, ContainedBy, NotContainedBy,\n            HasCellStatus, HasLookupStatus, HasLastSyncStatus, HasSyncStatusHistory)\n            → a JSON array of primitives; use an array even for a single element\n          - presence ops (IsEmpty, IsNotEmpty) → null or omitted\n\n        The primitive type must also match the field's underlying type: strings for\n        text / URL / enum / date / UUID / ISO-8601 fields, numbers for numeric fields,\n        booleans for boolean columns, and JSON objects for object-typed columns.\n    "
+    BridgeFilters:
+      type: object
+      title: BridgeFilters
+      description: "\n        Filter criteria for bridge rows. All `terms` are combined with logical AND — a row must\n        satisfy every term to be included. Provide an empty `terms` list (or omit `filters`) to\n        return all rows.\n    "
+      properties:
+        terms:
+          type: array
+          items:
+            $ref: '#/components/schemas/BridgeFiltersTerm'
     BridgeRowColumnValueResponse:
       type: object
       title: BridgeRowColumnValueResponse
