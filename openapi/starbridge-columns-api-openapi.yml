@@ -62,194 +62,98 @@ paths:
         openWorldHint: false
 components:
   schemas:
-    WebContactSettings:
+    BridgeFieldFormat:
       type: object
-      title: WebContactSettings
+      title: BridgeFieldFormat
+      description: Field format specification for the column
       required:
-      - subPrompt
+      - baseFormat
       properties:
-        subPrompt:
+        baseFormat:
           type: string
-        examples:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        additionalContext:
-          type:
-          - string
-          - 'null'
-    TriggerFiltersTerm:
-      type: object
-      title: TriggerFiltersTerm
-      required:
-      - field
-      - operation
-      properties:
-        field:
-          type: string
-        operation:
-          type: string
+          description: Base data type of the field (String, Integer, Boolean, etc.)
           enum:
-          - Equals
-          - DoesNotEqual
-          - Contains
-          - DoesNotContain
-          - GreaterThan
-          - LessThan
-          - IsEmpty
-          - IsNotEmpty
-          - Any
-          - None
-          - ContainsAny
-          - ContainsAll
-          - ContainedBy
-          - NotContainedBy
-          - HasCellStatus
-          - HasLookupStatus
-          - HasLastSyncStatus
-          - HasSyncStatusHistory
-        value:
-          description: Any JSON value - can be a string, number, boolean, object, array, or null
-    TriggerFiltersTermGroup:
-      type: object
-      title: TriggerFiltersTermGroup
-      properties:
-        terms:
-          type: array
-          items:
-            $ref: '#/components/schemas/TriggerFiltersTerm'
-    BridgeRowAttributeOption:
-      type: object
-      title: BridgeRowAttributeOption
-      required:
-      - key
-      - name
-      - fieldFormat
-      properties:
-        key:
-          type: string
-          description: Attribute key, e.g. `op:until_date`, `buyer:name`
-        name:
-          type: string
-          description: Human-readable label
-        fieldFormat:
-          $ref: '#/components/schemas/BridgeFieldFormat'
-    BridgeCompetitorPresenceSettings:
-      type: object
-      title: BridgeCompetitorPresenceSettings
-      description: Vendor presence settings — set on vendor presence columns.
-      required:
-      - serviceProviders
-      - runWebPresence
-      properties:
-        serviceProviders:
-          type: array
-          items:
-            $ref: '#/components/schemas/CompetitorPresenceSettingsServiceProvider'
-        runWebPresence:
-          type: boolean
-        contextPrompt:
+          - text
+          - date
+          - url
+          - number
+          - enumeration
+          - list
+          - obj
+          - json
+          - phone
+          - email
+          - boolean
+          - currencyUnit
+        description:
           type:
           - string
           - 'null'
-        runContractEstimation:
-          type: boolean
-    CompetitorPresenceSettingsServiceProvider:
-      type: object
-      title: CompetitorPresenceSettingsServiceProvider
-      required:
-      - name
-      properties:
-        name:
-          type: string
-        serviceProviderAliases:
+          description: Optional description of the field
+        enumerationValues:
           type:
           - array
           - 'null'
+          description: Optional list of enumeration values if field is a select type
           items:
-            type: string
-        productNamesOrAliases:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-    AccountScoringSignalTypeConfig:
-      type: object
-      title: AccountScoringSignalTypeConfig
-      properties:
-        guidance:
+            $ref: '#/components/schemas/FieldFormatEnumerationValue'
+        currency:
           type:
           - string
           - 'null'
-    AccountScoringFitColumnConfig:
-      type: object
-      title: AccountScoringFitColumnConfig
-      required:
-      - phaseId
-      properties:
-        phaseId:
-          type: string
-          format: uuid
-        includedInScoring:
-          type: boolean
-        strongFitGuidance:
-          type:
-          - string
-          - 'null'
-    BridgeMultiLinkSettings:
-      type: object
-      title: BridgeMultiLinkSettings
-      description: MultiLink settings — set on multi-link columns.
-      required:
-      - sourceBridgeIds
-      properties:
-        sourceBridgeIds:
-          type: array
-          description: UUIDs of the referenced (source) bridges whose rows these link columns pull in - i.e. the other bridges, not the bridge these columns belong to
-          items:
-            type: string
-            format: uuid
-        includedStatuses:
-          type:
-          - array
-          - 'null'
-          description: Row statuses included from the source bridges. Null when all statuses are included.
-          items:
-            type: string
-        maxAgeRelativePeriod:
-          type:
-          - string
-          - 'null'
-          description: Max age window for source rows relative to now. Null when no age cap is applied.
+          description: Optional currency type if field represents a monetary value
           enum:
-          - Future
-          - NextTwoYears
-          - NextYear
-          - NextNineMonths
-          - NextSixMonths
-          - NextThreeMonths
-          - NextTwoMonths
-          - NextOneMonth
-          - NextSixtyDays
-          - NextThirtyDays
-          - NextSevenDays
-          - NextOneDay
-          - Present
-          - LastOneDay
-          - LastSevenDays
-          - LastThirtyDays
-          - LastSixtyDays
-          - LastOneMonths
-          - LastTwoMonths
-          - LastThreeMonths
-          - LastSixMonths
-          - LastNineMonths
-          - LastYear
-          - LastTwoYears
-          - Past
+          - USD
+          - CAD
+        listElementBaseFormat:
+          type:
+          - string
+          - 'null'
+          description: Base format type for list elements if field is a list type
+          enum:
+          - text
+          - date
+          - url
+          - number
+          - enumeration
+          - list
+          - obj
+          - json
+          - phone
+          - email
+          - boolean
+          - currencyUnit
+        outputFields:
+          type:
+          - array
+          - 'null'
+          description: Optional field definitions for object type fields
+          items:
+            $ref: '#/components/schemas/BridgeObjFieldDefinition'
+    AccountScoringConfig:
+      type: object
+      title: AccountScoringConfig
+      properties:
+        fitColumns:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/AccountScoringFitColumnConfig'
+        signalConfigs:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            $ref: '#/components/schemas/AccountScoringSignalTypeConfig'
+        fitInteractionPrompt:
+          type:
+          - string
+          - 'null'
+        signalInteractionPrompt:
+          type:
+          - string
+          - 'null'
     BridgeLinkToCellSettings:
       type: object
       title: BridgeLinkToCellSettings
@@ -270,46 +174,6 @@ components:
         sourceRowIdentity:
           type: string
           description: How the matching target row is identified from this row (e.g. InherentOpportunityId, ContactColumn)
-    SignalBridgeConfig:
-      type: object
-      title: SignalBridgeConfig
-      required:
-      - id
-      properties:
-        id:
-          type: string
-          format: uuid
-        enabled:
-          type: boolean
-    BridgeEmailGenerationSettings:
-      type: object
-      title: BridgeEmailGenerationSettings
-      description: Email generation settings — set on email template columns.
-      required:
-      - emailSubjectTemplate
-      - emailBodyTemplate
-      properties:
-        emailSubjectTemplate:
-          type: string
-        emailBodyTemplate:
-          type: string
-        showParentColumn:
-          type: boolean
-        snippetDefinitions:
-          type:
-          - object
-          - 'null'
-          description: Map of snippet name to generation prompt. Prompts can contain {columnId} references.
-          additionalProperties:
-            type: string
-    TriggerFilters:
-      type: object
-      title: TriggerFilters
-      properties:
-        groups:
-          type: array
-          items:
-            $ref: '#/components/schemas/TriggerFiltersTermGroup'
     FieldFormatEnumerationValue:
       type: object
       title: FieldFormatEnumerationValue
@@ -320,6 +184,94 @@ components:
           type: string
         label:
           type: string
+    AccountScoringFitColumnConfig:
+      type: object
+      title: AccountScoringFitColumnConfig
+      required:
+      - phaseId
+      properties:
+        phaseId:
+          type: string
+          format: uuid
+        includedInScoring:
+          type: boolean
+        strongFitGuidance:
+          type:
+          - string
+          - 'null'
+    BridgeColumnResponse:
+      type: object
+      title: BridgeColumnResponse
+      required:
+      - columnId
+      - bridgeId
+      - name
+      - prompt
+      - type
+      - fieldFormat
+      - index
+      properties:
+        columnId:
+          type: string
+          description: Unique identifier for the column
+          format: uuid
+        bridgeId:
+          type: string
+          description: UUID of the bridge this column belongs to
+          format: uuid
+        name:
+          type: string
+          description: Display name of the column
+        prompt:
+          type: string
+          description: Prompt or instruction for generating column values
+        type:
+          type: string
+          description: Type of column (AiAnalysis, DataAttribute, AiAnalysisTemplate, etc.)
+          enum:
+          - AiAnalysis
+          - DataAttribute
+          - AiAnalysisTemplate
+          - WebAgentTemplate
+          - Input
+          - Link
+          - CrmLookup
+          - CrmSync
+          - LinkToCell
+          - CompetitorsPresence
+          - EmailTemplate
+          - PhoneCallTemplate
+          - Webhook
+          - MultiLink
+          - AccountScoring
+        fieldFormat:
+          $ref: '#/components/schemas/BridgeFieldFormat'
+        index:
+          type: integer
+          description: Zero-based index position of the column
+        key:
+          type:
+          - string
+          - 'null'
+          description: Optional key for referencing the column
+    AccountScoringMetadata:
+      type: object
+      title: AccountScoringMetadata
+      properties:
+        scoringConfig:
+          $ref: '#/components/schemas/AccountScoringConfig'
+        signalBridgesByType:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/SignalBridgeConfig'
+    TriggerFilters:
+      type: object
+      title: TriggerFilters
+      properties:
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/TriggerFiltersTermGroup'
     BridgeExistingColumnMetadata:
       type: object
       title: BridgeExistingColumnMetadata
@@ -392,98 +344,78 @@ components:
           - type: 'null'
         runConditions:
           $ref: '#/components/schemas/TriggerFilters'
-    AccountScoringConfig:
+    BridgeEmailGenerationSettings:
       type: object
-      title: AccountScoringConfig
+      title: BridgeEmailGenerationSettings
+      description: Email generation settings — set on email template columns.
+      required:
+      - emailSubjectTemplate
+      - emailBodyTemplate
       properties:
-        fitColumns:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/AccountScoringFitColumnConfig'
-        signalConfigs:
+        emailSubjectTemplate:
+          type: string
+        emailBodyTemplate:
+          type: string
+        showParentColumn:
+          type: boolean
+        snippetDefinitions:
           type:
           - object
           - 'null'
+          description: Map of snippet name to generation prompt. Prompts can contain {columnId} references.
           additionalProperties:
-            $ref: '#/components/schemas/AccountScoringSignalTypeConfig'
-        fitInteractionPrompt:
-          type:
-          - string
-          - 'null'
-        signalInteractionPrompt:
-          type:
-          - string
-          - 'null'
-    BridgeFieldFormat:
+            type: string
+    BridgeMultiLinkSettings:
       type: object
-      title: BridgeFieldFormat
-      description: Field format specification for the column
+      title: BridgeMultiLinkSettings
+      description: MultiLink settings — set on multi-link columns.
       required:
-      - baseFormat
+      - sourceBridgeIds
       properties:
-        baseFormat:
-          type: string
-          description: Base data type of the field (String, Integer, Boolean, etc.)
-          enum:
-          - text
-          - date
-          - url
-          - number
-          - enumeration
-          - list
-          - obj
-          - json
-          - phone
-          - email
-          - boolean
-          - currencyUnit
-        description:
-          type:
-          - string
-          - 'null'
-          description: Optional description of the field
-        enumerationValues:
+        sourceBridgeIds:
+          type: array
+          description: UUIDs of the referenced (source) bridges whose rows these link columns pull in - i.e. the other bridges, not the bridge these columns belong to
+          items:
+            type: string
+            format: uuid
+        includedStatuses:
           type:
           - array
           - 'null'
-          description: Optional list of enumeration values if field is a select type
+          description: Row statuses included from the source bridges. Null when all statuses are included.
           items:
-            $ref: '#/components/schemas/FieldFormatEnumerationValue'
-        currency:
+            type: string
+        maxAgeRelativePeriod:
           type:
           - string
           - 'null'
-          description: Optional currency type if field represents a monetary value
+          description: Max age window for source rows relative to now. Null when no age cap is applied.
           enum:
-          - USD
-          - CAD
-        listElementBaseFormat:
-          type:
-          - string
-          - 'null'
-          description: Base format type for list elements if field is a list type
-          enum:
-          - text
-          - date
-          - url
-          - number
-          - enumeration
-          - list
-          - obj
-          - json
-          - phone
-          - email
-          - boolean
-          - currencyUnit
-        outputFields:
-          type:
-          - array
-          - 'null'
-          description: Optional field definitions for object type fields
-          items:
-            $ref: '#/components/schemas/BridgeObjFieldDefinition'
+          - Future
+          - NextTwoYears
+          - NextYear
+          - NextNineMonths
+          - NextSixMonths
+          - NextThreeMonths
+          - NextTwoMonths
+          - NextOneMonth
+          - NextSixtyDays
+          - NextThirtyDays
+          - NextSevenDays
+          - NextOneDay
+          - Present
+          - LastOneDay
+          - LastSevenDays
+          - LastThirtyDays
+          - LastSixtyDays
+          - LastOneMonths
+          - LastTwoMonths
+          - LastThreeMonths
+          - LastSixMonths
+          - LastNineMonths
+          - LastYear
+          - LastTwoYears
+          - Past
     BridgeLinkSettings:
       type: object
       title: BridgeLinkSettings
@@ -534,61 +466,61 @@ components:
           - Past
         filters:
           $ref: '#/components/schemas/TriggerFilters'
-    BridgeColumnResponse:
+    BridgeCompetitorPresenceSettings:
       type: object
-      title: BridgeColumnResponse
+      title: BridgeCompetitorPresenceSettings
+      description: Vendor presence settings — set on vendor presence columns.
       required:
-      - columnId
-      - bridgeId
-      - name
-      - prompt
-      - type
-      - fieldFormat
-      - index
+      - serviceProviders
+      - runWebPresence
       properties:
-        columnId:
-          type: string
-          description: Unique identifier for the column
-          format: uuid
-        bridgeId:
-          type: string
-          description: UUID of the bridge this column belongs to
-          format: uuid
-        name:
-          type: string
-          description: Display name of the column
-        prompt:
-          type: string
-          description: Prompt or instruction for generating column values
-        type:
-          type: string
-          description: Type of column (AiAnalysis, DataAttribute, AiAnalysisTemplate, etc.)
-          enum:
-          - AiAnalysis
-          - DataAttribute
-          - AiAnalysisTemplate
-          - WebAgentTemplate
-          - Input
-          - Link
-          - CrmLookup
-          - CrmSync
-          - LinkToCell
-          - CompetitorsPresence
-          - EmailTemplate
-          - PhoneCallTemplate
-          - Webhook
-          - MultiLink
-          - AccountScoring
-        fieldFormat:
-          $ref: '#/components/schemas/BridgeFieldFormat'
-        index:
-          type: integer
-          description: Zero-based index position of the column
-        key:
+        serviceProviders:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompetitorPresenceSettingsServiceProvider'
+        runWebPresence:
+          type: boolean
+        contextPrompt:
           type:
           - string
           - 'null'
-          description: Optional key for referencing the column
+        runContractEstimation:
+          type: boolean
+    BridgeRowAttributeOption:
+      type: object
+      title: BridgeRowAttributeOption
+      required:
+      - key
+      - name
+      - fieldFormat
+      properties:
+        key:
+          type: string
+          description: Attribute key, e.g. `op:until_date`, `buyer:name`
+        name:
+          type: string
+          description: Human-readable label
+        fieldFormat:
+          $ref: '#/components/schemas/BridgeFieldFormat'
+    AccountScoringSignalTypeConfig:
+      type: object
+      title: AccountScoringSignalTypeConfig
+      properties:
+        guidance:
+          type:
+          - string
+          - 'null'
+    SignalBridgeConfig:
+      type: object
+      title: SignalBridgeConfig
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+        enabled:
+          type: boolean
     BridgeObjFieldDefinition:
       type: object
       title: BridgeObjFieldDefinition
@@ -620,16 +552,84 @@ components:
           - string
           - 'null'
           description: Optional description of the field
-    AccountScoringMetadata:
+    CompetitorPresenceSettingsServiceProvider:
       type: object
-      title: AccountScoringMetadata
+      title: CompetitorPresenceSettingsServiceProvider
+      required:
+      - name
       properties:
-        scoringConfig:
-          $ref: '#/components/schemas/AccountScoringConfig'
-        signalBridgesByType:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/SignalBridgeConfig'
+        name:
+          type: string
+        serviceProviderAliases:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        productNamesOrAliases:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+    WebContactSettings:
+      type: object
+      title: WebContactSettings
+      required:
+      - subPrompt
+      properties:
+        subPrompt:
+          type: string
+        examples:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        additionalContext:
+          type:
+          - string
+          - 'null'
+    TriggerFiltersTerm:
+      type: object
+      title: TriggerFiltersTerm
+      required:
+      - field
+      - operation
+      properties:
+        field:
+          type: string
+        operation:
+          type: string
+          enum:
+          - Equals
+          - DoesNotEqual
+          - Contains
+          - DoesNotContain
+          - GreaterThan
+          - LessThan
+          - IsEmpty
+          - IsNotEmpty
+          - Any
+          - None
+          - ContainsAny
+          - ContainsAll
+          - ContainedBy
+          - NotContainedBy
+          - HasCellStatus
+          - HasLookupStatus
+          - HasLastSyncStatus
+          - HasSyncStatusHistory
+        value:
+          description: Any JSON value - can be a string, number, boolean, object, array, or null
+    TriggerFiltersTermGroup:
+      type: object
+      title: TriggerFiltersTermGroup
+      properties:
+        terms:
+          type: array
+          items:
+            $ref: '#/components/schemas/TriggerFiltersTerm'
   securitySchemes:
     apiKey:
       scheme: bearer
