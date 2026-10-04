@@ -316,61 +316,159 @@ paths:
         openWorldHint: false
 components:
   schemas:
-    BridgeColumnResponse:
+    BridgeObjFieldDefinition:
       type: object
-      title: BridgeColumnResponse
+      title: BridgeObjFieldDefinition
       required:
-      - columnId
-      - bridgeId
       - name
-      - prompt
       - type
-      - fieldFormat
-      - index
       properties:
-        columnId:
-          type: string
-          description: Unique identifier for the column
-          format: uuid
-        bridgeId:
-          type: string
-          description: UUID of the bridge this column belongs to
-          format: uuid
         name:
           type: string
-          description: Display name of the column
-        prompt:
-          type: string
-          description: Prompt or instruction for generating column values
+          description: Name of the field
         type:
           type: string
-          description: Type of column (AiAnalysis, DataAttribute, AiAnalysisTemplate, etc.)
+          description: Data type of the field
           enum:
-          - AiAnalysis
-          - DataAttribute
-          - AiAnalysisTemplate
-          - WebAgentTemplate
-          - Input
-          - Link
-          - CrmLookup
-          - CrmSync
-          - LinkToCell
-          - CompetitorsPresence
-          - EmailTemplate
-          - PhoneCallTemplate
-          - Webhook
-          - MultiLink
-          - AccountScoring
-        fieldFormat:
-          $ref: '#/components/schemas/BridgeFieldFormat'
-        index:
-          type: integer
-          description: Zero-based index position of the column
-        key:
+          - text
+          - date
+          - url
+          - number
+          - enumeration
+          - list
+          - obj
+          - json
+          - phone
+          - email
+          - boolean
+          - currencyUnit
+        description:
           type:
           - string
           - 'null'
-          description: Optional key for referencing the column
+          description: Optional description of the field
+    BridgeSignalResponse:
+      type: object
+      title: BridgeSignalResponse
+      required:
+      - bridge
+      - row
+      properties:
+        bridge:
+          $ref: '#/components/schemas/BridgeBrief'
+        row:
+          $ref: '#/components/schemas/BridgeRowResponse'
+    FieldFormatEnumerationValue:
+      type: object
+      title: FieldFormatEnumerationValue
+      required:
+      - value
+      properties:
+        value:
+          type: string
+        label:
+          type: string
+    BridgeRowResponse:
+      type: object
+      title: BridgeRowResponse
+      required:
+      - rowId
+      - bridgeId
+      - createdAt
+      - updatedAt
+      - status
+      - columns
+      properties:
+        rowId:
+          type: string
+          description: Unique identifier for the row
+          format: uuid
+        name:
+          type:
+          - string
+          - 'null'
+          description: Optional name or title of the row
+        bridgeId:
+          type: string
+          description: UUID of the bridge this row belongs to
+          format: uuid
+        createdAt:
+          type: string
+          description: Timestamp when the row was created (added to the bridge).
+          format: date-time
+        updatedAt:
+          type: string
+          description: "\n        Timestamp when the row was last updated. This is a technical last-updated field: in addition to\n        meaningful changes (status, column values), non-meaningful changes such as a bulk re-sync or\n        maintenance can also advance it. Sort by `rowUpdatedAt` to page through recently-changed rows.\n    "
+          format: date-time
+        status:
+          type: string
+          description: Current processing status of the row
+          enum:
+          - NotProcessed
+          - Queued
+          - Processing
+          - Processed
+          - Failed
+          - Skipped
+        buyerId:
+          type:
+          - string
+          - 'null'
+          description: UUID of the buyer associated with this row, if any
+          format: uuid
+        organizerId:
+          type:
+          - string
+          - 'null'
+          description: UUID of the conference organizer associated with this row, if any
+          format: uuid
+        entity:
+          oneOf:
+          - $ref: '#/components/schemas/BridgeRowEntityRef'
+          - type: 'null'
+        columns:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/BridgeRowColumnValueResponse'
+    BridgeBrief:
+      type: object
+      title: BridgeBrief
+      required:
+      - bridgeId
+      - name
+      - filterType
+      - columns
+      properties:
+        bridgeId:
+          type: string
+          description: Unique identifier for the bridge
+          format: uuid
+        name:
+          type: string
+          description: Name of the bridge
+        filterType:
+          type: string
+          description: Type of filter applied to the bridge — also what each of its rows represents, surfaced per row as `entity`. `RFP` bridges match RFPs.
+          enum:
+          - RFP
+          - Meeting
+          - Purchase
+          - Buyer
+          - TopBuyer
+          - Contact
+          - Signal
+          - Conference
+          - JobChange
+          - SequenceBuyer
+          - SequenceContact
+          - SequenceJobChange
+          - VendorPresence
+          - ProductCompetitorPresence
+          - CompanionPresence
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/BridgeColumnResponse'
     BridgeFieldFormat:
       type: object
       title: BridgeFieldFormat
@@ -439,79 +537,6 @@ components:
           description: Optional field definitions for object type fields
           items:
             $ref: '#/components/schemas/BridgeObjFieldDefinition'
-    BridgeRowResponse:
-      type: object
-      title: BridgeRowResponse
-      required:
-      - rowId
-      - bridgeId
-      - createdAt
-      - updatedAt
-      - status
-      - columns
-      properties:
-        rowId:
-          type: string
-          description: Unique identifier for the row
-          format: uuid
-        name:
-          type:
-          - string
-          - 'null'
-          description: Optional name or title of the row
-        bridgeId:
-          type: string
-          description: UUID of the bridge this row belongs to
-          format: uuid
-        createdAt:
-          type: string
-          description: Timestamp when the row was created (added to the bridge).
-          format: date-time
-        updatedAt:
-          type: string
-          description: "\n        Timestamp when the row was last updated. This is a technical last-updated field: in addition to\n        meaningful changes (status, column values), non-meaningful changes such as a bulk re-sync or\n        maintenance can also advance it. Sort by `rowUpdatedAt` to page through recently-changed rows.\n    "
-          format: date-time
-        status:
-          type: string
-          description: Current processing status of the row
-          enum:
-          - NotProcessed
-          - Queued
-          - Processing
-          - Processed
-          - Failed
-          - Skipped
-        buyerId:
-          type:
-          - string
-          - 'null'
-          description: UUID of the buyer associated with this row, if any
-          format: uuid
-        organizerId:
-          type:
-          - string
-          - 'null'
-          description: UUID of the conference organizer associated with this row, if any
-          format: uuid
-        entity:
-          oneOf:
-          - $ref: '#/components/schemas/BridgeRowEntityRef'
-          - type: 'null'
-        columns:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/BridgeRowColumnValueResponse'
-    BridgeSignalResponse:
-      type: object
-      title: BridgeSignalResponse
-      required:
-      - bridge
-      - row
-      properties:
-        bridge:
-          $ref: '#/components/schemas/BridgeBrief'
-        row:
-          $ref: '#/components/schemas/BridgeRowResponse'
     BridgeRowColumnValueResponse:
       type: object
       title: BridgeRowColumnValueResponse
@@ -536,47 +561,6 @@ components:
           - 'null'
           description: Timestamp when the value was successfully processed
           format: date-time
-    BridgeObjFieldDefinition:
-      type: object
-      title: BridgeObjFieldDefinition
-      required:
-      - name
-      - type
-      properties:
-        name:
-          type: string
-          description: Name of the field
-        type:
-          type: string
-          description: Data type of the field
-          enum:
-          - text
-          - date
-          - url
-          - number
-          - enumeration
-          - list
-          - obj
-          - json
-          - phone
-          - email
-          - boolean
-          - currencyUnit
-        description:
-          type:
-          - string
-          - 'null'
-          description: Optional description of the field
-    FieldFormatEnumerationValue:
-      type: object
-      title: FieldFormatEnumerationValue
-      required:
-      - value
-      properties:
-        value:
-          type: string
-        label:
-          type: string
     BridgeRowEntityRef:
       type: object
       title: BridgeRowEntityRef
@@ -607,45 +591,61 @@ components:
         id:
           type: string
           description: Identifier of the underlying entity. Pass to entity-specific tools (e.g. opportunity line items, file downloads) to fetch detail beyond the bridge's columns.
-    BridgeBrief:
+    BridgeColumnResponse:
       type: object
-      title: BridgeBrief
+      title: BridgeColumnResponse
       required:
+      - columnId
       - bridgeId
       - name
-      - filterType
-      - columns
+      - prompt
+      - type
+      - fieldFormat
+      - index
       properties:
+        columnId:
+          type: string
+          description: Unique identifier for the column
+          format: uuid
         bridgeId:
           type: string
-          description: Unique identifier for the bridge
+          description: UUID of the bridge this column belongs to
           format: uuid
         name:
           type: string
-          description: Name of the bridge
-        filterType:
+          description: Display name of the column
+        prompt:
           type: string
-          description: Type of filter applied to the bridge — also what each of its rows represents, surfaced per row as `entity`. `RFP` bridges match RFPs.
+          description: Prompt or instruction for generating column values
+        type:
+          type: string
+          description: Type of column (AiAnalysis, DataAttribute, AiAnalysisTemplate, etc.)
           enum:
-          - RFP
-          - Meeting
-          - Purchase
-          - Buyer
-          - TopBuyer
-          - Contact
-          - Signal
-          - Conference
-          - JobChange
-          - SequenceBuyer
-          - SequenceContact
-          - SequenceJobChange
-          - VendorPresence
-          - ProductCompetitorPresence
-          - CompanionPresence
-        columns:
-          type: array
-          items:
-            $ref: '#/components/schemas/BridgeColumnResponse'
+          - AiAnalysis
+          - DataAttribute
+          - AiAnalysisTemplate
+          - WebAgentTemplate
+          - Input
+          - Link
+          - CrmLookup
+          - CrmSync
+          - LinkToCell
+          - CompetitorsPresence
+          - EmailTemplate
+          - PhoneCallTemplate
+          - Webhook
+          - MultiLink
+          - AccountScoring
+        fieldFormat:
+          $ref: '#/components/schemas/BridgeFieldFormat'
+        index:
+          type: integer
+          description: Zero-based index position of the column
+        key:
+          type:
+          - string
+          - 'null'
+          description: Optional key for referencing the column
   securitySchemes:
     apiKey:
       scheme: bearer
