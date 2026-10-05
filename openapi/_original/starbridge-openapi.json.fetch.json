@@ -1,0 +1,12 @@
+{
+ "url": "https://core-http2-157602306522.us-central1.run.app/external/public/swagger/documentation.yaml",
+ "requested_url": "https://core-http2-157602306522.us-central1.run.app/external/public/swagger/documentation.yaml",
+ "status": 200,
+ "content_type": "application/json",
+ "bytes": 71689,
+ "sha256": "bd7ea57deb4703fc80da2de8a96265799c1774b295f0fc907c2f2726d5c7ceab",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "equivalent",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the provider's current document describes the same operations (Jaccard 0.917), but the bytes differ, so the archive is an earlier or reformatted copy."
+}
