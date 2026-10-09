@@ -84,3 +84,18 @@ additional_servers:
   - name: query_docs_filesystem_starbridge_help_center
     description: Read-only shell-like query (ls/cat/head/rg/tree) over a virtual filesystem of the docs
       pages and OpenAPI specs.
+rfc9728:
+  endpoint: https://dashboard.starbridge.ai/mcp/oauth
+  metadata_url: https://dashboard.starbridge.ai/.well-known/oauth-protected-resource/internal/
+  discovered_via: WWW-Authenticate resource_metadata on an anonymous POST initialize
+  fetched: '2026-09-25'
+  http_status: 200
+  content_type: application/json
+  document:
+    resource: https://dashboard.starbridge.ai/mcp/oauth
+    authorization_servers:
+    - https://auth.starbridge.ai/
+    scopes_supported:
+    - mcp:tools
+    bearer_methods_supported:
+    - header
