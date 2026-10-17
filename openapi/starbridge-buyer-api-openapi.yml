@@ -306,57 +306,31 @@ paths:
         openWorldHint: false
 components:
   schemas:
-    DetailSection:
+    EntrySource:
       type: object
-      title: DetailSection
+      title: EntrySource
       required:
-      - sections
+      - entryId
+      - triggerId
       properties:
-        status:
+        entryId:
           type: string
-          enum:
-          - Standard
-          - Fallback
-        intro:
+          format: uuid
+        triggerId:
           type: string
-        sections:
-          type: array
-          items:
-            $ref: '#/components/schemas/Section'
-    Section:
-      type: object
-      title: Section
-      required:
-      - title
-      - text
-      properties:
-        title:
-          type: string
-        text:
-          type: string
-        sources:
-          type: array
-          items:
-            $ref: '#/components/schemas/EntrySource'
-    BuyerAttributeResponse:
-      type: object
-      title: BuyerAttributeResponse
-      required:
-      - buyerData
-      properties:
-        buyerData:
-          description: Any JSON value - can be a string, number, boolean, object, array, or null
-    BuyerSearchResponse:
-      type: object
-      title: BuyerSearchResponse
-      required:
-      - buyers
-      properties:
-        buyers:
-          type: array
-          description: Matching buyers (institutions) ordered by search relevance. Pick the single buyer that best fits the user's intent.
-          items:
-            $ref: '#/components/schemas/BuyerBrief'
+          format: uuid
+        triggerType:
+          type:
+          - string
+          - 'null'
+        triggerName:
+          type:
+          - string
+          - 'null'
+        entryName:
+          type:
+          - string
+          - 'null'
     BuyerSummaryContent:
       type: object
       title: BuyerSummaryContent
@@ -400,6 +374,17 @@ components:
           format: date-time
         needsRegeneration:
           type: boolean
+    BuyerSearchResponse:
+      type: object
+      title: BuyerSearchResponse
+      required:
+      - buyers
+      properties:
+        buyers:
+          type: array
+          description: Matching buyers (institutions) ordered by search relevance. Pick the single buyer that best fits the user's intent.
+          items:
+            $ref: '#/components/schemas/BuyerBrief'
     BuyerBrief:
       type: object
       title: BuyerBrief
@@ -487,31 +472,46 @@ components:
           type:
           - string
           - 'null'
-    EntrySource:
+    Section:
       type: object
-      title: EntrySource
+      title: Section
       required:
-      - entryId
-      - triggerId
+      - title
+      - text
       properties:
-        entryId:
+        title:
           type: string
-          format: uuid
-        triggerId:
+        text:
           type: string
-          format: uuid
-        triggerType:
-          type:
-          - string
-          - 'null'
-        triggerName:
-          type:
-          - string
-          - 'null'
-        entryName:
-          type:
-          - string
-          - 'null'
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntrySource'
+    DetailSection:
+      type: object
+      title: DetailSection
+      required:
+      - sections
+      properties:
+        status:
+          type: string
+          enum:
+          - Standard
+          - Fallback
+        intro:
+          type: string
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Section'
+    BuyerAttributeResponse:
+      type: object
+      title: BuyerAttributeResponse
+      required:
+      - buyerData
+      properties:
+        buyerData:
+          description: Any JSON value - can be a string, number, boolean, object, array, or null
   securitySchemes:
     apiKey:
       scheme: bearer
