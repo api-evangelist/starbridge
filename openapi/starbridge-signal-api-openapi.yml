@@ -651,3 +651,9 @@ components:
       scheme: bearer
       description: HTTP Bearer Authentication
       type: http
+x-provenance:
+  method: harvested
+  publisher: Starbridge
+  source: https://core-http2-157602306522.us-central1.run.app/external/public/swagger/documentation.yaml
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
